@@ -17,7 +17,7 @@
     </Preference>
 
     <SwitchPreferenceCompat
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="drawer_toggle"
         android:title="@string/drawer_toggle">
         <extra

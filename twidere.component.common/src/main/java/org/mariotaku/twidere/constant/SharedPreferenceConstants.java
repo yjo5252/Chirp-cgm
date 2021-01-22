@@ -101,7 +101,7 @@ public interface SharedPreferenceConstants {
     int DEFAULT_DATABASE_ITEM_LIMIT = 100;
     int DEFAULT_LOAD_ITEM_LIMIT = 20;
 
-    String DEFAULT_TAB_POSITION = VALUE_TAB_POSITION_TOP;
+    String DEFAULT_TAB_POSITION = VALUE_TAB_POSITION_BOTTOM;
 
     // Exportable preferences
 
