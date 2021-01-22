@@ -37,11 +37,9 @@ import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.SparseIntArray
-import android.view.Gravity
-import android.view.KeyEvent
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup.MarginLayoutParams
@@ -104,6 +102,7 @@ import org.mariotaku.twidere.receiver.NotificationReceiver
 import org.mariotaku.twidere.util.*
 import org.mariotaku.twidere.util.KeyboardShortcutsHandler.KeyboardShortcutCallback
 import org.mariotaku.twidere.util.premium.ExtraFeaturesService
+import org.mariotaku.twidere.util.sync.LOGTAG_SYNC
 import org.mariotaku.twidere.view.HomeDrawerLayout
 import org.mariotaku.twidere.view.TabPagerIndicator
 import java.lang.ref.WeakReference
@@ -381,7 +380,21 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         return false
     }
 
+
+    //drustz: add the swipe right on first page to open drawer
+    private var counterpagescroll: Int = 0
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+        if (position == 0 && positionOffset == 0f){
+            counterpagescroll += 1;
+            if (counterpagescroll >= 2){
+                counterpagescroll = 0
+                if (homeMenu.isDrawerOpen(GravityCompat.START) || homeMenu.isDrawerOpen(GravityCompat.END)) {
+                    homeMenu.openDrawer(GravityCompat.START)
+                }
+            }
+        }else{
+            counterpagescroll = 0;
+        }
     }
 
     override fun onPageSelected(position: Int) {
