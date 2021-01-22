@@ -343,6 +343,16 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         updateActionsButton()
     }
 
+
+//    drustz: add a back to main function
+    override fun onBackPressed() {
+        if (mainPager.currentItem == 0){
+            super.onBackPressed()
+        } else {
+            mainPager.currentItem = 0;
+        }
+    }
+
     override fun onClick(v: View) {
         when (v) {
             actionsButton -> {
