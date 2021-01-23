@@ -388,7 +388,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             counterpagescroll += 1;
             if (counterpagescroll >= 2){
                 counterpagescroll = 0
-                if (homeMenu.isDrawerOpen(GravityCompat.START) || homeMenu.isDrawerOpen(GravityCompat.END)) {
+                if (!(homeMenu.isDrawerOpen(GravityCompat.START) || homeMenu.isDrawerOpen(GravityCompat.END))) {
                     homeMenu.openDrawer(GravityCompat.START)
                 }
             }
