@@ -4,6 +4,7 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
@@ -63,6 +64,7 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
     override val profileImageView: ShapedImageView by lazy { itemView.profileImage }
     override val profileTypeView: ImageView by lazy { itemView.profileType }
 
+    private val lastReadLabel by lazy { itemView.lastReadLabel }
     private val itemContent by lazy { itemView.itemContent }
     private val mediaPreview by lazy { itemView.mediaPreview }
     private val linkPreview by lazy { itemView.linkPreview }
@@ -108,7 +110,6 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
 
     }
 
-
     fun displaySampleStatus() {
         val profileImageEnabled = adapter.profileImageEnabled
         profileImageView.visibility = if (profileImageEnabled) View.VISIBLE else View.GONE
@@ -146,6 +147,10 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
         mediaPreview.displayMedia(R.drawable.featured_graphics)
         linkPreview.isVisible = isLinkPreviewShown
         linkPreview.displayData(TWIDERE_PREVIEW_LINK_URI, LinkPreviewData(title = TWIDERE_PREVIEW_NAME, imgRes = R.drawable.featured_graphics), adapter.requestManager)
+    }
+
+    override fun showLastReadLabel() {
+        lastReadLabel.visibility = View.VISIBLE;
     }
 
     override fun display(status: ParcelableStatus, displayInReplyTo: Boolean,
@@ -459,6 +464,8 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
         nameView.updateText(formatter)
         quotedNameView.updateText(formatter)
 
+        //drustz:hide the lastread view
+        lastReadLabel.visibility = View.GONE
     }
 
     private fun displayQuotedMedia(requestManager: RequestManager, status: ParcelableStatus) {
@@ -529,6 +536,8 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
 
 
     override fun setTextSize(textSize: Float) {
+        lastReadLabel.textSize = textSize*1.2f
+
         nameView.setPrimaryTextSize(textSize)
         quotedNameView.setPrimaryTextSize(textSize)
         summaryView.textSize = textSize

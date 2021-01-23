@@ -123,6 +123,10 @@ public interface SharedPreferenceConstants {
     String KEY_DISPLAY_PROFILE_IMAGE = "display_profile_image";
     @ExportablePreference(STRING)
     String KEY_QUOTE_FORMAT = "quote_format";
+    @ExportablePreference(STRING)
+    String KEY_NEWEST_TID = "newest_tid";
+    @ExportablePreference(STRING)
+    String KEY_LASTREAD_TID = "last_read_tid";
     @ExportablePreference(BOOLEAN)
     String KEY_REMEMBER_POSITION = "remember_position";
     @ExportablePreference(BOOLEAN)

@@ -27,6 +27,7 @@ import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.loader.app.LoaderManager.LoaderCallbacks
@@ -38,6 +39,7 @@ import android.view.*
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.fragment_content_recyclerview.*
 import org.mariotaku.kpreferences.get
+import org.mariotaku.kpreferences.set
 import org.mariotaku.ktextension.*
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.twidere.R
@@ -278,6 +280,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
         var lastReadViewTop = 0
         var loadMore = false
         var wasAtTop = false
+
         // 1. Save current read position if not first load
         if (!firstLoad) {
             val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
@@ -347,15 +350,18 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
             restorePosition += 1
             restorePosition.coerceInOr(0 until layoutManager.itemCount, -1)
         }
-        if (restorePosition != -1 && adapter.isStatus(restorePosition) && (loadMore || !wasAtTop
-                || readFromBottom || (rememberPosition && firstLoad))) {
-            if (layoutManager.height == 0) {
-                // RecyclerView has not currently laid out, ignore padding.
-                layoutManager.scrollToPositionWithOffset(restorePosition, lastReadViewTop)
-            } else {
-                layoutManager.scrollToPositionWithOffset(restorePosition, lastReadViewTop - layoutManager.paddingTop)
-            }
-        }
+
+//        drustz: this causes the back-to-feed position always to be slided up
+//        Idk why (after adding the last-read label), hence just disable it.
+//        if (restorePosition != -1 && adapter.isStatus(restorePosition) && (loadMore || !wasAtTop
+//                || readFromBottom || (rememberPosition && firstLoad))) {
+//            if (layoutManager.height == 0) {
+//                // RecyclerView has not currently laid out, ignore padding.
+//                layoutManager.scrollToPositionWithOffset(restorePosition, lastReadViewTop)
+//            } else {
+//                layoutManager.scrollToPositionWithOffset(restorePosition, lastReadViewTop - layoutManager.paddingTop)
+//            }
+//        }
 
         if (loader is IExtendedLoader) {
             loader.fromUser = false

@@ -21,6 +21,7 @@ package org.mariotaku.twidere.adapter
 
 import android.content.Context
 import android.database.CursorIndexOutOfBoundsException
+import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -41,6 +42,7 @@ import org.mariotaku.twidere.annotation.PreviewStyle
 import org.mariotaku.twidere.constant.*
 import org.mariotaku.twidere.constant.SharedPreferenceConstants.KEY_DISPLAY_SENSITIVE_CONTENTS
 import org.mariotaku.twidere.exception.UnsupportedCountIndexException
+import org.mariotaku.twidere.fragment.HomeTimelineFragment
 import org.mariotaku.twidere.model.ItemCounts
 import org.mariotaku.twidere.model.ObjectId
 import org.mariotaku.twidere.model.ParcelableStatus
@@ -116,6 +118,9 @@ abstract class ParcelableStatusesAdapter(
             field = value
             notifyDataSetChanged()
         }
+
+    //drustz : lastread tid
+    var lastReadTid : String = ""
 
     private var data: List<ParcelableStatus>? = null
     private var displayPositions: IntArray? = null
@@ -338,6 +343,9 @@ abstract class ParcelableStatusesAdapter(
                 val status = getStatusInternal(position, countIndex = countIndex, reuse = true)
                 (holder as IStatusViewHolder).display(status, displayInReplyTo = isShowInReplyTo,
                         displayPinned = countIndex == ITEM_INDEX_PINNED_STATUS)
+                if (status.id == lastReadTid ){
+                    (holder as IStatusViewHolder).showLastReadLabel()
+                }
             }
             VIEW_TYPE_FILTER_HEADER -> {
                 (holder as TimelineFilterHeaderViewHolder).display(timelineFilter!!)

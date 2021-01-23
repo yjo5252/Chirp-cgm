@@ -38,6 +38,9 @@ interface IStatusViewHolder : CardMediaContainer.OnMediaClickListener {
     fun display(status: ParcelableStatus, displayInReplyTo: Boolean = true,
             displayPinned: Boolean = false)
 
+    //drustz: add show last read label
+    fun showLastReadLabel()
+
     val profileImageView: ImageView?
 
     val profileTypeView: ImageView?

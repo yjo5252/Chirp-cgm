@@ -107,6 +107,7 @@
     <dimen name="settings_panel_width_entries">240dp</dimen>
 
     <dimen name="text_size_extra_small">12sp</dimen>
+    <dimen name="text_size_normal">18sp</dimen>
 
     <dimen name="toolbar_elevation">8dp</dimen>
 
