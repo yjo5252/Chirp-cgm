@@ -308,3 +308,29 @@ object userTimelineFilterKey : KSimpleKey<UserTimelineFilter>("user_timeline_fil
     }
 
 }
+
+//drustz : mainfeedtimelinefilterkey
+object homeTimelineFilterKey : KSimpleKey<UserTimelineFilter>("home_timeline_filter", UserTimelineFilter()) {
+    override fun read(preferences: SharedPreferences): UserTimelineFilter {
+        val rawString = preferences.getString(key, null) ?: return def
+        val options = rawString.split(",")
+        return UserTimelineFilter().apply {
+            isIncludeReplies = "replies" in options
+            isIncludeRetweets = "retweets" in options
+        }
+    }
+
+    override fun write(editor: SharedPreferences.Editor, value: UserTimelineFilter): Boolean {
+        val options = ArraySet<String>().apply {
+            if (value.isIncludeReplies) {
+                add("replies")
+            }
+            if (value.isIncludeRetweets) {
+                add("retweets")
+            }
+        }.joinToString(",")
+        editor.putString(key, options)
+        return true
+    }
+
+}

@@ -343,7 +343,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
 
-//    drustz: add a back to main function
+//  drustz: add a back to main function
     override fun onBackPressed() {
         if (mainPager.currentItem == 0){
             super.onBackPressed()
@@ -381,7 +381,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
 
-    //drustz: add the swipe right on first page to open drawer
+//  drustz: add the swipe right on first page to open drawer
     private var counterpagescroll: Int = 0
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         if (position == 0 && positionOffset == 0f){
