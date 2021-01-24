@@ -144,7 +144,8 @@
         <item>30</item>
         <item>60</item>
         <item>120</item>
-        <item>240</item>
+<!-- change the interval to 1 minute-->
+        <item>1</item>
     </string-array>
     <string-array name="values_tab_column_width">
         <item>narrow</item>

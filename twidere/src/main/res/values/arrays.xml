@@ -68,7 +68,7 @@
         <item>30 minutes</item>
         <item>1 hour</item>
         <item>2 hours</item>
-        <item>4 hours</item>
+        <item>1 minute</item>
     </string-array>
     <string-array name="entries_tab_column_width">
         <item>Narrow</item>
