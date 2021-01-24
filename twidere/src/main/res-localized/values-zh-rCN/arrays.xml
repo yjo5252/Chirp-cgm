@@ -68,7 +68,7 @@
         <item>30分钟</item>
         <item>1小时</item>
         <item>2小时</item>
-        <item>1分钟</item>
+        <item>4小时</item>
     </string-array>
     <string-array name="entries_tab_column_width">
         <item>较窄</item>
