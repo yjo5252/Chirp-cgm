@@ -619,6 +619,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
 
         fun handleActionClick(fragment: BaseFragment, id: Int, status: ParcelableStatus,
                 holder: StatusViewHolder) {
+            Log.d("drz", "onClick: ")
             when (id) {
                 R.id.reply -> {
                     val intent = Intent(INTENT_ACTION_REPLY)
@@ -640,6 +641,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
                                     status.account_key, status.id, status)
                             }
                         }
+
                         status.is_favorite -> {
                             fragment.twitterWrapper.destroyFavoriteAsync(status.account_key, status.id)
                         }
