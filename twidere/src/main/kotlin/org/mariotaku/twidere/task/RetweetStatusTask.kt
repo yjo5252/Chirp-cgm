@@ -1,6 +1,7 @@
 package org.mariotaku.twidere.task
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import org.mariotaku.microblog.library.MicroBlog
 import org.mariotaku.microblog.library.MicroBlogException
@@ -9,6 +10,8 @@ import org.mariotaku.twidere.R
 import org.mariotaku.twidere.annotation.AccountType
 import org.mariotaku.twidere.constant.TWITTER_ERROR_ALREADY_FAVORITED
 import org.mariotaku.twidere.constant.TWITTER_ERROR_ALREADY_RETWEETED
+import org.mariotaku.twidere.constant.likedTweetsStats
+import org.mariotaku.twidere.constant.retweetTweetsStats
 import org.mariotaku.twidere.extension.getErrorMessage
 import org.mariotaku.twidere.extension.model.api.mastodon.toParcelable
 import org.mariotaku.twidere.extension.model.api.toParcelable
@@ -23,10 +26,7 @@ import org.mariotaku.twidere.model.event.StatusListChangedEvent
 import org.mariotaku.twidere.model.event.StatusRetweetedEvent
 import org.mariotaku.twidere.provider.TwidereDataStore.Statuses
 import org.mariotaku.twidere.task.twitter.UpdateStatusTask
-import org.mariotaku.twidere.util.AsyncTwitterWrapper
-import org.mariotaku.twidere.util.DataStoreUtils
-import org.mariotaku.twidere.util.Utils
-import org.mariotaku.twidere.util.updateStatusInfo
+import org.mariotaku.twidere.util.*
 
 /**
  * Retweet status
@@ -85,6 +85,9 @@ class RetweetStatusTask(
         if (result != null) {
             bus.post(StatusRetweetedEvent(result))
             Toast.makeText(context, R.string.message_toast_status_retweeted, Toast.LENGTH_SHORT).show()
+            Log.d("drz", "rewteeted")
+            //drustz: add to stats
+            UseStats.modifyStatsKeyCount(preferences, retweetTweetsStats, 1)
         } else {
             Toast.makeText(context, exception?.getErrorMessage(context), Toast.LENGTH_SHORT).show()
         }

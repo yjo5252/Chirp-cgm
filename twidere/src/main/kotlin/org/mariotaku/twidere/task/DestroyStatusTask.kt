@@ -1,6 +1,7 @@
 package org.mariotaku.twidere.task
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import org.mariotaku.microblog.library.MicroBlog
 import org.mariotaku.microblog.library.MicroBlogException
@@ -8,6 +9,9 @@ import org.mariotaku.microblog.library.mastodon.Mastodon
 import org.mariotaku.microblog.library.twitter.model.ErrorInfo
 import org.mariotaku.twidere.R
 import org.mariotaku.twidere.annotation.AccountType
+import org.mariotaku.twidere.constant.composeTweetsStats
+import org.mariotaku.twidere.constant.replyTweetsStats
+import org.mariotaku.twidere.constant.retweetTweetsStats
 import org.mariotaku.twidere.extension.getErrorMessage
 import org.mariotaku.twidere.extension.model.api.mastodon.toParcelable
 import org.mariotaku.twidere.extension.model.api.toParcelable
@@ -19,6 +23,7 @@ import org.mariotaku.twidere.model.event.StatusDestroyedEvent
 import org.mariotaku.twidere.model.event.StatusListChangedEvent
 import org.mariotaku.twidere.util.AsyncTwitterWrapper
 import org.mariotaku.twidere.util.DataStoreUtils
+import org.mariotaku.twidere.util.UseStats
 import org.mariotaku.twidere.util.deleteActivityStatus
 
 /**
@@ -62,10 +67,24 @@ class DestroyStatusTask(
     override fun afterExecute(callback: Any?, result: ParcelableStatus?, exception: MicroBlogException?) {
         microBlogWrapper.destroyingStatusIds.remove(AsyncTwitterWrapper.calculateHashCode(accountKey, statusId))
         if (result != null) {
-            if (result.retweet_id != null) {
+            if (result.retweet_id != null || result.text_unescaped.startsWith("RT @")) {
                 Toast.makeText(context, R.string.message_toast_retweet_cancelled, Toast.LENGTH_SHORT).show()
+
+                Log.d("drz", "unrewteeted")
+                //drustz: add to stats
+                UseStats.modifyStatsKeyCount(preferences, retweetTweetsStats, -1)
             } else {
                 Toast.makeText(context, R.string.message_toast_status_deleted, Toast.LENGTH_SHORT).show()
+
+                if (result.in_reply_to_name != null){
+                    Log.d("drz", "unreplied")
+                    //drustz: add to stats
+                    UseStats.modifyStatsKeyCount(preferences, replyTweetsStats, -1)
+                } else {
+                    Log.d("drz", "unrewteeted")
+                    //drustz: add to stats
+                    UseStats.modifyStatsKeyCount(preferences, composeTweetsStats, -1)
+                }
             }
             bus.post(StatusDestroyedEvent(result))
         } else {

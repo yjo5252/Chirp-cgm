@@ -48,7 +48,10 @@ import org.mariotaku.restfu.http.mime.Body
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.twidere.R
 import org.mariotaku.twidere.TwidereConstants.*
+import org.mariotaku.twidere.constant.composeTweetsStats
 import org.mariotaku.twidere.constant.refreshAfterTweetKey
+import org.mariotaku.twidere.constant.replyTweetsStats
+import org.mariotaku.twidere.constant.retweetTweetsStats
 import org.mariotaku.twidere.extension.getErrorMessage
 import org.mariotaku.twidere.extension.model.notificationBuilder
 import org.mariotaku.twidere.extension.queryOne
@@ -65,6 +68,7 @@ import org.mariotaku.twidere.task.CreateFavoriteTask
 import org.mariotaku.twidere.task.RetweetStatusTask
 import org.mariotaku.twidere.task.twitter.UpdateStatusTask
 import org.mariotaku.twidere.task.twitter.message.SendMessageTask
+import org.mariotaku.twidere.util.UseStats
 import org.mariotaku.twidere.util.Utils
 import org.mariotaku.twidere.util.deleteDrafts
 import java.io.ByteArrayOutputStream
@@ -294,9 +298,22 @@ class LengthyOperationsService : BaseIntentService("lengthy_operations") {
                                 item.draft_action == Draft.Action.QUOTE) {
                             Toast.makeText(context, R.string.message_toast_status_retweeted,
                                     Toast.LENGTH_SHORT).show()
+                            Log.d("drz", "rewteeted")
+                            //drustz: add to stats
+                            UseStats.modifyStatsKeyCount(preferences, retweetTweetsStats, 1)
                         } else {
                             Toast.makeText(context, R.string.message_toast_status_updated,
                                     Toast.LENGTH_SHORT).show()
+
+                            if (item.in_reply_to_status != null){
+                                Log.d("drz", "replied")
+                                //drustz: add to stats
+                                UseStats.modifyStatsKeyCount(preferences, replyTweetsStats, 1)
+                            } else {
+                                Log.d("drz", "tweeted")
+                                //drustz: add to stats
+                                UseStats.modifyStatsKeyCount(preferences, composeTweetsStats, 1)
+                            }
                         }
                     }
                 }

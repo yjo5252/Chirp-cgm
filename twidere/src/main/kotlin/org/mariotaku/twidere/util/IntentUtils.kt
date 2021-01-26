@@ -544,6 +544,13 @@ object IntentUtils {
         context.startActivity(builder.intent())
     }
 
+    fun useStats(initialTag: String? = null): Intent {
+        val builder = Uri.Builder()
+        builder.scheme(SCHEME_TWIDERE_USESTATS)
+        builder.authority(initialTag.orEmpty())
+        return builder.intent(Intent.ACTION_MAIN)
+    }
+
     fun settings(initialTag: String? = null): Intent {
         val builder = Uri.Builder()
         builder.scheme(SCHEME_TWIDERE_SETTINGS)

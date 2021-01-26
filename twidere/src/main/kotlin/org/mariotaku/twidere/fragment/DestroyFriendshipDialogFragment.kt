@@ -22,6 +22,7 @@ package org.mariotaku.twidere.fragment
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.FragmentManager
 import androidx.appcompat.app.AlertDialog
 import org.mariotaku.kpreferences.get
@@ -30,9 +31,11 @@ import org.mariotaku.ktextension.set
 import org.mariotaku.twidere.R
 import org.mariotaku.twidere.constant.IntentConstants.EXTRA_USER
 import org.mariotaku.twidere.constant.nameFirstKey
+import org.mariotaku.twidere.constant.unfollowAccountsStats
 import org.mariotaku.twidere.extension.applyOnShow
 import org.mariotaku.twidere.extension.applyTheme
 import org.mariotaku.twidere.model.ParcelableUser
+import org.mariotaku.twidere.util.UseStats
 
 class DestroyFriendshipDialogFragment : BaseDialogFragment(), DialogInterface.OnClickListener {
 

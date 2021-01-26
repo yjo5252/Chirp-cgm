@@ -1041,6 +1041,8 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                                 true, accountKeys, FilterScope.HOME)
                         result.put(i, count)
                         publishProgress(TabBadge(i, count))
+                        //drustz: add to stats
+                        UseStats.modifyStatsKeyCount(preferences, newTweetsStats, count)
                     }
                     CustomTabType.NOTIFICATIONS_TIMELINE -> {
                         val accountKeys = Utils.getAccountKeys(context, spec.args) ?: activatedKeys

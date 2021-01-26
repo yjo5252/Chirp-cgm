@@ -24,6 +24,7 @@ import org.mariotaku.twidere.model.timeline.UserTimelineFilter
 import org.mariotaku.twidere.preference.ThemeBackgroundPreference
 import org.mariotaku.twidere.util.sync.DataSyncProvider
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by mariotaku on 16/8/25.
@@ -42,6 +43,18 @@ val statusShortenerKey = KNullableStringKey(KEY_STATUS_SHORTENER, null)
 val mediaUploaderKey = KNullableStringKey(KEY_MEDIA_UPLOADER, null)
 val newDocumentApiKey = KBooleanKey(KEY_NEW_DOCUMENT_API, Build.VERSION.SDK_INT == Build.VERSION_CODES.M)
 val rememberPositionKey = KBooleanKey(KEY_REMEMBER_POSITION, true)
+val openTimeStamp = KLongKey(KEY_OPEN_TSTAMP, 0)
+val closeTimeStamp = KLongKey(KEY_CLOSE_TSTAMP, 0)
+val openTimesKey = KIntKey(KEY_OPEN_TIMES, 0)
+val weekUsage = KStringKey(KEY_WEEK_USAGE, "0,0,0,0,0,0,0")
+val lastModificationTimeStamp = KLongKey(KEY_LAST_MODIFY_TIME, 0)
+val newTweetsStats = KIntKey(KEY_NEW_TWEETS_CNT, 0)
+val composeTweetsStats = KIntKey(KEY_COMPOSE_TWEETS_CNT, 0)
+val replyTweetsStats = KIntKey(KEY_REPLY_TWEETS_CNT, 0)
+val likedTweetsStats = KIntKey(KEY_LIKED_TWEETS_CNT, 0)
+val retweetTweetsStats = KIntKey(KEY_RETWEET_TWEETS_CNT, 0)
+val followAccountsStats = KIntKey(KEY_FOLLOW_ACC_CNT, 0)
+val unfollowAccountsStats = KIntKey(KEY_UNFOLLOW_ACC_CNT, 0)
 val lastReadTweetIDKey = KStringKey(KEY_LASTREAD_TID, "")
 val newestTweetIDKey = KStringKey(KEY_NEWEST_TID, "")
 val attachLocationKey = KBooleanKey(KEY_ATTACH_LOCATION, false)
