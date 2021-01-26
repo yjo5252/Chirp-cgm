@@ -137,7 +137,7 @@ class UsageStatsActivity : BaseActivity() {
         for (i in weekStats.indices) {
             // turn your data into Entry objects
             entries.add(BarEntry(i.toFloat(),
-                    (weekStats[1]*i / (1000*60) ).toFloat()))
+                    (weekStats[i] / (1000*60) ).toFloat()))
 
             if (i <= todayIdx)
                 colors.add(Color.parseColor("#16D9DF"))
