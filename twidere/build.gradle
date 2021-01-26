@@ -252,7 +252,7 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:${libVersions['Glide']}"
     implementation 'jp.wasabeef:glide-transformations:4.1.0'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
-
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
 /** Custom dependencies **/
     implementation 'com.github.mariotaku:AbstractTask:0.9.5'
