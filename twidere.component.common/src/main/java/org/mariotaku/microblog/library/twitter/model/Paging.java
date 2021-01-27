@@ -103,4 +103,20 @@ public class Paging extends SimpleValueMap {
         put("rpp", rpp);
         return this;
     }
+
+    @Override
+    public String toString() {
+        String res = "Paging:";
+        if (has("min_position")) res += " [min_position] " + get("min_position");
+        if (has("max_position")) res += " [max_position] " + get("max_position");
+        if (has("count")) res += " [count] " + get("count");
+        if (has("cursor")) res += " [cursor] " + get("cursor");
+        if (has("latest_results")) res += " [latest_results] " + get("latest_results");
+        if (has("since_id")) res += " [since_id] " + get("since_id");
+        if (has("max_id")) res += " [max_id] " + get("max_id");
+        if (has("page")) res += " [page] " + get("page");
+        if (has("limit")) res += " [limit] " + get("limit");
+        if (has("rpp")) res += " [rpp] " + get("rpp");
+        return res;
+    }
 }

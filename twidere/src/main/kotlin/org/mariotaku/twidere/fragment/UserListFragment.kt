@@ -366,7 +366,6 @@ class UserListFragment : AbsToolbarTabPagesFragment(), OnClickListener,
         override fun loadInBackground(): SingleResponse<ParcelableUserList> {
             if (!omitIntentExtra && extras != null) {
                 val cache = extras.getParcelable<ParcelableUserList>(EXTRA_USER_LIST)
-                Log.d("drz", "user list 2 : " + cache)
                 if (cache != null) return SingleResponse(cache)
             }
             try {

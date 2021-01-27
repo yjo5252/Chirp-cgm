@@ -54,9 +54,11 @@ class UserListTimelineLoader(
 
     @Throws(MicroBlogException::class)
     override fun getStatuses(account: AccountDetails, paging: Paging): PaginatedList<ParcelableStatus> {
-        return getMicroBlogStatuses(account, paging).mapMicroBlogToPaginated {
+        val statuses =
+        getMicroBlogStatuses(account, paging).mapMicroBlogToPaginated {
             it.toParcelable(account, profileImageSize)
         }
+        return statuses
     }
 
     @WorkerThread

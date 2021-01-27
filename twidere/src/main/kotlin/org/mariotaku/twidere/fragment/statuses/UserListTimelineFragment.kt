@@ -86,7 +86,6 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
                     return null
                 }
             }
-            Log.d("drz", "saved arg: " + result.toString())
             return result.toTypedArray()
         }
 
@@ -131,7 +130,6 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
         refreshing = true
 //        val extras = arguments?.getParcelable<HomeTabExtras>(EXTRA_EXTRAS)
         val accountKey = Utils.getAccountKey(context, args)
-        Log.d("drz", "onCreateStatusesLoader: get arg: "+ args.toString())
         val listId = args.getString(EXTRA_LIST_ID)
         val userKey = args.getParcelable<UserKey?>(EXTRA_USER_KEY)
         val listName = args.getString(EXTRA_LIST_NAME)
