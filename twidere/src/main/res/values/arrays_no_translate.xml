@@ -137,7 +137,8 @@
         <item>list_timeline</item>
     </string-array>
     <string-array name="values_refresh_interval">
-        <item>3</item>
+        <!-- drustz: change the interval to 1 minute-->
+        <item>1</item>
         <item>5</item>
         <item>10</item>
         <item>15</item>

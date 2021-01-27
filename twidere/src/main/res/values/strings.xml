@@ -373,6 +373,8 @@
 
     <string name="excluded">Excluded</string>
 
+    <string name="explanation_access_to_appusage_is_not_enabled">Please click the "grant access" button to grant Twidere the permission to access the app usage</string>
+
     <string name="export_settings">Export settings</string>
     <string name="export_settings_type_dialog_title">Export settings…</string>
 

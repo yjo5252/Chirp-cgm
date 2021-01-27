@@ -23,8 +23,10 @@ import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import androidx.loader.content.Loader
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
+import org.mariotaku.ktextension.isNullOrEmpty
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.twidere.R
 import org.mariotaku.twidere.TwidereConstants.NOTIFICATION_ID_HOME_TIMELINE
@@ -32,11 +34,14 @@ import org.mariotaku.twidere.annotation.FilterScope
 import org.mariotaku.twidere.annotation.ReadPositionTag
 import org.mariotaku.twidere.constant.IntentConstants.EXTRA_EXTRAS
 import org.mariotaku.twidere.constant.homeTimelineFilterKey
+import org.mariotaku.twidere.constant.lastReadTweetIDKey
+import org.mariotaku.twidere.constant.newestTweetIDKey
 import org.mariotaku.twidere.constant.userTimelineFilterKey
 import org.mariotaku.twidere.extension.applyTheme
 import org.mariotaku.twidere.extension.onShow
 import org.mariotaku.twidere.fragment.statuses.UserTimelineFragment
 import org.mariotaku.twidere.model.ParameterizedExpression
+import org.mariotaku.twidere.model.ParcelableStatus
 import org.mariotaku.twidere.model.RefreshTaskParam
 import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.tab.extra.HomeTabExtras
@@ -126,6 +131,23 @@ class HomeTimelineFragment : CursorStatusesFragment() {
             }
         }
         return super.processWhere(where, whereArgs)
+    }
+
+    override fun onLoadFinished(loader: Loader<List<ParcelableStatus>?>, data: List<ParcelableStatus>?) {
+        val firstLoad = adapterData.isNullOrEmpty()
+        super.onLoadFinished(loader, data)
+        //drustz: save the first item in the load for lastread status
+        val firstitm = adapter.getStatus(adapter.statusStartIndex, false)
+        val newestid =  preferences[newestTweetIDKey]
+        var lastreadTid = preferences[lastReadTweetIDKey]
+        preferences.edit().apply {
+            //only reassign if they are not equal
+            if (firstLoad && lastreadTid != newestid){
+                this[lastReadTweetIDKey] = newestid
+            }
+            this[newestTweetIDKey] = firstitm.id
+        }.apply()
+        adapter.lastReadTid = preferences[lastReadTweetIDKey]
     }
 
     override fun onFilterClick(holder: TimelineFilterHeaderViewHolder) {

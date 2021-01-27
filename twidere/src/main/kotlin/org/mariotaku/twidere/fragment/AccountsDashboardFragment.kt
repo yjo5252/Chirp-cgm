@@ -365,7 +365,9 @@ class AccountsDashboardFragment : BaseFragment(), LoaderCallbacks<AccountsInfo>,
         menu.setItemAvailability(R.id.interactions, !hasInteractionsTab)
         menu.setItemAvailability(R.id.favorites, useStarsForLikes)
         menu.setItemAvailability(R.id.likes, !useStarsForLikes)
-        menu.setItemAvailability(R.id.premium_features, extraFeaturesService.isSupported())
+//        drustz: set promoted features to false
+//        menu.setItemAvailability(R.id.premium_features, extraFeaturesService.isSupported())
+        menu.setItemAvailability(R.id.premium_features, false)
         if (preferences[extraFeaturesNoticeVersionKey] < EXTRA_FEATURES_NOTICE_VERSION) {
             val icon = context?.let { ContextCompat.getDrawable(it, R.drawable.ic_action_infinity) }
             val color = context?.let { ContextCompat.getColor(it, R.color.material_red) }
@@ -630,6 +632,13 @@ class AccountsDashboardFragment : BaseFragment(), LoaderCallbacks<AccountsInfo>,
                 val intent = Intent(currentActivity, PremiumDashboardActivity::class.java)
                 startActivity(intent)
                 preferences[extraFeaturesNoticeVersionKey] = EXTRA_FEATURES_NOTICE_VERSION
+                closeAccountsDrawer()
+            }
+//            drustz: add usage stats
+            R.id.usagestats -> {
+                val intent = IntentUtils.useStats()
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                startActivity(intent)
                 closeAccountsDrawer()
             }
             R.id.settings -> {

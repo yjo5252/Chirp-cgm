@@ -22,7 +22,9 @@ import org.mariotaku.library.exportablepreferences.annotation.ExportablePreferen
 
 import static org.mariotaku.library.exportablepreferences.annotation.PreferenceType.BOOLEAN;
 import static org.mariotaku.library.exportablepreferences.annotation.PreferenceType.INT;
+import static org.mariotaku.library.exportablepreferences.annotation.PreferenceType.LONG;
 import static org.mariotaku.library.exportablepreferences.annotation.PreferenceType.STRING;
+import static org.mariotaku.library.exportablepreferences.annotation.PreferenceType.STRING_SET;
 
 public interface SharedPreferenceConstants {
 
@@ -109,6 +111,31 @@ public interface SharedPreferenceConstants {
     String KEY_DATABASE_ITEM_LIMIT = "database_item_limit";
     @ExportablePreference(INT)
     String KEY_LOAD_ITEM_LIMIT = "load_item_limit";
+    @ExportablePreference(LONG)
+    String KEY_OPEN_TSTAMP = "open_time_stamp";
+    @ExportablePreference(LONG)
+    String KEY_LAST_MODIFY_TIME = "last_modify_time_stamp";
+    @ExportablePreference(INT)
+    String KEY_NEW_TWEETS_CNT = "stats_new_tweets";
+    @ExportablePreference(INT)
+    String KEY_COMPOSE_TWEETS_CNT = "stats_compose_tweets";
+    @ExportablePreference(INT)
+    String KEY_REPLY_TWEETS_CNT = "stats_reply_tweets";
+    @ExportablePreference(INT)
+    String KEY_LIKED_TWEETS_CNT = "stats_liked_tweets";
+    @ExportablePreference(INT)
+    String KEY_RETWEET_TWEETS_CNT = "stats_re_tweets";
+    @ExportablePreference(INT)
+    String KEY_FOLLOW_ACC_CNT = "stats_follow_accounts";
+    @ExportablePreference(INT)
+    String KEY_UNFOLLOW_ACC_CNT = "stats_unfollow_accounts";
+
+    @ExportablePreference(LONG)
+    String KEY_CLOSE_TSTAMP = "close_time_stamp";
+    @ExportablePreference(INT)
+    String KEY_OPEN_TIMES = "open_times";
+    @ExportablePreference(STRING)
+    String KEY_WEEK_USAGE = "week_usage";
     @ExportablePreference(INT)
     String KEY_TEXT_SIZE = "text_size_int";
     @ExportablePreference(STRING)
@@ -123,6 +150,10 @@ public interface SharedPreferenceConstants {
     String KEY_DISPLAY_PROFILE_IMAGE = "display_profile_image";
     @ExportablePreference(STRING)
     String KEY_QUOTE_FORMAT = "quote_format";
+    @ExportablePreference(STRING)
+    String KEY_NEWEST_TID = "newest_tid";
+    @ExportablePreference(STRING)
+    String KEY_LASTREAD_TID = "last_read_tid";
     @ExportablePreference(BOOLEAN)
     String KEY_REMEMBER_POSITION = "remember_position";
     @ExportablePreference(BOOLEAN)

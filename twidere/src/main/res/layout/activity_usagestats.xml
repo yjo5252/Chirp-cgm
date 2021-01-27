@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <TextView
+        android:id="@+id/titleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/element_spacing_large"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textAllCaps="true"
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="?android:textColorPrimary"
+        android:text="Twidere Usage Today" />
+
+    <Button
+        android:id="@+id/mOpenUsageSettingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:text="Grant Access" />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/usingTimeStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:textSize="@dimen/text_size_small"
+        android:text="⌛ Using Time: 1 hr 30 mins 25 secs"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/openTimeStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:text="🚪 App Open Times: 3"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/newTweetsStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:text="🐤 New Tweets Consumed: 333"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/likeStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:text="♥ Tweets Liked: 33"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/replyStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:text="🗨 Tweet Replied: 33"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/retweetStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:text="🔁 Retweeted/Quoted: 33"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/composeStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:text="📝 Tweet Composed: 33"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/userfollowStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:text="👀 Accounts Followed: 33"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/userunfollowStatsView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/text_size_normal"
+        android:layout_marginVertical="@dimen/element_spacing_small"
+        android:layout_marginHorizontal="@dimen/element_spacing_xlarge"
+        android:text="🔕 Accounts Unfollowed: 33"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="?android:textColorPrimary"
+        />
+
+    <TextView
+        android:id="@+id/chartTitleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/element_spacing_large"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textAllCaps="true"
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="?android:textColorPrimary"
+        android:text="Weekly Usage" />
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/weekStatsChart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/element_spacing_large"
+        android:layout_marginBottom="48dp"
+        />
+
+</LinearLayout>

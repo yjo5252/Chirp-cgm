@@ -28,6 +28,7 @@ import android.os.Parcelable
 import android.provider.BaseColumns
 import androidx.annotation.WorkerThread
 import android.text.TextUtils
+import android.util.Log
 import org.mariotaku.kpreferences.get
 import org.mariotaku.ktextension.mapToArray
 import org.mariotaku.library.objectcursor.ObjectCursor
@@ -42,10 +43,7 @@ import org.mariotaku.twidere.R
 import org.mariotaku.twidere.TwidereConstants.*
 import org.mariotaku.twidere.annotation.AccountType
 import org.mariotaku.twidere.annotation.FilterScope
-import org.mariotaku.twidere.constant.IntentConstants
-import org.mariotaku.twidere.constant.databaseItemLimitKey
-import org.mariotaku.twidere.constant.filterPossibilitySensitiveStatusesKey
-import org.mariotaku.twidere.constant.filterUnavailableQuoteStatusesKey
+import org.mariotaku.twidere.constant.*
 import org.mariotaku.twidere.extension.model.*
 import org.mariotaku.twidere.extension.model.api.mastodon.toParcelable
 import org.mariotaku.twidere.extension.model.api.toParcelable
@@ -361,12 +359,29 @@ object DataStoreUtils {
         expressions.add(buildStatusFilterWhereClause(preferences, getTableNameByUri(uri)!!,
                 null, filterScopes))
 
-        if (extraArgs != null) {
-            val extras = extraArgs.getParcelable<Parcelable>(EXTRA_EXTRAS)
-            if (extras is HomeTabExtras) {
-                processTabExtras(expressions, expressionArgs, extras)
+        //drustz: for modifying the counting with the main feed filter
+//        if (extraArgs != null) {
+//            val extras = extraArgs.getParcelable<Parcelable>(EXTRA_EXTRAS)
+//            if (extras is HomeTabExtras) {
+//                processTabExtras(expressions, expressionArgs, extras)
+//            }
+//        }
+        val extras = HomeTabExtras().apply {
+            isHideQuotes = false
+            isHideReplies = false
+            isHideRetweets = false
+        }
+        val timelineFilter = preferences[homeTimelineFilterKey]
+        timelineFilter?.let {
+            if (!it.isIncludeReplies) {
+                extras.isHideReplies = true
+            }
+            if (!it.isIncludeRetweets) {
+                extras.isHideRetweets = true
             }
         }
+
+        processTabExtras(expressions, expressionArgs, extras)
 
         val selection = Expression.and(*expressions.toTypedArray())
         return context.contentResolver.queryCount(uri, selection.sql, expressionArgs.toTypedArray())

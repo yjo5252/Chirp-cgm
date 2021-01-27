@@ -32,6 +32,11 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.net.ConnectivityManager
 import android.os.AsyncTask
 import android.os.Looper
+import android.text.format.DateFormat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDex
 import com.bumptech.glide.Glide
 import nl.komponents.kovenant.task
@@ -83,7 +88,7 @@ import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class TwidereApplication : Application(), OnSharedPreferenceChangeListener {
+class TwidereApplication : Application(), OnSharedPreferenceChangeListener, LifecycleObserver {
 
     @Inject
     internal lateinit var activityTracker: ActivityTracker
@@ -164,6 +169,9 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener {
         registerActivityLifecycleCallbacks(activityTracker)
         registerReceiver(ConnectivityStateReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
+        //drustz : notify about go in/from background status
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+
         listenExternalThemeChange()
 
         loadDefaultFeatures()
@@ -174,6 +182,16 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener {
         AccountManager.get(this).addOnAccountsUpdatedListenerSafe(OnAccountsUpdateListener {
             NotificationChannelsManager.updateAccountChannelsAndGroups(this)
         }, updateImmediately = true)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onMoveToForeground() { // app moved to foreground
+        UseStats.recordOpenTime(sharedPreferences)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun onMoveToBackground() { // app moved to background
+        UseStats.recordCloseTime(sharedPreferences)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -338,3 +356,5 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener {
         }
     }
 }
+
+

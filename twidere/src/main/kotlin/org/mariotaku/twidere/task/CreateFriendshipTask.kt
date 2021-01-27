@@ -1,6 +1,7 @@
 package org.mariotaku.twidere.task
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import org.mariotaku.microblog.library.MicroBlog
 import org.mariotaku.microblog.library.MicroBlogException
@@ -8,6 +9,7 @@ import org.mariotaku.microblog.library.mastodon.Mastodon
 import org.mariotaku.twidere.Constants
 import org.mariotaku.twidere.R
 import org.mariotaku.twidere.annotation.AccountType
+import org.mariotaku.twidere.constant.followAccountsStats
 import org.mariotaku.twidere.constant.nameFirstKey
 import org.mariotaku.twidere.extension.model.api.mastodon.toParcelable
 import org.mariotaku.twidere.extension.model.api.toParcelable
@@ -15,6 +17,7 @@ import org.mariotaku.twidere.extension.model.newMicroBlogInstance
 import org.mariotaku.twidere.model.AccountDetails
 import org.mariotaku.twidere.model.ParcelableUser
 import org.mariotaku.twidere.model.event.FriendshipTaskEvent
+import org.mariotaku.twidere.util.UseStats
 import org.mariotaku.twidere.util.Utils
 
 /**
@@ -59,6 +62,10 @@ class CreateFriendshipTask(context: Context) : AbsFriendshipOperationTask(contex
                 manager.getDisplayName(user, nameFirst))
         }
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+        Log.d("drz", "followed")
+        //drustz: add to stats
+        UseStats.modifyStatsKeyCount(preferences, followAccountsStats, 1)
     }
 
 }

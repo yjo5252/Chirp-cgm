@@ -291,7 +291,8 @@ abstract class CursorStatusesFragment : AbsStatusesFragment() {
                 val status = event.status
                 val data = adapterData
                 if (status == null || data == null || data.isEmpty()) return
-                val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
+                //drustz: prevent the filter to be counted in
+                val firstVisiblePosition = Math.max(layoutManager.findFirstVisibleItemPosition(), adapter.statusStartIndex)
                 val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
                 if (firstVisiblePosition < 0 || lastVisiblePosition < 0) return
                 val startIndex = adapter.statusStartIndex

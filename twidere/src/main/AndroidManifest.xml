@@ -59,6 +59,7 @@
     <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
 
     <!-- Used for account management -->
     <uses-permission
@@ -250,6 +251,23 @@
                 <data android:mimeType="text/plain"/>
             </intent-filter>
 
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeActivity"/>
+        </activity>
+        <activity
+            android:name=".activity.UsageStatsActivity"
+            android:label="Usage Stats"
+            android:theme="@style/Theme.Twidere"
+            android:parentActivityName=".activity.HomeActivity"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="org.mariotaku.twidere.USE_STATS"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="twidere.usestats"/>
+            </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.HomeActivity"/>
