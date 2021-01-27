@@ -20,6 +20,7 @@
 package org.mariotaku.twidere.model.tab.impl
 
 import android.content.Context
+import android.util.Log
 import org.mariotaku.twidere.R
 import org.mariotaku.twidere.annotation.AccountType
 import org.mariotaku.twidere.annotation.TabAccountFlags
@@ -65,7 +66,7 @@ class UserListTimelineTabConfiguration : TabConfiguration() {
     override fun applyExtraConfigurationTo(tab: Tab, extraConf: ExtraConfiguration): Boolean {
         val arguments = tab.arguments as UserListArguments
         when (extraConf.key) {
-            EXTRA_USER_LIST -> {
+            EXTRA_USER_LIST -> {EXTRA_USER_LIST
                 val userList = (extraConf as UserListExtraConfiguration).value ?: return false
                 arguments.listId = userList.id
             }

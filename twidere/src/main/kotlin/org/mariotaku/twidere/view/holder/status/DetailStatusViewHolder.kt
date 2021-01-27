@@ -351,6 +351,9 @@ class DetailStatusViewHolder(
 
 
         val lang = status.lang
+        //drustz: yandix translate no longer work. just hide it
+        translateLabelView.visibility = View.GONE
+        
         if (CheckUtils.isValidLocale(lang) /* && account.isOfficial(context)*/) {
             translateContainer.visibility = View.VISIBLE
             if (translation != null) {

@@ -30,6 +30,7 @@ import org.mariotaku.twidere.R
 import org.mariotaku.twidere.TwidereConstants.*
 import org.mariotaku.twidere.adapter.ListParcelableStatusesAdapter
 import org.mariotaku.twidere.adapter.iface.ILoadMoreSupportAdapter
+import org.mariotaku.twidere.constant.IntentConstants
 import org.mariotaku.twidere.extension.getErrorMessage
 import org.mariotaku.twidere.extension.model.getMaxId
 import org.mariotaku.twidere.loader.iface.IPaginationLoader
@@ -88,6 +89,17 @@ abstract class ParcelableStatusesFragment : AbsStatusesFragment() {
     override fun onStop() {
         bus.unregister(this)
         super.onStop()
+    }
+
+    protected fun reloadStatuses() {
+        if (context == null || isDetached) return
+        val args = Bundle()
+        val fragmentArgs = arguments
+        if (fragmentArgs != null) {
+            args.putAll(fragmentArgs)
+            args.putBoolean(IntentConstants.EXTRA_FROM_USER, true)
+        }
+        loaderManager.restartLoader(loaderId, args, this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

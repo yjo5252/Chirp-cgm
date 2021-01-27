@@ -136,18 +136,23 @@ class HomeTimelineFragment : CursorStatusesFragment() {
     override fun onLoadFinished(loader: Loader<List<ParcelableStatus>?>, data: List<ParcelableStatus>?) {
         val firstLoad = adapterData.isNullOrEmpty()
         super.onLoadFinished(loader, data)
-        //drustz: save the first item in the load for lastread status
-        val firstitm = adapter.getStatus(adapter.statusStartIndex, false)
-        val newestid =  preferences[newestTweetIDKey]
-        var lastreadTid = preferences[lastReadTweetIDKey]
-        preferences.edit().apply {
-            //only reassign if they are not equal
-            if (firstLoad && lastreadTid != newestid){
-                this[lastReadTweetIDKey] = newestid
-            }
-            this[newestTweetIDKey] = firstitm.id
-        }.apply()
-        adapter.lastReadTid = preferences[lastReadTweetIDKey]
+
+        try {
+            //drustz: save the first item in the load for lastread status
+            val firstitm = adapter.getStatus(adapter.statusStartIndex, false)
+            val newestid = preferences[newestTweetIDKey]
+            var lastreadTid = preferences[lastReadTweetIDKey]
+            preferences.edit().apply {
+                //only reassign if they are not equal
+                if (firstLoad && lastreadTid != newestid) {
+                    this[lastReadTweetIDKey] = newestid
+                }
+                this[newestTweetIDKey] = firstitm.id
+            }.apply()
+            adapter.lastReadTid = preferences[lastReadTweetIDKey]
+        } catch (e: IndexOutOfBoundsException) {
+
+        }
     }
 
     override fun onFilterClick(holder: TimelineFilterHeaderViewHolder) {

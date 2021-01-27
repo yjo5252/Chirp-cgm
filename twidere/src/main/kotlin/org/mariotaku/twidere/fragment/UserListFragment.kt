@@ -67,6 +67,7 @@ import org.mariotaku.twidere.model.SingleResponse
 import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.event.UserListSubscriptionEvent
 import org.mariotaku.twidere.model.event.UserListUpdatedEvent
+import org.mariotaku.twidere.model.tab.conf.UserListExtraConfiguration
 import org.mariotaku.twidere.util.*
 import org.mariotaku.twidere.util.shortcut.ShortcutCreator
 
@@ -365,6 +366,7 @@ class UserListFragment : AbsToolbarTabPagesFragment(), OnClickListener,
         override fun loadInBackground(): SingleResponse<ParcelableUserList> {
             if (!omitIntentExtra && extras != null) {
                 val cache = extras.getParcelable<ParcelableUserList>(EXTRA_USER_LIST)
+                Log.d("drz", "user list 2 : " + cache)
                 if (cache != null) return SingleResponse(cache)
             }
             try {
@@ -386,6 +388,7 @@ class UserListFragment : AbsToolbarTabPagesFragment(), OnClickListener,
                         return SingleResponse(MicroBlogException("Invalid argument"))
                     }
                 }
+                Log.d("drz", "user list 3 : " + list.toParcelable(accountKey))
                 return SingleResponse(list.toParcelable(accountKey))
             } catch (e: MicroBlogException) {
                 return SingleResponse(e)
