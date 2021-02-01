@@ -1,13 +1,26 @@
 package org.mariotaku.twidere.util
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
+import androidx.fragment.app.DialogFragment
+import kotlinx.android.synthetic.main.activity_usagestats.*
 import org.mariotaku.kpreferences.KIntKey
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
 import org.mariotaku.twidere.Constants
+import org.mariotaku.twidere.R
+import org.mariotaku.twidere.app.TwidereApplication
 import org.mariotaku.twidere.constant.*
+import org.mariotaku.twidere.extension.applyTheme
+import org.mariotaku.twidere.extension.onShow
+import org.mariotaku.twidere.fragment.BaseDialogFragment
+import org.mariotaku.twidere.fragment.statuses.UserListTimelineFragment
+import org.mariotaku.twidere.model.timeline.UserTimelineFilter
 import java.util.*
 
 object UseStats {
@@ -54,6 +67,9 @@ object UseStats {
         }.apply()
     }
 
+    fun showTimingDialog() {
+
+    }
 
     //drustz: this is to request the use time stas until now.
     //because the current foreground time is not updated in the arraylist
@@ -163,6 +179,31 @@ object UseStats {
                 this[lastModificationTimeStamp] = System.currentTimeMillis()
             }.apply()
         }
+    }
+
+    fun getTodayUsageStr(preferences: SharedPreferences): String {
+        val weekStats = getUseWeeklyTillNow(preferences)
+        val todayIdx = getTodayInWeekIdx()
+
+        var seconds = (weekStats[todayIdx] / 1000).toInt() % 60
+        val minutes = (weekStats[todayIdx] / (1000 * 60) % 60).toInt()
+        val hours = (weekStats[todayIdx] / (1000 * 60 * 60) % 24).toInt()
+        var usageStr = ""
+        if (hours > 0){
+            usageStr = if (hours > 1) "$hours hrs " else "1 hr "
+        }
+
+        if (minutes == 0 && hours > 0) {
+            usageStr += "0 min "
+        }
+
+        if (minutes > 0){
+            usageStr += if (minutes == 1) "1 min " else "$minutes mins "
+        }
+
+        var sec = seconds.coerceAtLeast(1)
+        usageStr += if (sec == 1) "1 sec" else "$sec secs"
+        return usageStr
     }
 
 }

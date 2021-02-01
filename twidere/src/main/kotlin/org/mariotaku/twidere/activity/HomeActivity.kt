@@ -310,6 +310,17 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         super.onResume()
         invalidateOptionsMenu()
         updateActionsButton()
+
+        //drustz: add time diff for show dialogue on use status
+//        Log.d("drz", "onResume: show activity?" + preferences[shouldShowUsageDialog] )
+        if (preferences[shouldShowUsageDialog]){
+            showUsageStatsDialog()
+            preferences.edit().apply {
+                this[shouldShowUsageDialog] = false
+                this[lastshowUsageDialogTimeStamp] = System.currentTimeMillis()
+            }.apply()
+
+        }
     }
 
     override fun onStop() {
@@ -840,6 +851,11 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         return true
     }
 
+    private fun showUsageStatsDialog() {
+        val df = ShowTimeUsageDialog()
+        df.show(supportFragmentManager, "time_usage_dialog")
+    }
+
     private fun showAutoRefreshConfirm() {
         if (isFinishing) return
         executeAfterFragmentResumed { activity ->
@@ -1114,6 +1130,22 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         override fun onDismiss(dialog: DialogInterface) {
             kPreferences[defaultAutoRefreshAskedKey] = true
             super.onDismiss(dialog)
+        }
+    }
+
+    class ShowTimeUsageDialog : BaseDialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Usage Status Today")
+            builder.setMessage("You have used Twidere for " + UseStats.getTodayUsageStr(preferences) + " today. " +
+                    "Do you want to continue?")
+            builder.setNegativeButton(android.R.string.ok, null)
+            builder.setPositiveButton("Exit") { dialog, _ ->
+                this.activity?.finishAffinity()
+            }
+            val dialog = builder.create()
+            dialog.onShow { it.applyTheme() }
+            return dialog
         }
     }
 

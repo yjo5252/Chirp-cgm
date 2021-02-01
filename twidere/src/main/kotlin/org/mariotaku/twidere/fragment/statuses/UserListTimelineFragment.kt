@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.loader.content.Loader
+import kotlinx.android.synthetic.main.activity_usagestats.*
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
 import org.mariotaku.twidere.R
@@ -42,6 +43,7 @@ import org.mariotaku.twidere.model.ParcelableStatus
 import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.tab.extra.HomeTabExtras
 import org.mariotaku.twidere.model.timeline.UserTimelineFilter
+import org.mariotaku.twidere.util.UseStats
 import org.mariotaku.twidere.util.Utils
 import org.mariotaku.twidere.view.holder.TimelineFilterHeaderViewHolder
 import java.util.*

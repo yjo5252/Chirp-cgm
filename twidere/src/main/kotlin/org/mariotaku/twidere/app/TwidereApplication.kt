@@ -22,6 +22,7 @@ package org.mariotaku.twidere.app
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Application
+import android.app.Dialog
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
@@ -31,8 +32,11 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.net.ConnectivityManager
 import android.os.AsyncTask
+import android.os.Bundle
 import android.os.Looper
 import android.text.format.DateFormat
+import android.util.Log
+import android.view.WindowManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -57,10 +61,13 @@ import org.mariotaku.twidere.activity.AssistLauncherActivity
 import org.mariotaku.twidere.activity.MainActivity
 import org.mariotaku.twidere.activity.MainHondaJOJOActivity
 import org.mariotaku.twidere.constant.*
+import org.mariotaku.twidere.extension.applyTheme
 import org.mariotaku.twidere.extension.firstLanguage
 import org.mariotaku.twidere.extension.model.loadRemoteSettings
 import org.mariotaku.twidere.extension.model.save
+import org.mariotaku.twidere.extension.onShow
 import org.mariotaku.twidere.extension.setLocale
+import org.mariotaku.twidere.fragment.BaseDialogFragment
 import org.mariotaku.twidere.model.DefaultFeatures
 import org.mariotaku.twidere.receiver.ConnectivityStateReceiver
 import org.mariotaku.twidere.util.*
@@ -187,6 +194,14 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onMoveToForeground() { // app moved to foreground
         UseStats.recordOpenTime(sharedPreferences)
+
+//        drustz: add time diff for show dialogue on use status
+        if (System.currentTimeMillis() -
+                sharedPreferences[lastshowUsageDialogTimeStamp] > 5*60*1000 /*15min*/){
+            sharedPreferences.edit().apply{
+                this[shouldShowUsageDialog] = true
+            }.apply()
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
