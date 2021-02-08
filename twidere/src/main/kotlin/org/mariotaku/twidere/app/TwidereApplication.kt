@@ -197,7 +197,11 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
 
 //        drustz: add time diff for show dialogue on use status
         if (System.currentTimeMillis() -
-                sharedPreferences[lastshowUsageDialogTimeStamp] > 5*60*1000 /*15min*/){
+                sharedPreferences[lastshowUsageDialogTimeStamp] > 15*60*1000 /*15min*/){
+            val weekStats = UseStats.getUseWeeklyTillNow(sharedPreferences)
+            val todayIdx = UseStats.getTodayInWeekIdx()
+            val secs = (weekStats[todayIdx]/1000).toInt()
+            if (secs < 5*60) return //not show if not over 5min
             sharedPreferences.edit().apply{
                 this[shouldShowUsageDialog] = true
             }.apply()
@@ -207,6 +211,8 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onMoveToBackground() { // app moved to background
         UseStats.recordCloseTime(sharedPreferences)
+        //update all list read histories
+        UseStats.updateAllLastTweetHistories(sharedPreferences)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {

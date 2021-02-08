@@ -20,6 +20,7 @@
 package org.mariotaku.twidere.fragment.statuses
 
 import android.app.Dialog
+import android.app.usage.UsageStats
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -28,12 +29,12 @@ import androidx.loader.content.Loader
 import kotlinx.android.synthetic.main.activity_usagestats.*
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
+import org.mariotaku.ktextension.isNullOrEmpty
 import org.mariotaku.twidere.R
 import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.annotation.ReadPositionTag
+import org.mariotaku.twidere.constant.*
 import org.mariotaku.twidere.constant.IntentConstants.*
-import org.mariotaku.twidere.constant.homeTimelineFilterKey
-import org.mariotaku.twidere.constant.userTimelineFilterKey
 import org.mariotaku.twidere.extension.applyTheme
 import org.mariotaku.twidere.extension.onShow
 import org.mariotaku.twidere.fragment.BaseDialogFragment
@@ -44,6 +45,7 @@ import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.tab.extra.HomeTabExtras
 import org.mariotaku.twidere.model.timeline.UserTimelineFilter
 import org.mariotaku.twidere.util.UseStats
+import org.mariotaku.twidere.util.UseStats.setNewestHistoryOfList
 import org.mariotaku.twidere.util.Utils
 import org.mariotaku.twidere.view.holder.TimelineFilterHeaderViewHolder
 import java.util.*
@@ -52,6 +54,8 @@ import java.util.*
  * Created by mariotaku on 14/12/2.
  */
 class UserListTimelineFragment : ParcelableStatusesFragment() {
+
+    var loadtimes = 0
 
     //drustz : add enable timeline filter on the main feed
     override val enableTimelineFilter: Boolean
@@ -163,6 +167,25 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
         val df = UserListTimelineFilterDialogFragment()
         df.setTargetFragment(this, REQUEST_SET_TIMELINE_FILTER)
         fragmentManager?.let { df.show(it, "set_timeline_filter") }
+    }
+
+    //drustz: add read history in the userlist timeline
+    override fun onLoadFinished(loader: Loader<List<ParcelableStatus>?>, data: List<ParcelableStatus>?) {
+        super.onLoadFinished(loader, data)
+
+        val arguments = arguments ?: return
+        val tabPosition = arguments.getInt(EXTRA_TAB_POSITION, -1)
+        val listId = arguments.getString(EXTRA_LIST_ID) ?: return
+        try {
+            //drustz: save the first item in the load for lastread status
+            val firstitm = adapter.getStatus(adapter.statusStartIndex, false)
+            setNewestHistoryOfList(preferences, listId, firstitm.id)
+            val lastid = UseStats.getLastTweetHistoryOfList(preferences, listId)
+            if (!lastid.isNullOrEmpty())
+                adapter.lastReadTid = lastid
+        } catch (e: IndexOutOfBoundsException) {
+
+        }
     }
 
     private fun reloadAllStatuses() {

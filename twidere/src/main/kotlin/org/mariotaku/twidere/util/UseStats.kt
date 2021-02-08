@@ -25,11 +25,66 @@ import java.util.*
 
 object UseStats {
 
-    public val weekDayStrings = listOf(
+    val weekDayStrings = listOf(
             "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 
-    public val weekdayToIdx:Map<String, Int> =
+    val weekdayToIdx:Map<String, Int> =
             weekDayStrings.associateWith{ weekDayStrings.indexOf(it) }
+
+
+    var newestiddict = mutableMapOf<String, String?>()
+    var lastreaddict = mutableMapOf<String, String?>()
+
+    //drustz: those are for list reading hisotries.
+    fun initTweetHistoryList(preference: SharedPreferences){
+        var newestidDictStr = preference[newestTweetIDKeyForList]
+        var lastreadTidDictStr = preference[lastReadTweetIDKeyForList]
+
+        //if not the first time
+        if (newestidDictStr != "") {
+            newestiddict = newestidDictStr
+                    .splitToSequence(",") // returns sequence of strings: [foo = 3, bar = 5, baz = 9000]
+                    .map { it.split("=") } // returns list of lists: [[foo, 3 ], [bar, 5 ], [baz, 9000]]
+                    .map { it[0].trim() to it[1].trim() } // return list of pairs: [(foo, 3), (bar, 5), (baz, 9000)]
+                    .toMap()
+                    .toMutableMap()
+
+            lastreaddict = lastreadTidDictStr
+                    .splitToSequence(",")
+                    .map { it.split("=") }
+                    .map { it[0].trim() to it[1].trim() }
+                    .toMap()
+                    .toMutableMap()
+        }
+    }
+
+    fun getLastTweetHistoryOfList(preference: SharedPreferences, listID: String):String? {
+        if (newestiddict.isNullOrEmpty()) {
+            initTweetHistoryList(preference)
+        }
+        if (!lastreaddict.containsKey(listID)){
+            lastreaddict[listID] = ""
+        }
+        return lastreaddict[listID]
+    }
+
+    fun setNewestHistoryOfList(preference: SharedPreferences, listID: String, tid: String) {
+        if (newestiddict.isNullOrEmpty()) {
+            initTweetHistoryList(preference)
+        }
+        newestiddict[listID] = tid
+    }
+
+    fun updateAllLastTweetHistories(preference: SharedPreferences) {
+        if (newestiddict.isNullOrEmpty()) {
+            return
+        }
+        preference.edit().apply {
+            this[lastReadTweetIDKeyForList] = newestiddict.toString().removeSurrounding("{", "}")
+            this[newestTweetIDKeyForList] = newestiddict.toString().removeSurrounding("{", "}")
+        }.apply()
+        initTweetHistoryList(preference)
+    }
 
     fun getTodayInWeekIdx(): Int {
         val curtime = System.currentTimeMillis()
@@ -180,6 +235,7 @@ object UseStats {
             }.apply()
         }
     }
+
 
     fun getTodayUsageStr(preferences: SharedPreferences): String {
         val weekStats = getUseWeeklyTillNow(preferences)

@@ -158,6 +158,10 @@ public interface SharedPreferenceConstants {
     String KEY_NEWEST_TID = "newest_tid";
     @ExportablePreference(STRING)
     String KEY_LASTREAD_TID = "last_read_tid";
+    @ExportablePreference(STRING)
+    String KEY_LASTREAD_TID_LIST = "newest_tid_list";
+    @ExportablePreference(STRING)
+    String KEY_NEWEST_TID_LIST = "last_read_tid_list";
     @ExportablePreference(BOOLEAN)
     String KEY_REMEMBER_POSITION = "remember_position";
     @ExportablePreference(BOOLEAN)
