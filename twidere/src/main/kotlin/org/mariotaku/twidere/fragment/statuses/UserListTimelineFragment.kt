@@ -131,6 +131,11 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
             return sb.toString()
         }
 
+    override fun onResume() {
+        super.onResume()
+        UseStats.modifyStatsKeyCount(preferences, timelistPageVisitStats, 1)
+    }
+
     override fun onCreateStatusesLoader(context: Context, args: Bundle, fromUser: Boolean):
             Loader<List<ParcelableStatus>?> {
         refreshing = true

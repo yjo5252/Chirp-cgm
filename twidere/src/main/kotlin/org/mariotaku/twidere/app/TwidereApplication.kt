@@ -43,6 +43,11 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDex
 import com.bumptech.glide.Glide
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.activity_usagestats.*
 import nl.komponents.kovenant.task
 import okhttp3.Dns
 import org.mariotaku.abstask.library.TaskStarter
@@ -145,6 +150,8 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         return@lazy prefs
     }
 
+    lateinit var firebaseAnalytics: FirebaseAnalytics
+
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         MultiDex.install(this)
@@ -189,6 +196,8 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         AccountManager.get(this).addOnAccountsUpdatedListenerSafe(OnAccountsUpdateListener {
             NotificationChannelsManager.updateAccountChannelsAndGroups(this)
         }, updateImmediately = true)
+        firebaseAnalytics = Firebase.analytics
+
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -213,6 +222,30 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         UseStats.recordCloseTime(sharedPreferences)
         //update all list read histories
         UseStats.updateAllLastTweetHistories(sharedPreferences)
+
+        if (sharedPreferences[trackUserID] === "") {
+            val uuid = UUID.randomUUID().toString()
+            sharedPreferences.edit().apply{
+                this[trackUserID] = uuid
+            }.apply()
+            firebaseAnalytics.setUserId(uuid)
+        }
+
+        Log.d("drz", "onMoveToBackground")
+
+        firebaseAnalytics.logEvent("UseStats") {
+            param("OpenTimes", sharedPreferences[openTimesKey].toLong())
+            param("NewTweetConsume", sharedPreferences[newTweetsStats].toLong())
+            param("TweetLike", sharedPreferences[likedTweetsStats].toLong())
+            param("TweetReply", sharedPreferences[replyTweetsStats].toLong())
+            param("RetweetNQuote", sharedPreferences[retweetTweetsStats].toLong())
+            param("TweetCompose", sharedPreferences[composeTweetsStats].toLong())
+            param("AccFollow", sharedPreferences[followAccountsStats].toLong())
+            param("AccUnfollow", sharedPreferences[unfollowAccountsStats].toLong())
+            param("StatPageView", sharedPreferences[timestatusPageVisitStats].toLong())
+            param("StatsDialogueExit", sharedPreferences[shutDownDialogueStats].toLong())
+            param("StatsDialogueIgnore", sharedPreferences[ignoreDialogueStats].toLong())
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {

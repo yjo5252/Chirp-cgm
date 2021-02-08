@@ -75,6 +75,8 @@ object UseStats {
         newestiddict[listID] = tid
     }
 
+    //below are usage status related functions---
+
     fun updateAllLastTweetHistories(preference: SharedPreferences) {
         if (newestiddict.isNullOrEmpty()) {
             return
@@ -122,9 +124,6 @@ object UseStats {
         }.apply()
     }
 
-    fun showTimingDialog() {
-
-    }
 
     //drustz: this is to request the use time stas until now.
     //because the current foreground time is not updated in the arraylist

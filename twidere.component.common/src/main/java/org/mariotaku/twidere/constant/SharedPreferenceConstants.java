@@ -129,6 +129,14 @@ public interface SharedPreferenceConstants {
     String KEY_FOLLOW_ACC_CNT = "stats_follow_accounts";
     @ExportablePreference(INT)
     String KEY_UNFOLLOW_ACC_CNT = "stats_unfollow_accounts";
+    @ExportablePreference(INT)
+    String KEY_STATUSPAGE_VISIT_CNT = "stats_statspage_count";
+    @ExportablePreference(INT)
+    String KEY_LIST_VISIT_CNT = "stats_listview_count";
+    @ExportablePreference(INT)
+    String KEY_SHUTDOWN_DIALOGUE = "stats_shut_down_dialogue_times";
+    @ExportablePreference(INT)
+    String KEY_IGNORE_DIALOGUE = "stats_ignore_dialogue_times";
 
     @ExportablePreference(LONG)
     String KEY_CLOSE_TSTAMP = "close_time_stamp";
@@ -140,6 +148,8 @@ public interface SharedPreferenceConstants {
     String KEY_OPEN_TIMES = "open_times";
     @ExportablePreference(STRING)
     String KEY_WEEK_USAGE = "week_usage";
+    @ExportablePreference(STRING)
+    String KEY_USER_TRACK_ID = "user_track_id";
     @ExportablePreference(INT)
     String KEY_TEXT_SIZE = "text_size_int";
     @ExportablePreference(STRING)

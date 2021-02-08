@@ -1139,8 +1139,11 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             builder.setTitle("Usage Status Today")
             builder.setMessage("You have used Twidere for " + UseStats.getTodayUsageStr(preferences) + " today. " +
                     "Do you want to continue?")
-            builder.setNegativeButton(android.R.string.ok, null)
+            builder.setNegativeButton(android.R.string.ok) { _, _ ->
+                UseStats.modifyStatsKeyCount(preferences, ignoreDialogueStats, 1)
+            }
             builder.setPositiveButton("Exit") { dialog, _ ->
+                UseStats.modifyStatsKeyCount(preferences, shutDownDialogueStats, 1)
                 this.activity?.finishAffinity()
             }
             val dialog = builder.create()

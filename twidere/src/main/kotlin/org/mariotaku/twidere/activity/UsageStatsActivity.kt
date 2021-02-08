@@ -53,6 +53,7 @@ class UsageStatsActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         updateUsage()
+        UseStats.modifyStatsKeyCount(preferences, timestatusPageVisitStats, 1)
     }
 
     fun updateUsage() {
