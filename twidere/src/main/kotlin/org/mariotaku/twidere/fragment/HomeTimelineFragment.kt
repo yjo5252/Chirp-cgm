@@ -23,7 +23,11 @@ import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.loader.content.Loader
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.analytics.ktx.logEvent
+import kotlinx.android.synthetic.main.fragment_status.*
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
 import org.mariotaku.ktextension.isNullOrEmpty
@@ -32,26 +36,24 @@ import org.mariotaku.twidere.R
 import org.mariotaku.twidere.TwidereConstants.NOTIFICATION_ID_HOME_TIMELINE
 import org.mariotaku.twidere.annotation.FilterScope
 import org.mariotaku.twidere.annotation.ReadPositionTag
-import org.mariotaku.twidere.constant.IntentConstants.EXTRA_EXTRAS
-import org.mariotaku.twidere.constant.homeTimelineFilterKey
-import org.mariotaku.twidere.constant.lastReadTweetIDKey
-import org.mariotaku.twidere.constant.newestTweetIDKey
-import org.mariotaku.twidere.constant.userTimelineFilterKey
+import org.mariotaku.twidere.constant.*
 import org.mariotaku.twidere.extension.applyTheme
 import org.mariotaku.twidere.extension.onShow
-import org.mariotaku.twidere.fragment.statuses.UserTimelineFragment
 import org.mariotaku.twidere.model.ParameterizedExpression
 import org.mariotaku.twidere.model.ParcelableStatus
 import org.mariotaku.twidere.model.RefreshTaskParam
 import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.tab.extra.HomeTabExtras
-import org.mariotaku.twidere.model.timeline.TimelineFilter
 import org.mariotaku.twidere.model.timeline.UserTimelineFilter
 import org.mariotaku.twidere.provider.TwidereDataStore.Statuses
 import org.mariotaku.twidere.util.DataStoreUtils
 import org.mariotaku.twidere.util.ErrorInfoStore
+import org.mariotaku.twidere.util.UseStats
+import org.mariotaku.twidere.util.UseStats.firebaseLoginstance
+import org.mariotaku.twidere.view.FixedTextView
 import org.mariotaku.twidere.view.holder.TimelineFilterHeaderViewHolder
 import java.util.*
+
 
 /**
  * Created by mariotaku on 14/12/3.
@@ -99,6 +101,64 @@ class HomeTimelineFragment : CursorStatusesFragment() {
                 notificationManager.cancel("home_$accountKey", NOTIFICATION_ID_HOME_TIMELINE)
             }
         }
+
+        //drustz: each time the visibility change we collect the time usage
+        if (isVisibleToUser) {
+            recordEnterTime()
+        } else {
+            recordLeaveTime()
+        }
+    }
+
+    private fun recordEnterTime(){
+        enterframgmentTimestamp = System.currentTimeMillis()
+        readhistoryShownTimestamp = 0
+        Log.d("drz", "onVisible: [home] ??")
+    }
+
+    //drustz: record feed view time after the user move out
+    private fun recordLeaveTime(){
+        if (recyclerView != null) {
+            val firstitm = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            val lastitm = (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+
+            for (i in firstitm..lastitm) {
+                val contentview = (recyclerView.layoutManager as
+                        LinearLayoutManager).findViewByPosition(i)
+                val readhistoryView: FixedTextView? = contentview?.findViewById(R.id.lastReadLabel) as FixedTextView?
+                if (readhistoryView != null && readhistoryView.isVisible) {
+                    //the read history is already shown in the recycler view.
+                    //if the readhistoryshowntimestamp is 0, then it means that
+                    // the user did not scroll and the history label is already shown
+                    // in the first place. So we need to make it same as the enter time
+                    if (readhistoryShownTimestamp == 0.toLong()) {
+                        readhistoryShownTimestamp = enterframgmentTimestamp
+                    }
+                }
+            }
+        }
+
+        if (enterframgmentTimestamp == 0.toLong()) return
+
+        val usetime = (System.currentTimeMillis() - enterframgmentTimestamp) / 1000
+        val timeafterhistory = (System.currentTimeMillis() - readhistoryShownTimestamp) / 1000
+        Log.d("drz", "[HOME] time viewed: "+ usetime)
+        if (readhistoryShownTimestamp > 0) {
+            Log.d("drz", "[HOME] time after readhistory: " + timeafterhistory)
+            firebaseLoginstance.logEvent("FeedViewTime") {
+                param("ViewTimeTotal", usetime)
+                param("AfterHistory", timeafterhistory)
+                param("feed", "home")
+            }
+        } else {
+            firebaseLoginstance.logEvent("FeedViewTime") {
+                param("ViewTimeTotal", usetime)
+                param("feed", "home")
+            }
+        }
+
+        enterframgmentTimestamp = 0
+        readhistoryShownTimestamp = 0
     }
 
     //durstz : add header filter for main feed
@@ -159,6 +219,28 @@ class HomeTimelineFragment : CursorStatusesFragment() {
         val df = HomeTimelineFilterDialogFragment()
         df.setTargetFragment(this, REQUEST_SET_TIMELINE_FILTER)
         fragmentManager?.let { df.show(it, "set_timeline_filter") }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("drz", "onResume: [home] !!")
+        if (isVisible && userVisibleHint){
+            recordEnterTime()
+        }
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("drz", "onPause: [home] !!")
+        if (isVisible && userVisibleHint){
+            recordLeaveTime()
+        }
+    }
+
+    override fun readhistoryViewVisible(){
+        if (readhistoryShownTimestamp == 0.toLong())
+            readhistoryShownTimestamp = System.currentTimeMillis()
     }
 
     class HomeTimelineFilterDialogFragment : BaseDialogFragment() {

@@ -25,8 +25,14 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.loader.content.Loader
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.analytics.ktx.logEvent
 import kotlinx.android.synthetic.main.activity_usagestats.*
+import kotlinx.android.synthetic.main.fragment_content_recyclerview.*
+import kotlinx.android.synthetic.main.fragment_status.*
+import kotlinx.android.synthetic.main.fragment_status.recyclerView
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
 import org.mariotaku.ktextension.isNullOrEmpty
@@ -47,6 +53,7 @@ import org.mariotaku.twidere.model.timeline.UserTimelineFilter
 import org.mariotaku.twidere.util.UseStats
 import org.mariotaku.twidere.util.UseStats.setNewestHistoryOfList
 import org.mariotaku.twidere.util.Utils
+import org.mariotaku.twidere.view.FixedTextView
 import org.mariotaku.twidere.view.holder.TimelineFilterHeaderViewHolder
 import java.util.*
 
@@ -54,8 +61,6 @@ import java.util.*
  * Created by mariotaku on 14/12/2.
  */
 class UserListTimelineFragment : ParcelableStatusesFragment() {
-
-    var loadtimes = 0
 
     //drustz : add enable timeline filter on the main feed
     override val enableTimelineFilter: Boolean
@@ -131,9 +136,90 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
             return sb.toString()
         }
 
+    override fun readhistoryViewVisible(){
+        if (readhistoryShownTimestamp == 0.toLong()) {
+            readhistoryShownTimestamp = System.currentTimeMillis()
+        }
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        //drustz: each time the visibility change we collect the time usage
+        if (isVisibleToUser) {
+            recordEnterTime()
+        } else {
+            recordLeaveTime()
+        }
+    }
+
+    private fun recordEnterTime(){
+        enterframgmentTimestamp = System.currentTimeMillis()
+        readhistoryShownTimestamp = 0
+    }
+
+    //drustz: record feed view time after the user move out
+    private fun recordLeaveTime(){
+        if (recyclerView != null) {
+            val firstitm = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            val lastitm = (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+
+            for (i in firstitm..lastitm) {
+                val contentview = (recyclerView.layoutManager as
+                        LinearLayoutManager).findViewByPosition(i)
+                val readhistoryView: FixedTextView? = contentview?.findViewById(R.id.lastReadLabel) as FixedTextView?
+                if (readhistoryView != null && readhistoryView.isVisible) {
+                    // drustz: the read history is already shown in the recycler view.
+                    //if the readhistoryshowntimestamp is 0, then it means that
+                    // the user did not scroll and the history label is already shown
+                    // in the first place. So we need to make it same as the enter time
+                    if (readhistoryShownTimestamp == 0.toLong()) {
+                        readhistoryShownTimestamp = enterframgmentTimestamp
+                    }
+                }
+            }
+        }
+
+        val arguments = arguments ?: return
+        val listId = arguments.getString(EXTRA_LIST_ID)
+
+
+        if (listId != null && enterframgmentTimestamp != 0.toLong()) {
+            val usetime = (System.currentTimeMillis() - enterframgmentTimestamp) / 1000
+            val timeafterhistory = (System.currentTimeMillis() - readhistoryShownTimestamp) / 1000
+//            Log.d("drz", "[list] time viewed: "+ usetime)
+            if (readhistoryShownTimestamp > 0) {
+//                Log.d("drz", "[list] time after readhistory: " + timeafterhistory)
+                UseStats.firebaseLoginstance.logEvent("FeedViewTime") {
+                    param("FeedViewTimeTotal", usetime)
+                    param("FeedViewTimeAfterHistory", timeafterhistory)
+                    param("FeedName", listId)
+                }
+            } else {
+                UseStats.firebaseLoginstance.logEvent("FeedViewTime") {
+                    param("FeedViewTimeTotal", usetime)
+                    param("FeedName", listId)
+                }
+            }
+            enterframgmentTimestamp = 0
+            readhistoryShownTimestamp = 0
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        UseStats.modifyStatsKeyCount(preferences, timelistPageVisitStats, 1)
+        if (isVisible && userVisibleHint){
+            Log.d("drz", "onResume: [list] visible !!")
+            recordEnterTime()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (isVisible && userVisibleHint){
+            Log.d("drz", "onPause: [list] visible !!")
+            recordLeaveTime()
+        }
     }
 
     override fun onCreateStatusesLoader(context: Context, args: Bundle, fromUser: Boolean):

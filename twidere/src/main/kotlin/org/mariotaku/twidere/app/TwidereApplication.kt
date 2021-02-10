@@ -76,6 +76,7 @@ import org.mariotaku.twidere.fragment.BaseDialogFragment
 import org.mariotaku.twidere.model.DefaultFeatures
 import org.mariotaku.twidere.receiver.ConnectivityStateReceiver
 import org.mariotaku.twidere.util.*
+import org.mariotaku.twidere.util.UseStats.firebaseLoginstance
 import org.mariotaku.twidere.util.concurrent.ConstantFuture
 import org.mariotaku.twidere.util.content.TwidereSQLiteOpenHelper
 import org.mariotaku.twidere.util.dagger.ApplicationModule
@@ -197,6 +198,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             NotificationChannelsManager.updateAccountChannelsAndGroups(this)
         }, updateImmediately = true)
         firebaseAnalytics = Firebase.analytics
+        firebaseLoginstance = firebaseAnalytics
 
     }
 
@@ -215,7 +217,6 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
                 this[shouldShowUsageDialog] = true
             }.apply()
         }
-
         sendFirebaseEvents()
     }
 

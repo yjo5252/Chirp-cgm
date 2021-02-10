@@ -28,18 +28,19 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.annotation.CallSuper
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.loader.app.LoaderManager.LoaderCallbacks
 import androidx.loader.content.Loader
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnChildAttachStateChangeListener
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import android.view.*
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.fragment_content_recyclerview.*
 import org.mariotaku.kpreferences.get
-import org.mariotaku.kpreferences.set
 import org.mariotaku.ktextension.*
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.twidere.R
@@ -69,9 +70,11 @@ import org.mariotaku.twidere.util.KeyboardShortcutsHandler.KeyboardShortcutCallb
 import org.mariotaku.twidere.util.glide.PauseRecyclerViewOnScrollListener
 import org.mariotaku.twidere.util.sync.SyncTaskRunner
 import org.mariotaku.twidere.view.ExtendedRecyclerView
+import org.mariotaku.twidere.view.FixedTextView
 import org.mariotaku.twidere.view.holder.GapViewHolder
 import org.mariotaku.twidere.view.holder.StatusViewHolder
 import org.mariotaku.twidere.view.holder.iface.IStatusViewHolder
+
 
 /**
  * Created by mariotaku on 14/11/5.
@@ -94,6 +97,10 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
             }
         }
     }
+
+    //drustz: for fragment usage time tracking
+    protected var enterframgmentTimestamp : Long = 0
+    protected var readhistoryShownTimestamp : Long = 0
 
     protected abstract val accountKeys: Array<UserKey>
 
@@ -150,8 +157,8 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
         registerForContextMenu(recyclerView)
         navigationHelper = RecyclerViewNavigationHelper(recyclerView, layoutManager, adapter, this)
         pauseOnScrollListener = PauseRecyclerViewOnScrollListener(
-            pauseOnScroll = false, pauseOnFling = false,
-            requestManager = requestManager
+                pauseOnScroll = false, pauseOnFling = false,
+                requestManager = requestManager
         )
 
         if (shouldInitLoader) {
@@ -165,6 +172,20 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
         recyclerView.addOnScrollListener(onScrollListener)
         pauseOnScrollListener?.let { recyclerView.addOnScrollListener(it) }
         bus.register(statusesBusCallback)
+
+        //drustz: add a visibility callback when the readhistory is available
+        recyclerView.addOnChildAttachStateChangeListener(object : OnChildAttachStateChangeListener {
+            override fun onChildViewAttachedToWindow(view: View) {
+                val readhistoryView: FixedTextView? = view.findViewById(R.id.lastReadLabel) as FixedTextView?
+                if (readhistoryView != null && readhistoryView.isVisible) {
+                    readhistoryViewVisible()
+                }
+            }
+
+            override fun onChildViewDetachedFromWindow(view: View) {
+
+            }
+        })
     }
 
     override fun onStop() {
@@ -189,6 +210,8 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
             }
         }
     }
+
+    protected open fun readhistoryViewVisible() {}
 
     abstract fun getStatuses(param: RefreshTaskParam): Boolean
 
@@ -237,7 +260,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
     }
 
     override fun handleKeyboardShortcutRepeat(handler: KeyboardShortcutsHandler, keyCode: Int, repeatCount: Int,
-            event: KeyEvent, metaState: Int): Boolean {
+                                              event: KeyEvent, metaState: Int): Boolean {
         return navigationHelper.handleKeyboardShortcutRepeat(handler, keyCode, repeatCount, event, metaState)
     }
 
@@ -386,7 +409,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
     }
 
     override fun onMediaClick(holder: IStatusViewHolder, view: View, current: ParcelableMedia,
-            statusPosition: Int) {
+                              statusPosition: Int) {
         val status = adapter.getStatus(statusPosition)
         activity?.let {
             IntentUtils.openMedia(it, status, current, preferences[newDocumentApiKey],
@@ -395,7 +418,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
     }
 
     override fun onQuotedMediaClick(holder: IStatusViewHolder, view: View, current: ParcelableMedia,
-            statusPosition: Int) {
+                                    statusPosition: Int) {
         val status = adapter.getStatus(statusPosition)
         val quotedMedia = status.quoted_media ?: return
         activity?.let {
@@ -539,7 +562,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
                                        data: List<ParcelableStatus>?): Boolean
 
     protected abstract fun onCreateStatusesLoader(context: Context, args: Bundle,
-            fromUser: Boolean): Loader<List<ParcelableStatus>?>
+                                                  fromUser: Boolean): Loader<List<ParcelableStatus>?>
 
     protected abstract fun onStatusesLoaded(loader: Loader<List<ParcelableStatus>?>, data: List<ParcelableStatus>?)
 
@@ -553,7 +576,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
         inflater.inflate(R.menu.action_status, menu)
         context?.let {
             MenuUtils.setupForStatus(it, menu, preferences, twitterWrapper, userColorNameManager,
-                status)
+                    status)
         }
     }
 
@@ -618,7 +641,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
         const val REQUEST_RETWEET_SELECT_ACCOUNT = 102
 
         fun handleActionClick(fragment: BaseFragment, id: Int, status: ParcelableStatus,
-                holder: StatusViewHolder) {
+                              holder: StatusViewHolder) {
             when (id) {
                 R.id.reply -> {
                     val intent = Intent(INTENT_ACTION_REPLY)
@@ -637,7 +660,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
                         fragment.preferences[favoriteConfirmationKey] -> {
                             fragment.executeAfterFragmentResumed {
                                 FavoriteConfirmDialogFragment.show(it.childFragmentManager,
-                                    status.account_key, status.id, status)
+                                        status.account_key, status.id, status)
                             }
                         }
 
@@ -710,7 +733,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
         }
 
         fun selectAccountIntent(context: Context, status: ParcelableStatus, itemId: Long,
-                sameHostOnly: Boolean = true): Intent {
+                                sameHostOnly: Boolean = true): Intent {
             val intent = Intent(context, AccountSelectorActivity::class.java)
             intent.putExtra(EXTRA_SELECT_ONLY_ITEM_AUTOMATICALLY, true)
             if (sameHostOnly) {
@@ -726,7 +749,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
 
 
         fun handleKeyboardShortcutAction(fragment: BaseFragment, action: String,
-                status: ParcelableStatus, position: Int): Boolean {
+                                         status: ParcelableStatus, position: Int): Boolean {
             when (action) {
                 ACTION_STATUS_REPLY -> {
                     val intent = Intent(INTENT_ACTION_REPLY)
@@ -746,7 +769,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
                         fragment.preferences[favoriteConfirmationKey] -> {
                             fragment.executeAfterFragmentResumed {
                                 FavoriteConfirmDialogFragment.show(it.childFragmentManager,
-                                    status.account_key, status.id, status)
+                                        status.account_key, status.id, status)
                             }
                         }
                         status.is_favorite -> {

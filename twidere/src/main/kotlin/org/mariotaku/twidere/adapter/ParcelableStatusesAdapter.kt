@@ -121,6 +121,9 @@ abstract class ParcelableStatusesAdapter(
 
     //drustz : lastread tid
     var lastReadTid : String = ""
+        set(value) {
+            field = value
+        }
 
     private var data: List<ParcelableStatus>? = null
     private var displayPositions: IntArray? = null
@@ -343,7 +346,7 @@ abstract class ParcelableStatusesAdapter(
                 val status = getStatusInternal(position, countIndex = countIndex, reuse = true)
                 (holder as IStatusViewHolder).display(status, displayInReplyTo = isShowInReplyTo,
                         displayPinned = countIndex == ITEM_INDEX_PINNED_STATUS)
-                if (status.id == lastReadTid ){
+                if (status.id == lastReadTid) {
                     (holder as IStatusViewHolder).showLastReadLabel()
                 }
             }

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
 import androidx.fragment.app.DialogFragment
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.activity_usagestats.*
 import org.mariotaku.kpreferences.KIntKey
 import org.mariotaku.kpreferences.get
@@ -31,6 +32,7 @@ object UseStats {
     val weekdayToIdx:Map<String, Int> =
             weekDayStrings.associateWith{ weekDayStrings.indexOf(it) }
 
+    lateinit var firebaseLoginstance: FirebaseAnalytics
 
     var newestiddict = mutableMapOf<String, String?>()
     var neweststampdict = mutableMapOf<String, Long?>()
@@ -148,7 +150,6 @@ object UseStats {
         }.apply()
     }
 
-
     //drustz: this is to request the use time stas until now.
     //because the current foreground time is not updated in the arraylist
     //Called by the UsageStatsActivity
@@ -252,6 +253,10 @@ object UseStats {
                 this[retweetTweetsStats] = 0
                 this[followAccountsStats] = 0
                 this[unfollowAccountsStats] = 0
+                this[timelistPageVisitStats] = 0
+                this[timestatusPageVisitStats] = 0
+                this[shutDownDialogueStats] = 0
+                this[ignoreDialogueStats] = 0
 
                 this[prefKey] = numdiff.coerceAtLeast(0)
                 this[lastModificationTimeStamp] = System.currentTimeMillis()
