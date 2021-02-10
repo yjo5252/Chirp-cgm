@@ -184,10 +184,24 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
         try {
             //drustz: save the first item in the load for lastread status
             val firstitm = adapter.getStatus(adapter.statusStartIndex, false)
-            setNewestHistoryOfList(preferences, listId, firstitm.id)
+            var newstatscnt = 0
+
             val lastid = UseStats.getLastTweetHistoryOfList(preferences, listId)
-            if (!lastid.isNullOrEmpty())
+            val neweststamp = UseStats.getNewestTweetTimeStampOfList(preferences, listId)
+            if (!lastid.isNullOrEmpty()) {
                 adapter.lastReadTid = lastid
+                //we need to calculate the new status from this refresh
+                val statscnt = adapter.getStatusCount() - adapter.statusStartIndex
+
+                for (i in adapter.statusStartIndex..statscnt){
+                    if (adapter.getStatusTimestamp(i) <= neweststamp)
+                        break
+                    else newstatscnt += 1
+                }
+            }
+            setNewestHistoryOfList(preferences, listId, firstitm.id, firstitm.timestamp)
+            //drustz: add to stats
+            UseStats.modifyStatsKeyCount(preferences, newTweetsStats, newstatscnt)
         } catch (e: IndexOutOfBoundsException) {
 
         }

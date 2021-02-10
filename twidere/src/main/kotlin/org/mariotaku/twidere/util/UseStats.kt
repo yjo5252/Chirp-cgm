@@ -33,11 +33,13 @@ object UseStats {
 
 
     var newestiddict = mutableMapOf<String, String?>()
+    var neweststampdict = mutableMapOf<String, Long?>()
     var lastreaddict = mutableMapOf<String, String?>()
 
     //drustz: those are for list reading hisotries.
     fun initTweetHistoryList(preference: SharedPreferences){
         var newestidDictStr = preference[newestTweetIDKeyForList]
+        var neweststampDictStr = preference[newestTweetStampKeyForList]
         var lastreadTidDictStr = preference[lastReadTweetIDKeyForList]
 
         //if not the first time
@@ -49,6 +51,13 @@ object UseStats {
                     .toMap()
                     .toMutableMap()
 
+            neweststampdict = neweststampDictStr
+                    .splitToSequence(",")
+                    .map { it.split("=") }
+                    .map { it[0].trim() to it[1].trim().toLong() }
+                    .toMap()
+                    .toMutableMap()
+
             lastreaddict = lastreadTidDictStr
                     .splitToSequence(",")
                     .map { it.split("=") }
@@ -56,6 +65,17 @@ object UseStats {
                     .toMap()
                     .toMutableMap()
         }
+        Log.d("drz", "initTweetHistoryList: " + lastreaddict.toString())
+    }
+
+    fun getNewestTweetTimeStampOfList(preference: SharedPreferences, listID: String):Long {
+        if (newestiddict.isNullOrEmpty()) {
+            initTweetHistoryList(preference)
+        }
+        if (!neweststampdict.containsKey(listID)){
+            neweststampdict[listID] = 0
+        }
+        return neweststampdict[listID]!!
     }
 
     fun getLastTweetHistoryOfList(preference: SharedPreferences, listID: String):String? {
@@ -68,10 +88,12 @@ object UseStats {
         return lastreaddict[listID]
     }
 
-    fun setNewestHistoryOfList(preference: SharedPreferences, listID: String, tid: String) {
+    fun setNewestHistoryOfList(preference: SharedPreferences, listID: String,
+                               tid: String, tstamp: Long) {
         if (newestiddict.isNullOrEmpty()) {
             initTweetHistoryList(preference)
         }
+        neweststampdict[listID] = tstamp
         newestiddict[listID] = tid
     }
 
@@ -81,9 +103,11 @@ object UseStats {
         if (newestiddict.isNullOrEmpty()) {
             return
         }
+        Log.d("drz", "timestamps: "+ neweststampdict.toString())
         preference.edit().apply {
             this[lastReadTweetIDKeyForList] = newestiddict.toString().removeSurrounding("{", "}")
             this[newestTweetIDKeyForList] = newestiddict.toString().removeSurrounding("{", "}")
+            this[newestTweetStampKeyForList] = neweststampdict.toString().removeSurrounding("{", "}")
         }.apply()
         initTweetHistoryList(preference)
     }

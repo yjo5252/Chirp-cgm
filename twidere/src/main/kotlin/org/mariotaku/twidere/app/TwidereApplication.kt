@@ -204,7 +204,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
     fun onMoveToForeground() { // app moved to foreground
         UseStats.recordOpenTime(sharedPreferences)
 
-//        drustz: add time diff for show dialogue on use status
+//      drustz: add time diff for show dialogue on use status
         if (System.currentTimeMillis() -
                 sharedPreferences[lastshowUsageDialogTimeStamp] > 15*60*1000 /*15min*/){
             val weekStats = UseStats.getUseWeeklyTillNow(sharedPreferences)
@@ -215,14 +215,20 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
                 this[shouldShowUsageDialog] = true
             }.apply()
         }
+
+        sendFirebaseEvents()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onMoveToBackground() { // app moved to background
+        Log.d("drz", "onMoveToBackground1")
         UseStats.recordCloseTime(sharedPreferences)
         //update all list read histories
         UseStats.updateAllLastTweetHistories(sharedPreferences)
+        sendFirebaseEvents()
+    }
 
+    fun sendFirebaseEvents(){
         if (sharedPreferences[trackUserID] === "") {
             val uuid = UUID.randomUUID().toString()
             sharedPreferences.edit().apply{
@@ -230,9 +236,6 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             }.apply()
             firebaseAnalytics.setUserId(uuid)
         }
-
-        Log.d("drz", "onMoveToBackground")
-
         firebaseAnalytics.logEvent("UseStats") {
             param("OpenTimes", sharedPreferences[openTimesKey].toLong())
             param("NewTweetConsume", sharedPreferences[newTweetsStats].toLong())
