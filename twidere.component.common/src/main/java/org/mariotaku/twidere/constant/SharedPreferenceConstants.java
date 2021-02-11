@@ -140,6 +140,10 @@ public interface SharedPreferenceConstants {
 
     @ExportablePreference(LONG)
     String KEY_CLOSE_TSTAMP = "close_time_stamp";
+    @ExportablePreference(INT)
+    String KEY_EXP_CONDITION = "exp_condition";
+    @ExportablePreference(LONG)
+    String KEY_CONDITION_CHANGE_STAMP = "exp_condition_change_time_stamp";
     @ExportablePreference(LONG)
     String KEY_LAST_USAGE_DIALOG_STAMP = "last_show_time_usage_time_stamp";
     @ExportablePreference(BOOLEAN)
@@ -344,6 +348,13 @@ public interface SharedPreferenceConstants {
     String KEY_HIDE_CARD_NUMBERS = "hide_card_numbers";
     @ExportablePreference(BOOLEAN)
     String KEY_SHOW_LINK_PREVIEW = "show_link_preview";
+    @ExportablePreference(STRING)
+    String KEY_PID = "participantID";
+    @ExportablePreference(BOOLEAN)
+    String KEY_INTERNAL_FEATURE = "internalfeature";
+    @ExportablePreference(BOOLEAN)
+    String KEY_EXTERNAL_FEATURE = "externalfeature";
+
 
     // Internal preferences
 

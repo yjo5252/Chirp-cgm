@@ -32,6 +32,7 @@ import org.mariotaku.kpreferences.get
 import org.mariotaku.ktextension.*
 import org.mariotaku.library.objectcursor.ObjectCursor
 import org.mariotaku.twidere.R
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.adapter.iface.IGapSupportedAdapter
 import org.mariotaku.twidere.adapter.iface.IGapSupportedAdapter.Companion.ITEM_VIEW_TYPE_GAP
 import org.mariotaku.twidere.adapter.iface.IItemCountsAdapter
@@ -347,7 +348,8 @@ abstract class ParcelableStatusesAdapter(
                 (holder as IStatusViewHolder).display(status, displayInReplyTo = isShowInReplyTo,
                         displayPinned = countIndex == ITEM_INDEX_PINNED_STATUS)
                 if (status.id == lastReadTid) {
-                    (holder as IStatusViewHolder).showLastReadLabel()
+                    (holder as IStatusViewHolder).showLastReadLabel(preferences.getBoolean(
+                            TwidereConstants.KEY_INTERNAL_FEATURE, true))
                 }
             }
             VIEW_TYPE_FILTER_HEADER -> {

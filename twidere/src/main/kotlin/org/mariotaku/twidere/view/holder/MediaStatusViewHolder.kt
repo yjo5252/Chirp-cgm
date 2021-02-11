@@ -103,7 +103,7 @@ class MediaStatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: 
         itemView.itemContent.setOnClickListener(this)
     }
 
-    override fun showLastReadLabel() {
+    override fun showLastReadLabel(showinternal: Boolean) {
     }
 
     override fun setTextSize(textSize: Float) {

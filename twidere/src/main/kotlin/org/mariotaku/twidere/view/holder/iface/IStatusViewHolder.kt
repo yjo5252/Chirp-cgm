@@ -39,7 +39,7 @@ interface IStatusViewHolder : CardMediaContainer.OnMediaClickListener {
             displayPinned: Boolean = false)
 
     //drustz: add show last read label
-    fun showLastReadLabel()
+    fun showLastReadLabel(showinternal: Boolean)
 
     val profileImageView: ImageView?
 

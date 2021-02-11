@@ -61,6 +61,7 @@ import org.mariotaku.mediaviewer.library.MediaDownloader
 import org.mariotaku.restfu.http.RestHttpClient
 import org.mariotaku.twidere.BuildConfig
 import org.mariotaku.twidere.Constants
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.TwidereConstants.*
 import org.mariotaku.twidere.activity.AssistLauncherActivity
 import org.mariotaku.twidere.activity.MainActivity
@@ -200,6 +201,12 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         firebaseAnalytics = Firebase.analytics
         firebaseLoginstance = firebaseAnalytics
 
+        //drustz: exp condition check
+        //change condition every n days
+        if (System.currentTimeMillis() - sharedPreferences[expconditionChangeTimeStamp] >
+                60*1000){
+            Log.d("drz", "onCreate: changed!")
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -207,7 +214,9 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         UseStats.recordOpenTime(sharedPreferences)
 
 //      drustz: add time diff for show dialogue on use status
-        if (System.currentTimeMillis() -
+        //also need to switch on the external preference
+        if (sharedPreferences.getBoolean(KEY_EXTERNAL_FEATURE, true)
+                && System.currentTimeMillis() -
                 sharedPreferences[lastshowUsageDialogTimeStamp] > 15*60*1000 /*15min*/){
             val weekStats = UseStats.getUseWeeklyTillNow(sharedPreferences)
             val todayIdx = UseStats.getTodayInWeekIdx()
@@ -222,7 +231,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onMoveToBackground() { // app moved to background
-        Log.d("drz", "onMoveToBackground1")
+//        Log.d("drz", "onMoveToBackground1")
         UseStats.recordCloseTime(sharedPreferences)
         //update all list read histories
         UseStats.updateAllLastTweetHistories(sharedPreferences)
@@ -249,6 +258,8 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             param("StatPageView", sharedPreferences[timestatusPageVisitStats].toLong())
             param("StatsDialogueExit", sharedPreferences[shutDownDialogueStats].toLong())
             param("StatsDialogueIgnore", sharedPreferences[ignoreDialogueStats].toLong())
+            param("Condition", preferences[expcondition].toLong())
+            sharedPreferences.getString(KEY_PID, "")?.let { param("userID", it) }
         }
     }
 
@@ -292,7 +303,13 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             KEY_MEDIA_PRELOAD, KEY_PRELOAD_WIFI_ONLY -> {
                 mediaPreloader.reloadOptions(preferences)
             }
-            KEY_NAME_FIRST, KEY_I_WANT_MY_STARS_BACK -> {
+            KEY_NAME_FIRST, KEY_I_WANT_MY_STARS_BACK,
+                //drustz: add pref notificaiton on param change
+            KEY_EXTERNAL_FEATURE, KEY_INTERNAL_FEATURE, KEY_PID -> {
+                sharedPreferences.edit().apply{
+                    this[expcondition] = 0
+                    this[expconditionChangeTimeStamp] = System.currentTimeMillis()
+                }.apply()
                 contentNotificationManager.updatePreferences()
             }
             KEY_OVERRIDE_LANGUAGE -> {

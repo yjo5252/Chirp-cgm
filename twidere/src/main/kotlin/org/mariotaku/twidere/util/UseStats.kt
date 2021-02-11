@@ -67,7 +67,7 @@ object UseStats {
                     .toMap()
                     .toMutableMap()
         }
-        Log.d("drz", "initTweetHistoryList: " + lastreaddict.toString())
+//        Log.d("drz", "initTweetHistoryList: " + lastreaddict.toString())
     }
 
     fun getNewestTweetTimeStampOfList(preference: SharedPreferences, listID: String):Long {

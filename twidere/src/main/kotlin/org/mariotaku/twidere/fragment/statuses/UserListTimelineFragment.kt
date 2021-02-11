@@ -168,7 +168,7 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
                 val contentview = (recyclerView.layoutManager as
                         LinearLayoutManager).findViewByPosition(i)
                 val readhistoryView: FixedTextView? = contentview?.findViewById(R.id.lastReadLabel) as FixedTextView?
-                if (readhistoryView != null && readhistoryView.isVisible) {
+                if (readhistoryView != null && readhistoryView.tag == "readhistoryshow") {
                     // drustz: the read history is already shown in the recycler view.
                     //if the readhistoryshowntimestamp is 0, then it means that
                     // the user did not scroll and the history label is already shown
@@ -194,11 +194,15 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
                     param("FeedViewTimeTotal", usetime)
                     param("FeedViewTimeAfterHistory", timeafterhistory)
                     param("FeedName", listId)
+                    param("Condition", preferences[expcondition].toLong())
+                    preferences.getString(TwidereConstants.KEY_PID, "")?.let { param("userID", it) }
                 }
             } else {
                 UseStats.firebaseLoginstance.logEvent("FeedViewTime") {
                     param("FeedViewTimeTotal", usetime)
                     param("FeedName", listId)
+                    preferences.getString(TwidereConstants.KEY_PID, "")?.let { param("userID", it) }
+                    param("Condition", preferences[expcondition].toLong())
                 }
             }
             enterframgmentTimestamp = 0
@@ -241,12 +245,15 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
             isHideReplies = false
             isHideRetweets = false
         }
-        timelineFilter?.let {
-            if (!it.isIncludeReplies) {
-                extras.isHideReplies = true
-            }
-            if (!it.isIncludeRetweets) {
-                extras.isHideRetweets = true
+        //drustz: use filter only when the internal preference set
+        if (preferences.getBoolean(TwidereConstants.KEY_INTERNAL_FEATURE, true)) {
+            timelineFilter?.let {
+                if (!it.isIncludeReplies) {
+                    extras.isHideReplies = true
+                }
+                if (!it.isIncludeRetweets) {
+                    extras.isHideRetweets = true
+                }
             }
         }
         return UserListTimelineLoader(requireActivity(), accountKey, listId, userKey, screenName, listName,

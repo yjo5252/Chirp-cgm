@@ -44,6 +44,7 @@ import org.mariotaku.kpreferences.get
 import org.mariotaku.ktextension.*
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.twidere.R
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.activity.AccountSelectorActivity
 import org.mariotaku.twidere.activity.ComposeActivity
 import org.mariotaku.twidere.adapter.ParcelableStatusesAdapter
@@ -177,7 +178,7 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
         recyclerView.addOnChildAttachStateChangeListener(object : OnChildAttachStateChangeListener {
             override fun onChildViewAttachedToWindow(view: View) {
                 val readhistoryView: FixedTextView? = view.findViewById(R.id.lastReadLabel) as FixedTextView?
-                if (readhistoryView != null && readhistoryView.isVisible) {
+                if (readhistoryView != null && readhistoryView.tag == "readhistoryshow") {
                     readhistoryViewVisible()
                 }
             }
@@ -347,7 +348,13 @@ abstract class AbsStatusesFragment : AbsContentListRecyclerViewFragment<Parcelab
         }
         // 2. Change adapter data
         adapterData = data
-        adapter.timelineFilter = timelineFilter
+
+        //drustz: show filter only when the preference set
+        if (preferences.getBoolean(TwidereConstants.KEY_INTERNAL_FEATURE, true)) {
+            adapter.timelineFilter = timelineFilter
+        } else {
+            adapter.timelineFilter = null
+        }
 
         refreshEnabled = true
 

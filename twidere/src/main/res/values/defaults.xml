@@ -3,7 +3,7 @@
     <bool name="default_multi_column_tabs_land">false</bool>
     <bool name="default_multi_column_tabs_port">false</bool>
     <string name="default_profile_image_style">round</string>
-    <string name="default_tab_display_option">icon</string>
+    <string name="default_tab_display_option">both</string>
 
     <integer name="min_database_item_limit">50</integer>
 

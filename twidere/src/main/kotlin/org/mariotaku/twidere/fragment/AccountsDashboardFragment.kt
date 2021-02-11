@@ -58,6 +58,7 @@ import org.mariotaku.kpreferences.set
 import org.mariotaku.ktextension.*
 import org.mariotaku.twidere.Constants.EXTRA_FEATURES_NOTICE_VERSION
 import org.mariotaku.twidere.R
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.TwidereConstants.*
 import org.mariotaku.twidere.activity.ComposeActivity
 import org.mariotaku.twidere.activity.HomeActivity
@@ -368,6 +369,10 @@ class AccountsDashboardFragment : BaseFragment(), LoaderCallbacks<AccountsInfo>,
 //        drustz: set promoted features to false
 //        menu.setItemAvailability(R.id.premium_features, extraFeaturesService.isSupported())
         menu.setItemAvailability(R.id.premium_features, false)
+
+        //drustz: set external feature switch preference
+        menu.setItemAvailability(R.id.usagestats, preferences.getBoolean(KEY_EXTERNAL_FEATURE, true))
+
         if (preferences[extraFeaturesNoticeVersionKey] < EXTRA_FEATURES_NOTICE_VERSION) {
             val icon = context?.let { ContextCompat.getDrawable(it, R.drawable.ic_action_infinity) }
             val color = context?.let { ContextCompat.getColor(it, R.color.material_red) }

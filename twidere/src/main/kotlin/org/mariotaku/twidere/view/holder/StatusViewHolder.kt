@@ -97,7 +97,6 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
 
     private var statusClickListener: IStatusViewHolder.StatusClickListener? = null
 
-
     init {
         this.eventListener = EventListener(this)
 
@@ -149,8 +148,10 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
         linkPreview.displayData(TWIDERE_PREVIEW_LINK_URI, LinkPreviewData(title = TWIDERE_PREVIEW_NAME, imgRes = R.drawable.featured_graphics), adapter.requestManager)
     }
 
-    override fun showLastReadLabel() {
-        lastReadLabel.visibility = View.VISIBLE;
+    override fun showLastReadLabel(showinternal: Boolean) {
+        if (showinternal)
+            lastReadLabel.visibility = View.VISIBLE
+        lastReadLabel.tag = "readhistoryshow"
     }
 
     override fun display(status: ParcelableStatus, displayInReplyTo: Boolean,
@@ -466,6 +467,7 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
 
         //drustz:hide the lastread view
         lastReadLabel.visibility = View.GONE
+        lastReadLabel.tag = ""
     }
 
     private fun displayQuotedMedia(requestManager: RequestManager, status: ParcelableStatus) {

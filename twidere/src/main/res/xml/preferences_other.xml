@@ -38,4 +38,20 @@
         android:fragment="org.mariotaku.twidere.fragment.NetworkDiagnosticsFragment"
         android:title="@string/network_diagnostics"/>
 
+    <org.mariotaku.twidere.preference.ThemedEditTextPreference
+        android:key="participantid"
+        android:singleLine="true"
+        android:title="participant ID"/>
+
+    <SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:key="internalfeature"
+        android:summary="Please do not change this on your own"
+        android:title="Internal Features"/>
+
+    <SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:key="externalfeature"
+        android:summary="Please do not change this on your own"
+        android:title="External Features"/>
 </PreferenceScreen>

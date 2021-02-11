@@ -33,6 +33,7 @@ import org.mariotaku.kpreferences.set
 import org.mariotaku.ktextension.isNullOrEmpty
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.twidere.R
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.TwidereConstants.NOTIFICATION_ID_HOME_TIMELINE
 import org.mariotaku.twidere.annotation.FilterScope
 import org.mariotaku.twidere.annotation.ReadPositionTag
@@ -113,7 +114,7 @@ class HomeTimelineFragment : CursorStatusesFragment() {
     private fun recordEnterTime(){
         enterframgmentTimestamp = System.currentTimeMillis()
         readhistoryShownTimestamp = 0
-        Log.d("drz", "onVisible: [home] ??")
+//        Log.d("drz", "onVisible: [home] ??")
     }
 
     //drustz: record feed view time after the user move out
@@ -126,7 +127,7 @@ class HomeTimelineFragment : CursorStatusesFragment() {
                 val contentview = (recyclerView.layoutManager as
                         LinearLayoutManager).findViewByPosition(i)
                 val readhistoryView: FixedTextView? = contentview?.findViewById(R.id.lastReadLabel) as FixedTextView?
-                if (readhistoryView != null && readhistoryView.isVisible) {
+                if (readhistoryView != null && readhistoryView.tag == "readhistoryshow") {
                     //the read history is already shown in the recycler view.
                     //if the readhistoryshowntimestamp is 0, then it means that
                     // the user did not scroll and the history label is already shown
@@ -142,18 +143,22 @@ class HomeTimelineFragment : CursorStatusesFragment() {
 
         val usetime = (System.currentTimeMillis() - enterframgmentTimestamp) / 1000
         val timeafterhistory = (System.currentTimeMillis() - readhistoryShownTimestamp) / 1000
-        Log.d("drz", "[HOME] time viewed: "+ usetime)
+//        Log.d("drz", "[HOME] time viewed: "+ usetime)
         if (readhistoryShownTimestamp > 0) {
-            Log.d("drz", "[HOME] time after readhistory: " + timeafterhistory)
+//            Log.d("drz", "[HOME] time after readhistory: " + timeafterhistory)
             firebaseLoginstance.logEvent("FeedViewTime") {
                 param("ViewTimeTotal", usetime)
                 param("AfterHistory", timeafterhistory)
                 param("feed", "home")
+                param("Condition", preferences[expcondition].toLong())
+                preferences.getString(TwidereConstants.KEY_PID, "")?.let { param("userID", it) }
             }
         } else {
             firebaseLoginstance.logEvent("FeedViewTime") {
                 param("ViewTimeTotal", usetime)
                 param("feed", "home")
+                param("Condition", preferences[expcondition].toLong())
+                preferences.getString(TwidereConstants.KEY_PID, "")?.let { param("userID", it) }
             }
         }
 
@@ -172,12 +177,15 @@ class HomeTimelineFragment : CursorStatusesFragment() {
                 isHideReplies = false
                 isHideRetweets = false
             }
-            timelineFilter?.let {
-                if (!it.isIncludeReplies) {
-                    extras.isHideReplies = true
-                }
-                if (!it.isIncludeRetweets) {
-                    extras.isHideRetweets = true
+            //drustz: use filter only when the internal preference set
+            if (preferences.getBoolean(TwidereConstants.KEY_INTERNAL_FEATURE, true)) {
+                timelineFilter?.let {
+                    if (!it.isIncludeReplies) {
+                        extras.isHideReplies = true
+                    }
+                    if (!it.isIncludeRetweets) {
+                        extras.isHideRetweets = true
+                    }
                 }
             }
             if (extras != null) {
@@ -223,7 +231,6 @@ class HomeTimelineFragment : CursorStatusesFragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("drz", "onResume: [home] !!")
         if (isVisible && userVisibleHint){
             recordEnterTime()
         }
@@ -232,7 +239,6 @@ class HomeTimelineFragment : CursorStatusesFragment() {
 
     override fun onPause() {
         super.onPause()
-        Log.d("drz", "onPause: [home] !!")
         if (isVisible && userVisibleHint){
             recordLeaveTime()
         }

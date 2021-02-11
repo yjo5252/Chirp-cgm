@@ -28,6 +28,7 @@ import com.squareup.otto.Subscribe
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
 import org.mariotaku.twidere.R
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.TwidereConstants.*
 import org.mariotaku.twidere.constant.userTimelineFilterKey
 import org.mariotaku.twidere.extension.applyTheme
@@ -72,12 +73,15 @@ class UserTimelineFragment : ParcelableStatusesFragment() {
                     return null
                 }
             }
-            (timelineFilter as? UserTimelineFilter)?.let {
-                if (it.isIncludeReplies) {
-                    result.add("include_replies")
-                }
-                if (it.isIncludeRetweets) {
-                    result.add("include_retweets")
+            //drustz: use filter only when the internal preference set
+            if (preferences.getBoolean(TwidereConstants.KEY_INTERNAL_FEATURE, true)) {
+                (timelineFilter as? UserTimelineFilter)?.let {
+                    if (it.isIncludeReplies) {
+                        result.add("include_replies")
+                    }
+                    if (it.isIncludeRetweets) {
+                        result.add("include_retweets")
+                    }
                 }
             }
             return result.toTypedArray()
