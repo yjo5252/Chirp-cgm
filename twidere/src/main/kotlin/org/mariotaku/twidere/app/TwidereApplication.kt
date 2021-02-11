@@ -258,7 +258,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             param("StatPageView", sharedPreferences[timestatusPageVisitStats].toLong())
             param("StatsDialogueExit", sharedPreferences[shutDownDialogueStats].toLong())
             param("StatsDialogueIgnore", sharedPreferences[ignoreDialogueStats].toLong())
-            param("Condition", preferences[expcondition].toLong())
+            param("Condition", sharedPreferences[expcondition].toLong())
             sharedPreferences.getString(KEY_PID, "")?.let { param("userID", it) }
         }
     }
