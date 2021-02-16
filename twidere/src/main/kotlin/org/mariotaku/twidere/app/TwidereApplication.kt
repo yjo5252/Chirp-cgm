@@ -212,7 +212,6 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onMoveToForeground() { // app moved to foreground
         UseStats.recordOpenTime(sharedPreferences)
-
 //      drustz: add time diff for show dialogue on use status
         //also need to switch on the external preference
         if (sharedPreferences.getBoolean(KEY_EXTERNAL_FEATURE, true)
@@ -226,42 +225,17 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
                 this[shouldShowUsageDialog] = true
             }.apply()
         }
-        sendFirebaseEvents()
+        UseStats.sendFirebaseEvents(sharedPreferences)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onMoveToBackground() { // app moved to background
 //        Log.d("drz", "onMoveToBackground1")
-        UseStats.recordCloseTime(sharedPreferences)
         //update all list read histories
         UseStats.updateAllLastTweetHistories(sharedPreferences)
-        sendFirebaseEvents()
+//        UseStats.sendFirebaseEvents(sharedPreferences)
     }
 
-    fun sendFirebaseEvents(){
-        if (sharedPreferences[trackUserID] === "") {
-            val uuid = UUID.randomUUID().toString()
-            sharedPreferences.edit().apply{
-                this[trackUserID] = uuid
-            }.apply()
-            firebaseAnalytics.setUserId(uuid)
-        }
-        firebaseAnalytics.logEvent("UseStats") {
-            param("OpenTimes", sharedPreferences[openTimesKey].toLong())
-            param("NewTweetConsume", sharedPreferences[newTweetsStats].toLong())
-            param("TweetLike", sharedPreferences[likedTweetsStats].toLong())
-            param("TweetReply", sharedPreferences[replyTweetsStats].toLong())
-            param("RetweetNQuote", sharedPreferences[retweetTweetsStats].toLong())
-            param("TweetCompose", sharedPreferences[composeTweetsStats].toLong())
-            param("AccFollow", sharedPreferences[followAccountsStats].toLong())
-            param("AccUnfollow", sharedPreferences[unfollowAccountsStats].toLong())
-            param("StatPageView", sharedPreferences[timestatusPageVisitStats].toLong())
-            param("StatsDialogueExit", sharedPreferences[shutDownDialogueStats].toLong())
-            param("StatsDialogueIgnore", sharedPreferences[ignoreDialogueStats].toLong())
-            param("Condition", sharedPreferences[expcondition].toLong())
-            sharedPreferences.getString(KEY_PID, "")?.let { param("userID", it) }
-        }
-    }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         applyLanguageSettings()

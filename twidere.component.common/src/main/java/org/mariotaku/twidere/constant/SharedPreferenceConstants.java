@@ -169,15 +169,13 @@ public interface SharedPreferenceConstants {
     @ExportablePreference(STRING)
     String KEY_QUOTE_FORMAT = "quote_format";
     @ExportablePreference(STRING)
-    String KEY_NEWEST_TID = "newest_tid";
+    String KEY_NEWEST_TSTAMP = "newest_timestamp";
     @ExportablePreference(STRING)
-    String KEY_LASTREAD_TID = "last_read_tid";
-    @ExportablePreference(STRING)
-    String KEY_LASTREAD_TID_LIST = "newest_tid_list";
+    String KEY_LASTREAD_TSTAMP = "last_read_timestamp";
     @ExportablePreference(STRING)
     String KEY_NEWEST_STAMP_LIST = "newest_tweetstamp_list";
     @ExportablePreference(STRING)
-    String KEY_NEWEST_TID_LIST = "last_read_tid_list";
+    String KEY_LASTREAD_STAMP_LIST = "lastread_tweetstamp_list";
     @ExportablePreference(BOOLEAN)
     String KEY_REMEMBER_POSITION = "remember_position";
     @ExportablePreference(BOOLEAN)

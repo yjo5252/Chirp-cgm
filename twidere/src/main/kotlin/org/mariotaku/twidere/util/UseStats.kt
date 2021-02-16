@@ -9,12 +9,14 @@ import android.text.format.DateFormat
 import android.util.Log
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
 import kotlinx.android.synthetic.main.activity_usagestats.*
 import org.mariotaku.kpreferences.KIntKey
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
 import org.mariotaku.twidere.Constants
 import org.mariotaku.twidere.R
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.app.TwidereApplication
 import org.mariotaku.twidere.constant.*
 import org.mariotaku.twidere.extension.applyTheme
@@ -34,25 +36,16 @@ object UseStats {
 
     lateinit var firebaseLoginstance: FirebaseAnalytics
 
-    var newestiddict = mutableMapOf<String, String?>()
     var neweststampdict = mutableMapOf<String, Long?>()
-    var lastreaddict = mutableMapOf<String, String?>()
+    var lastreaddict = mutableMapOf<String, Long?>()
 
     //drustz: those are for list reading hisotries.
     fun initTweetHistoryList(preference: SharedPreferences){
-        var newestidDictStr = preference[newestTweetIDKeyForList]
         var neweststampDictStr = preference[newestTweetStampKeyForList]
-        var lastreadTidDictStr = preference[lastReadTweetIDKeyForList]
+        var lastreadTidDictStr = preference[lastReadTweetStampKeyForList]
 
         //if not the first time
-        if (newestidDictStr != "") {
-            newestiddict = newestidDictStr
-                    .splitToSequence(",") // returns sequence of strings: [foo = 3, bar = 5, baz = 9000]
-                    .map { it.split("=") } // returns list of lists: [[foo, 3 ], [bar, 5 ], [baz, 9000]]
-                    .map { it[0].trim() to it[1].trim() } // return list of pairs: [(foo, 3), (bar, 5), (baz, 9000)]
-                    .toMap()
-                    .toMutableMap()
-
+        if (neweststampDictStr != "") {
             neweststampdict = neweststampDictStr
                     .splitToSequence(",")
                     .map { it.split("=") }
@@ -63,7 +56,7 @@ object UseStats {
             lastreaddict = lastreadTidDictStr
                     .splitToSequence(",")
                     .map { it.split("=") }
-                    .map { it[0].trim() to it[1].trim() }
+                    .map { it[0].trim() to it[1].trim().toLong() }
                     .toMap()
                     .toMutableMap()
         }
@@ -71,7 +64,7 @@ object UseStats {
     }
 
     fun getNewestTweetTimeStampOfList(preference: SharedPreferences, listID: String):Long {
-        if (newestiddict.isNullOrEmpty()) {
+        if (neweststampdict.isNullOrEmpty()) {
             initTweetHistoryList(preference)
         }
         if (!neweststampdict.containsKey(listID)){
@@ -80,35 +73,33 @@ object UseStats {
         return neweststampdict[listID]!!
     }
 
-    fun getLastTweetHistoryOfList(preference: SharedPreferences, listID: String):String? {
-        if (newestiddict.isNullOrEmpty()) {
+    fun getLastTweetHistoryOfList(preference: SharedPreferences, listID: String):Long {
+        if (neweststampdict.isNullOrEmpty()) {
             initTweetHistoryList(preference)
         }
         if (!lastreaddict.containsKey(listID)){
-            lastreaddict[listID] = ""
+            lastreaddict[listID] = 0
         }
-        return lastreaddict[listID]
+        return lastreaddict[listID]!!
     }
 
     fun setNewestHistoryOfList(preference: SharedPreferences, listID: String,
-                               tid: String, tstamp: Long) {
-        if (newestiddict.isNullOrEmpty()) {
+                               tstamp: Long) {
+        if (neweststampdict.isNullOrEmpty()) {
             initTweetHistoryList(preference)
         }
         neweststampdict[listID] = tstamp
-        newestiddict[listID] = tid
     }
 
     //below are usage status related functions---
 
     fun updateAllLastTweetHistories(preference: SharedPreferences) {
-        if (newestiddict.isNullOrEmpty()) {
+        if (neweststampdict.isNullOrEmpty()) {
             return
         }
         Log.d("drz", "timestamps: "+ neweststampdict.toString())
         preference.edit().apply {
-            this[lastReadTweetIDKeyForList] = newestiddict.toString().removeSurrounding("{", "}")
-            this[newestTweetIDKeyForList] = newestiddict.toString().removeSurrounding("{", "}")
+            this[lastReadTweetStampKeyForList] = neweststampdict.toString().removeSurrounding("{", "}")
             this[newestTweetStampKeyForList] = neweststampdict.toString().removeSurrounding("{", "}")
         }.apply()
         initTweetHistoryList(preference)
@@ -206,7 +197,7 @@ object UseStats {
         val ondaymillis = 1000 * 60 /* minute */ * 60 * 24 //day
 
         var weeklyUsage = getUseTimeOfAWeek(preference)
-        for (i in 1..6) {
+        for (i in 0..6) {
             if (c.timeInMillis - i * ondaymillis <= preference[closeTimeStamp]) break
             weeklyUsage[mod(todayWeekIdx-i, 7)] = 0
         }
@@ -288,6 +279,33 @@ object UseStats {
         var sec = seconds.coerceAtLeast(1)
         usageStr += if (sec == 1) "1 sec" else "$sec secs"
         return usageStr
+    }
+
+    fun sendFirebaseEvents(sharedPreferences: SharedPreferences){
+        if (sharedPreferences[trackUserID] === "") {
+            val uuid = UUID.randomUUID().toString()
+            sharedPreferences.edit().apply{
+                this[trackUserID] = uuid
+            }.apply()
+            firebaseLoginstance.setUserId(uuid)
+        }
+
+        Log.d("drz", "sendFirebaseEvents: send!")
+        firebaseLoginstance.logEvent("UseStats") {
+            param("OpenTimes", sharedPreferences[openTimesKey].toLong())
+            param("NewTweetConsume", sharedPreferences[newTweetsStats].toLong())
+            param("TweetLike", sharedPreferences[likedTweetsStats].toLong())
+            param("TweetReply", sharedPreferences[replyTweetsStats].toLong())
+            param("RetweetNQuote", sharedPreferences[retweetTweetsStats].toLong())
+            param("TweetCompose", sharedPreferences[composeTweetsStats].toLong())
+            param("AccFollow", sharedPreferences[followAccountsStats].toLong())
+            param("AccUnfollow", sharedPreferences[unfollowAccountsStats].toLong())
+            param("StatPageView", sharedPreferences[timestatusPageVisitStats].toLong())
+            param("StatsDialogueExit", sharedPreferences[shutDownDialogueStats].toLong())
+            param("StatsDialogueIgnore", sharedPreferences[ignoreDialogueStats].toLong())
+            param("Condition", sharedPreferences[expcondition].toLong())
+            sharedPreferences.getString(TwidereConstants.KEY_PID, "")?.let { param("userID", it) }
+        }
     }
 
 }

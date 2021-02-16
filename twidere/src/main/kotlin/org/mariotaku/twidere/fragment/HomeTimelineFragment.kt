@@ -208,16 +208,16 @@ class HomeTimelineFragment : CursorStatusesFragment() {
         try {
             //drustz: save the first item in the load for lastread status
             val firstitm = adapter.getStatus(adapter.statusStartIndex, false)
-            val newestid = preferences[newestTweetIDKey]
-            var lastreadTid = preferences[lastReadTweetIDKey]
+            val newestTs = preferences[newestTweetTimestampKey]
+            var lastreadTs = preferences[lastReadTweetTimestampKey]
             preferences.edit().apply {
                 //only reassign if they are not equal
-                if (firstLoad && lastreadTid != newestid) {
-                    this[lastReadTweetIDKey] = newestid
+                if (firstLoad && lastreadTs != newestTs) {
+                    this[lastReadTweetTimestampKey] = newestTs
                 }
-                this[newestTweetIDKey] = firstitm.id
+                this[newestTweetTimestampKey] = firstitm.timestamp
             }.apply()
-            adapter.lastReadTid = preferences[lastReadTweetIDKey]
+            adapter.lastReadTstamp = preferences[lastReadTweetTimestampKey]
         } catch (e: IndexOutOfBoundsException) {
 
         }

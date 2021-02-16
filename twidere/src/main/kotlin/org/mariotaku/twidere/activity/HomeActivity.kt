@@ -298,6 +298,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
 
     override fun onStart() {
         super.onStart()
+        Log.d("drz", "onStart: here called")
         multiSelectHandler.dispatchOnStart()
         AccountManager.get(this).addOnAccountsUpdatedListenerSafe(accountUpdatedListener, updateImmediately = false)
         bus.register(this)
@@ -324,6 +325,9 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
     override fun onStop() {
+        UseStats.recordCloseTime(preferences)
+        UseStats.sendFirebaseEvents(preferences)
+
         multiSelectHandler.dispatchOnStop()
         readStateManager.unregisterOnSharedPreferenceChangeListener(readStateChangeListener)
         bus.unregister(this)

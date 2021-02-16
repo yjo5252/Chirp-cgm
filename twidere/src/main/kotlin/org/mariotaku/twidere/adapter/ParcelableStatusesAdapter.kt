@@ -120,11 +120,14 @@ abstract class ParcelableStatusesAdapter(
             notifyDataSetChanged()
         }
 
-    //drustz : lastread tid
-    var lastReadTid : String = ""
+    //drustz : lastread tstamp
+    var lastReadTstamp : Long = 0
         set(value) {
             field = value
+            lastReadTID = ""
         }
+
+    var lastReadTID = ""
 
     private var data: List<ParcelableStatus>? = null
     private var displayPositions: IntArray? = null
@@ -347,7 +350,9 @@ abstract class ParcelableStatusesAdapter(
                 val status = getStatusInternal(position, countIndex = countIndex, reuse = true)
                 (holder as IStatusViewHolder).display(status, displayInReplyTo = isShowInReplyTo,
                         displayPinned = countIndex == ITEM_INDEX_PINNED_STATUS)
-                if (status.id == lastReadTid) {
+                if ( (status.timestamp <= lastReadTstamp && lastReadTID == "") ||
+                        (lastReadTID == status.id)){
+                    lastReadTID = status.id
                     (holder as IStatusViewHolder).showLastReadLabel(preferences.getBoolean(
                             TwidereConstants.KEY_INTERNAL_FEATURE, true))
                 }
