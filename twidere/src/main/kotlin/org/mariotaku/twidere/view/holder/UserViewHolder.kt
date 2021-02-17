@@ -19,12 +19,16 @@
 
 package org.mariotaku.twidere.view.holder
 
+import android.graphics.Color
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
 import android.widget.RelativeLayout
+import kotlinx.android.synthetic.main.fragment_user_profile_editor.view.*
 import kotlinx.android.synthetic.main.list_item_user.view.*
+import kotlinx.android.synthetic.main.list_item_user.view.profileImage
 import org.mariotaku.ktextension.hideIfEmpty
 import org.mariotaku.ktextension.spannable
 import org.mariotaku.twidere.R
@@ -98,7 +102,6 @@ class UserViewHolder(
         val context = itemView.context
         val manager = adapter.userColorNameManager
         val twitter = adapter.twitterWrapper
-
         itemContent.drawStart(manager.getUserColor(user.key))
 
         val userTypeRes = getUserTypeIconRes(user.is_verified, user.is_protected)
@@ -178,6 +181,11 @@ class UserViewHolder(
             followersCountView.text = Utils.getLocalizedNumber(locale, user.followers_count)
             friendsCountView.text = Utils.getLocalizedNumber(locale, user.friends_count)
         }
+        itemView.setBackgroundColor(Color.TRANSPARENT)
+    }
+
+    fun setSelected() {
+        itemView.setBackgroundColor(Color.parseColor("#80d4ff"))
     }
 
     override fun onClick(v: View) {

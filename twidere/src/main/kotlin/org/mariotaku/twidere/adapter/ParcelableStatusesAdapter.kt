@@ -125,6 +125,14 @@ abstract class ParcelableStatusesAdapter(
         set(value) {
             field = value
             lastReadTID = ""
+            if (lastReadTstamp == 0.toLong()) return
+            val statscnt = getStatusCount() - statusStartIndex
+            for (i in statusStartIndex..statscnt){
+                if (getStatusTimestamp(i) <= lastReadTstamp) {
+                    lastReadTID = getStatusId(i)
+                    break
+                }
+            }
         }
 
     var lastReadTID = ""

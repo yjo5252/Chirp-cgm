@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.bumptech.glide.RequestManager
+import org.intellij.lang.annotations.JdkConstants
 import org.mariotaku.ktextension.contains
 import org.mariotaku.twidere.R
 import org.mariotaku.twidere.adapter.iface.ILoadMoreSupportAdapter
@@ -48,6 +49,8 @@ class ParcelableUsersAdapter(
     override var simpleLayout: Boolean = false
     override var showFollow: Boolean = false
 
+    private var selectedData: MutableList<ParcelableUser> = ArrayList()
+
     fun getData(): List<ParcelableUser>? {
         return data
     }
@@ -60,6 +63,7 @@ class ParcelableUsersAdapter(
 
     private fun bindUser(holder: UserViewHolder, position: Int) {
         holder.display(getUser(position)!!)
+        holder.setSelected()
     }
 
     override fun getItemCount(): Int {
@@ -108,6 +112,18 @@ class ParcelableUsersAdapter(
         data.removeAt(dataPosition)
         notifyItemRemoved(position)
         return true
+    }
+
+    fun setUserSelection(position: Int, user: ParcelableUser): Boolean {
+        var selected = false
+        if (selectedData.contains(user)){
+            selectedData.remove(user)
+        } else {
+            selectedData.add(user)
+            selected = true
+        }
+        notifyItemChanged(position)
+        return selected
     }
 
     fun setUserAt(position: Int, user: ParcelableUser): Boolean {

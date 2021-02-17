@@ -51,7 +51,9 @@ import org.mariotaku.twidere.activity.AccountSelectorActivity
 import org.mariotaku.twidere.activity.UserSelectorActivity
 import org.mariotaku.twidere.adapter.SupportTabsAdapter
 import org.mariotaku.twidere.app.TwidereApplication
+import org.mariotaku.twidere.constant.CompatibilityConstants
 import org.mariotaku.twidere.constant.newDocumentApiKey
+import org.mariotaku.twidere.exception.NoAccountException
 import org.mariotaku.twidere.extension.applyTheme
 import org.mariotaku.twidere.extension.model.api.microblog.toParcelable
 import org.mariotaku.twidere.extension.neutral
@@ -59,6 +61,7 @@ import org.mariotaku.twidere.extension.onShow
 import org.mariotaku.twidere.fragment.iface.IBaseFragment.SystemWindowInsetsCallback
 import org.mariotaku.twidere.fragment.iface.SupportFragmentCallback
 import org.mariotaku.twidere.fragment.statuses.UserListTimelineFragment
+import org.mariotaku.twidere.fragment.users.UserListAddFollowerFragment
 import org.mariotaku.twidere.fragment.users.UserListMembersFragment
 import org.mariotaku.twidere.fragment.users.UserListSubscribersFragment
 import org.mariotaku.twidere.model.ParcelableUser
@@ -69,6 +72,7 @@ import org.mariotaku.twidere.model.event.UserListSubscriptionEvent
 import org.mariotaku.twidere.model.event.UserListUpdatedEvent
 import org.mariotaku.twidere.model.tab.conf.UserListExtraConfiguration
 import org.mariotaku.twidere.util.*
+import org.mariotaku.twidere.util.IntentUtils.intent
 import org.mariotaku.twidere.util.shortcut.ShortcutCreator
 
 class UserListFragment : AbsToolbarTabPagesFragment(), OnClickListener,
@@ -116,6 +120,9 @@ class UserListFragment : AbsToolbarTabPagesFragment(), OnClickListener,
                 val user = data.getParcelableExtra<ParcelableUser>(EXTRA_USER)
                 twitter.addUserListMembersAsync(userList.account_key, userList.id, user)
                 return
+            }
+            REQUEST_SELECT_USERS -> {
+
             }
             REQUEST_SELECT_ACCOUNT -> {
                 if (resultCode == Activity.RESULT_OK) {
@@ -236,6 +243,15 @@ class UserListFragment : AbsToolbarTabPagesFragment(), OnClickListener,
                 intent.setClass(activity, UserSelectorActivity::class.java)
                 intent.putExtra(EXTRA_ACCOUNT_KEY, userList.account_key)
                 startActivityForResult(intent, REQUEST_SELECT_USER)
+            }
+            //drustz: Add a "add from following users"
+            R.id.addfromfollowing -> {
+                val builder = IntentUtils.UriBuilder(AUTHORITY_ADDFOLLOWING_LIST)
+                builder.appendQueryParameter(QUERY_PARAM_ACCOUNT_KEY, userList.account_key.toString())
+                builder.appendQueryParameter(QUERY_PARAM_USER_KEY, userList.user_key.toString())
+                builder.appendQueryParameter(QUERY_PARAM_SCREEN_NAME, userList.user_screen_name)
+                startActivityForResult(builder.intent(), REQUEST_SELECT_USERS)
+                return true
             }
             R.id.delete -> {
                 if (userList.user_key != userList.account_key) return false

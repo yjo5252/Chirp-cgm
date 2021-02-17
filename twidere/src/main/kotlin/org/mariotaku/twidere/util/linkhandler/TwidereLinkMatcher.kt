@@ -44,6 +44,9 @@ object TwidereLinkMatcher {
         addURI(AUTHORITY_MUTES_USERS, null, LINK_ID_MUTES_USERS)
         addURI(AUTHORITY_MAP, null, LINK_ID_MAP)
 
+        //drustz: add user following to add list members
+        addURI(AUTHORITY_ADDFOLLOWING_LIST, null, LINK_ID_ADD_FOLLOWING_LIST)
+
         addURI(AUTHORITY_ACCOUNTS, null, LINK_ID_ACCOUNTS)
         addURI(AUTHORITY_DRAFTS, null, LINK_ID_DRAFTS)
         addURI(AUTHORITY_FILTERS, null, LINK_ID_FILTERS)

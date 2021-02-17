@@ -94,6 +94,7 @@ public interface TwidereConstants extends SharedPreferenceConstants, IntentConst
     String AUTHORITY_USER_FAVORITES = "user_favorites";
     String AUTHORITY_USER_FOLLOWERS = "user_followers";
     String AUTHORITY_USER_FRIENDS = "user_friends";
+    String AUTHORITY_ADDFOLLOWING_LIST = "add_following_to_list";
     String AUTHORITY_USER_BLOCKS = "user_blocks";
     String AUTHORITY_STATUS = "status";
     String AUTHORITY_PUBLIC_TIMELINE = "public_timeline";
@@ -194,6 +195,7 @@ public interface TwidereConstants extends SharedPreferenceConstants, IntentConst
     int REQUEST_PICK_DIRECTORY = 14;
     int REQUEST_ADD_TO_LIST = 15;
     int REQUEST_SELECT_USER = 16;
+    int REQUEST_SELECT_USERS = 301;
     int REQUEST_SELECT_USER_LIST = 17;
     int REQUEST_SETTINGS = 19;
     int REQUEST_OPEN_DOCUMENT = 20;

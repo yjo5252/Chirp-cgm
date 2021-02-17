@@ -401,6 +401,9 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
             LINK_ID_USER_FRIENDS -> {
                 setTitle(R.string.title_following)
             }
+            LINK_ID_ADD_FOLLOWING_LIST -> {
+                setTitle("Add following accounts")
+            }
             LINK_ID_USER_BLOCKS -> {
                 setTitle(R.string.title_blocked_users)
             }
@@ -702,6 +705,17 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
                     args.putParcelable(EXTRA_USER_KEY, paramUserKey)
                 }
                 if (TextUtils.isEmpty(paramScreenName) && paramUserKey == null) return null
+            }
+            LINK_ID_ADD_FOLLOWING_LIST -> {
+                fragment = UserListAddFollowerFragment()
+                val paramScreenName = uri.getQueryParameter(QUERY_PARAM_SCREEN_NAME)
+                val paramUserKey = uri.getUserKeyQueryParameter()
+                if (!args.containsKey(EXTRA_SCREEN_NAME)) {
+                    args.putString(EXTRA_SCREEN_NAME, paramScreenName)
+                }
+                if (!args.containsKey(EXTRA_USER_KEY)) {
+                    args.putParcelable(EXTRA_USER_KEY, paramUserKey)
+                }
             }
             LINK_ID_USER_BLOCKS -> {
                 fragment = UserBlocksListFragment()

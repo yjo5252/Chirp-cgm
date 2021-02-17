@@ -24,6 +24,10 @@
         android:icon="@drawable/ic_action_add"
         android:title="@string/action_add_member"/>
     <item
+        android:id="@id/addfromfollowing"
+        android:icon="@drawable/ic_action_add"
+        android:title="Add member from following"/>
+    <item
         android:id="@id/delete"
         android:icon="@drawable/ic_action_delete"
         android:title="@string/action_delete"/>

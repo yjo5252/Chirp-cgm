@@ -606,11 +606,11 @@ object IntentUtils {
         return Uri.Builder().scheme(SCHEME_TWIDERE).authority(authority)
     }
 
-    private fun Uri.intent(action: String = Intent.ACTION_VIEW): Intent {
+    fun Uri.intent(action: String = Intent.ACTION_VIEW): Intent {
         return Intent(action, this).setPackage(BuildConfig.APPLICATION_ID)
     }
 
-    private fun Uri.Builder.intent(action: String = Intent.ACTION_VIEW): Intent {
+    fun Uri.Builder.intent(action: String = Intent.ACTION_VIEW): Intent {
         return build().intent(action)
     }
 }

@@ -87,6 +87,8 @@ public interface Constants extends TwidereConstants {
     int LINK_ID_FILTERS_SUBSCRIPTIONS_ADD = 114;
     int LINK_ID_PROFILE_EDITOR = 121;
 
+    int LINK_ID_ADD_FOLLOWING_LIST = 122;
+
     String TWIDERE_PREVIEW_NICKNAME = "Twidere";
     String TWIDERE_PREVIEW_NAME = "Twidere Project";
     String TWIDERE_PREVIEW_SCREEN_NAME = "TwidereProject";
