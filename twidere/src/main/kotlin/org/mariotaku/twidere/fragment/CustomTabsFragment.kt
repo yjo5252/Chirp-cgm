@@ -117,6 +117,20 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
         emptyIcon.setImageResource(R.drawable.ic_info_tab)
         loaderManager.initLoader(0, null, this)
         setListShown(false)
+
+        //drustz: we pass the addlist param here
+        if (arguments?.getBoolean("addListTab", false) == true){
+            //auto click the create list item
+            val fm = childFragmentManager
+            val df = TabEditorDialogFragment()
+            df.arguments = Bundle {
+                this[EXTRA_TAB_TYPE] = CustomTabType.LIST_TIMELINE
+                if (!adapter.isEmpty) {
+                    this[EXTRA_TAB_POSITION] = adapter.getTab(adapter.count - 1).position + 1
+                }
+            }
+            df.show(fm, TabEditorDialogFragment.TAG_ADD_TAB)
+        }
     }
 
     private fun setListShown(shown: Boolean) {

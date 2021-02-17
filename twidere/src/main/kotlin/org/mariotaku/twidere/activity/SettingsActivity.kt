@@ -25,20 +25,21 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.DrawableRes
-import androidx.annotation.XmlRes
-import androidx.fragment.app.Fragment
-import androidx.core.view.ViewCompat
-import androidx.appcompat.app.AlertDialog
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
+import androidx.annotation.DrawableRes
+import androidx.annotation.XmlRes
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
 import kotlinx.android.synthetic.main.activity_settings.*
 import org.mariotaku.chameleon.Chameleon
 import org.mariotaku.ktextension.Bundle
@@ -55,6 +56,7 @@ import org.mariotaku.twidere.util.KeyboardShortcutsHandler
 import org.mariotaku.twidere.util.ThemeUtils
 import java.util.*
 import kotlin.system.exitProcess
+
 
 class SettingsActivity : BaseActivity(), OnItemClickListener, OnPreferenceStartFragmentCallback {
 
@@ -122,6 +124,13 @@ class SettingsActivity : BaseActivity(), OnItemClickListener, OnPreferenceStartF
                 openDetails(initialItem)
                 entriesList.setItemChecked(initialItem, true)
             }
+        }
+
+        val b = intent.extras
+        if (b != null && b.getBoolean("addListTab")) {
+            //open the list configure tab
+            openDetails(4, true)
+            entriesList.setItemChecked(4, true)
         }
     }
 
@@ -237,21 +246,26 @@ class SettingsActivity : BaseActivity(), OnItemClickListener, OnPreferenceStartF
                 BrowserFragment::class.java, browserArgs)
     }
 
-    private fun openDetails(position: Int) {
+    private fun openDetails(position: Int, openList: Boolean = false) {
         if (isFinishing) return
         val entry = entriesAdapter.getItem(position) as? PreferenceEntry ?: return
         val fm = supportFragmentManager
         fm.popBackStackImmediate(null, 0)
         val ft = fm.beginTransaction()
+
+        //drustz: we add an extra boolean to pass param to tab config fragment
+        var args = Bundle()
+        if (entry.args != null)
+            args = entry.args
+        args.putInt(EXTRA_RESID, entry.preference)
+        if (openList) args.putBoolean("addListTab", true)
         if (entry.preference != 0) {
-            val args = Bundle()
-            args.putInt(EXTRA_RESID, entry.preference)
             val f = Fragment.instantiate(this, SettingsDetailsFragment::class.java.name,
                     args)
             ft.replace(R.id.detailFragmentContainer, f)
         } else if (entry.fragment != null) {
             ft.replace(R.id.detailFragmentContainer, Fragment.instantiate(this, entry.fragment,
-                    entry.args))
+                    args))
         }
         ft.setBreadCrumbTitle(entry.title)
         ft.commit()

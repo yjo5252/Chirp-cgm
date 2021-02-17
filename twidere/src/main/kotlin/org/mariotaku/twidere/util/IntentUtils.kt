@@ -10,10 +10,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
-import android.text.TextUtils
 import org.mariotaku.chameleon.Chameleon
 import org.mariotaku.chameleon.ChameleonUtils
 import org.mariotaku.kpreferences.get
@@ -48,7 +48,7 @@ object IntentUtils {
     }
 
     fun openUserProfile(context: Context, user: ParcelableUser, newDocument: Boolean,
-            activityOptions: Bundle? = null) {
+                        activityOptions: Bundle? = null) {
         val intent = userProfile(user)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && newDocument) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
@@ -57,8 +57,8 @@ object IntentUtils {
     }
 
     fun openUserProfile(context: Context, accountKey: UserKey?,
-            userKey: UserKey?, screenName: String?, profileUrl: String?,
-            newDocument: Boolean, activityOptions: Bundle? = null) {
+                        userKey: UserKey?, screenName: String?, profileUrl: String?,
+                        newDocument: Boolean, activityOptions: Bundle? = null) {
         val intent = userProfile(accountKey, userKey, screenName, profileUrl)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && newDocument) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
@@ -79,7 +79,8 @@ object IntentUtils {
     }
 
     fun userProfile(accountKey: UserKey?, userKey: UserKey?, screenName: String?,
-            profileUrl: String? = null, accountHost: String? = accountKey?.host ?: userKey?.host): Intent {
+                    profileUrl: String? = null, accountHost: String? = accountKey?.host
+                    ?: userKey?.host): Intent {
         val uri = LinkCreator.getTwidereUserLink(accountKey, userKey, screenName)
         val intent = uri.intent()
         intent.putExtra(EXTRA_PROFILE_URL, profileUrl)
@@ -88,7 +89,7 @@ object IntentUtils {
     }
 
     fun userTimeline(accountKey: UserKey?, userKey: UserKey?, screenName: String?,
-            profileUrl: String? = null): Intent {
+                     profileUrl: String? = null): Intent {
         val uri = LinkCreator.getTwidereUserRelatedLink(AUTHORITY_USER_TIMELINE, accountKey,
                 userKey, screenName)
         val intent = Intent(Intent.ACTION_VIEW, uri)
@@ -97,7 +98,7 @@ object IntentUtils {
     }
 
     fun userMediaTimeline(accountKey: UserKey?, userKey: UserKey?, screenName: String?,
-            profileUrl: String? = null): Intent {
+                          profileUrl: String? = null): Intent {
         val uri = LinkCreator.getTwidereUserRelatedLink(AUTHORITY_USER_MEDIA_TIMELINE, accountKey,
                 userKey, screenName)
         val intent = uri.intent()
@@ -106,7 +107,7 @@ object IntentUtils {
     }
 
     fun userFavorites(accountKey: UserKey?, userKey: UserKey?, screenName: String?,
-            profileUrl: String? = null): Intent {
+                      profileUrl: String? = null): Intent {
         val uri = LinkCreator.getTwidereUserRelatedLink(AUTHORITY_USER_FAVORITES, accountKey,
                 userKey, screenName)
         val intent = uri.intent()
@@ -125,7 +126,7 @@ object IntentUtils {
     }
 
     fun openUserMentions(context: Context, accountKey: UserKey?,
-            screenName: String) {
+                         screenName: String) {
         val builder = UriBuilder(AUTHORITY_USER_MENTIONS)
         if (accountKey != null) {
             builder.appendQueryParameter(QUERY_PARAM_ACCOUNT_KEY, accountKey.toString())
@@ -135,24 +136,24 @@ object IntentUtils {
     }
 
     fun openMedia(context: Context, status: ParcelableStatus,
-            current: ParcelableMedia? = null, newDocument: Boolean,
-            displaySensitiveContents: Boolean, options: Bundle? = null) {
+                  current: ParcelableMedia? = null, newDocument: Boolean,
+                  displaySensitiveContents: Boolean, options: Bundle? = null) {
         val media = ParcelableMediaUtils.getPrimaryMedia(status) ?: return
         openMedia(context, status.account_key, status.is_possibly_sensitive, status, current,
                 media, newDocument, displaySensitiveContents, options)
     }
 
     fun openMedia(context: Context, accountKey: UserKey?, media: Array<ParcelableMedia>,
-            current: ParcelableMedia? = null, isPossiblySensitive: Boolean,
-            newDocument: Boolean, displaySensitiveContents: Boolean, options: Bundle? = null) {
+                  current: ParcelableMedia? = null, isPossiblySensitive: Boolean,
+                  newDocument: Boolean, displaySensitiveContents: Boolean, options: Bundle? = null) {
         openMedia(context, accountKey, isPossiblySensitive, null, current, media, newDocument,
                 displaySensitiveContents, options)
     }
 
     fun openMedia(context: Context, accountKey: UserKey?, isPossiblySensitive: Boolean,
-            status: ParcelableStatus?, current: ParcelableMedia? = null, media: Array<ParcelableMedia>,
-            newDocument: Boolean, displaySensitiveContents: Boolean,
-            options: Bundle? = null) {
+                  status: ParcelableStatus?, current: ParcelableMedia? = null, media: Array<ParcelableMedia>,
+                  newDocument: Boolean, displaySensitiveContents: Boolean,
+                  options: Bundle? = null) {
         if (context is FragmentActivity && isPossiblySensitive && !displaySensitiveContents) {
             val fm = context.supportFragmentManager
             val fragment = SensitiveContentWarningDialogFragment()
@@ -173,7 +174,7 @@ object IntentUtils {
     }
 
     fun openMediaDirectly(context: Context, accountKey: UserKey?, status: ParcelableStatus,
-            current: ParcelableMedia, newDocument: Boolean, options: Bundle? = null) {
+                          current: ParcelableMedia, newDocument: Boolean, options: Bundle? = null) {
         val media = ParcelableMediaUtils.getPrimaryMedia(status) ?: return
         openMediaDirectly(context, accountKey, media, current, options, newDocument, status)
     }
@@ -207,8 +208,8 @@ object IntentUtils {
     }
 
     fun openMediaDirectly(context: Context, accountKey: UserKey?, media: Array<ParcelableMedia>,
-            current: ParcelableMedia? = null, options: Bundle? = null, newDocument: Boolean,
-            status: ParcelableStatus? = null, message: ParcelableMessage? = null) {
+                          current: ParcelableMedia? = null, options: Bundle? = null, newDocument: Boolean,
+                          status: ParcelableStatus? = null, message: ParcelableMessage? = null) {
         val intent = Intent(context, MediaViewerActivity::class.java)
         intent.putExtra(EXTRA_ACCOUNT_KEY, accountKey)
         intent.putExtra(EXTRA_CURRENT_MEDIA, current)
@@ -228,7 +229,7 @@ object IntentUtils {
     }
 
     fun getMediaViewerUri(type: String, id: String,
-            accountKey: UserKey?): Uri {
+                          accountKey: UserKey?): Uri {
         val builder = Uri.Builder()
         builder.scheme(SCHEME_TWIDERE)
         builder.authority("media")
@@ -268,7 +269,7 @@ object IntentUtils {
     }
 
     fun openIncomingFriendships(context: Context,
-            accountKey: UserKey?) {
+                                accountKey: UserKey?) {
         val builder = UriBuilder(AUTHORITY_INCOMING_FRIENDSHIPS)
         if (accountKey != null) {
             builder.appendQueryParameter(QUERY_PARAM_ACCOUNT_KEY, accountKey.toString())
@@ -285,7 +286,7 @@ object IntentUtils {
     }
 
     fun openMutesUsers(context: Context,
-            accountKey: UserKey?) {
+                       accountKey: UserKey?) {
         val builder = UriBuilder(AUTHORITY_MUTES_USERS)
         if (accountKey != null) {
             builder.appendQueryParameter(QUERY_PARAM_ACCOUNT_KEY, accountKey.toString())
@@ -389,7 +390,7 @@ object IntentUtils {
     }
 
     fun openUserFavorites(context: Context, accountKey: UserKey?, userKey: UserKey?,
-            screenName: String?) {
+                          screenName: String?) {
         val builder = UriBuilder(AUTHORITY_USER_FAVORITES)
         if (accountKey != null) {
             builder.appendQueryParameter(QUERY_PARAM_ACCOUNT_KEY, accountKey.toString())
@@ -405,14 +406,14 @@ object IntentUtils {
     }
 
     fun openUserFollowers(context: Context, accountKey: UserKey?, userKey: UserKey?,
-            screenName: String?) {
+                          screenName: String?) {
         val intent = LinkCreator.getTwidereUserRelatedLink(AUTHORITY_USER_FOLLOWERS,
                 accountKey, userKey, screenName)
         context.startActivity(Intent(Intent.ACTION_VIEW, intent))
     }
 
     fun openUserFriends(context: Context, accountKey: UserKey?, userKey: UserKey?,
-            screenName: String?) {
+                        screenName: String?) {
         val builder = UriBuilder(AUTHORITY_USER_FRIENDS)
         if (accountKey != null) {
             builder.appendQueryParameter(QUERY_PARAM_ACCOUNT_KEY, accountKey.toString())
@@ -427,18 +428,18 @@ object IntentUtils {
     }
 
     fun openUserListDetails(context: Context, accountKey: UserKey?, listId: String?,
-            userKey: UserKey?, screenName: String?, listName: String?) {
+                            userKey: UserKey?, screenName: String?, listName: String?) {
         context.startActivity(userListDetails(accountKey, listId, userKey, screenName, listName))
     }
 
     fun userListDetails(accountKey: UserKey?, listId: String?, userKey: UserKey?,
-            screenName: String?, listName: String?): Intent {
+                        screenName: String?, listName: String?): Intent {
         return getTwidereUserListRelatedLink(AUTHORITY_USER_LIST, accountKey, listId, userKey,
                 screenName, listName).intent()
     }
 
     fun userListTimeline(accountKey: UserKey?, listId: String?, userKey: UserKey?,
-            screenName: String?, listName: String?): Intent {
+                         screenName: String?, listName: String?): Intent {
         return getTwidereUserListRelatedLink(AUTHORITY_USER_LIST_TIMELINE, accountKey, listId,
                 userKey, screenName, listName).intent()
     }
@@ -574,8 +575,8 @@ object IntentUtils {
     }
 
     fun browse(context: Context, preferences: SharedPreferences,
-            theme: Chameleon.Theme? = Chameleon.getOverrideTheme(context, ChameleonUtils.getActivity(context)),
-            uri: Uri, forceBrowser: Boolean = true): Pair<Intent, Bundle?> {
+               theme: Chameleon.Theme? = Chameleon.getOverrideTheme(context, ChameleonUtils.getActivity(context)),
+               uri: Uri, forceBrowser: Boolean = true): Pair<Intent, Bundle?> {
         if (!preferences[chromeCustomTabKey]) {
             val viewIntent = Intent(Intent.ACTION_VIEW, uri)
             viewIntent.addCategory(Intent.CATEGORY_BROWSABLE)

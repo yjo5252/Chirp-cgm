@@ -265,6 +265,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         actionsButton.setOnLongClickListener(this)
         drawerToggleButton.setOnClickListener(this)
         emptyTabHint.setOnClickListener(this)
+        settingToggleButton.setOnClickListener(this)
 
         setupSlidingMenu()
         setupBars()
@@ -382,7 +383,32 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                     homeMenu.openDrawer(GravityCompat.START)
                 }
             }
+            settingToggleButton -> {
+                Log.d("drz", "onClick: [here]")
+                val intent = IntentUtils.settings()
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                val b = Bundle()
+                b.putBoolean("addListTab", true) // add extra param
+                intent.putExtras(b) //Put your id to your next Intent
+                startActivityForResult(intent, REQUEST_SETTINGS)
+            }
         }
+    }
+
+    //drustz: add activity return result
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            REQUEST_SETTINGS -> {
+                if (data == null) return
+                if (data.getBooleanExtra(EXTRA_SHOULD_RESTART, false)) {
+                    Utils.restartActivity(this)
+                } else if (data.getBooleanExtra(EXTRA_SHOULD_RECREATE, false)) {
+                    this?.recreate()
+                }
+                return
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onLongClick(v: View): Boolean {
