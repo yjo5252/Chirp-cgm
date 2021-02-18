@@ -49,7 +49,9 @@ class ParcelableUsersAdapter(
     override var simpleLayout: Boolean = false
     override var showFollow: Boolean = false
 
-    private var selectedData: MutableList<ParcelableUser> = ArrayList()
+    var selectedData: MutableList<ParcelableUser> = ArrayList()
+    var userListAddingMode = false
+
 
     fun getData(): List<ParcelableUser>? {
         return data
@@ -62,8 +64,12 @@ class ParcelableUsersAdapter(
     }
 
     private fun bindUser(holder: UserViewHolder, position: Int) {
-        holder.display(getUser(position)!!)
-        holder.setSelected()
+        val user = getUser(position)!!
+        holder.display(user)
+        if (userListAddingMode)
+            holder.hideButtons()
+        if (selectedData.contains(user))
+            holder.setSelected()
     }
 
     override fun getItemCount(): Int {

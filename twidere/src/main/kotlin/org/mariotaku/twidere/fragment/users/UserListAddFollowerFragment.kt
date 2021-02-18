@@ -3,17 +3,26 @@ package org.mariotaku.twidere.fragment.users
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import org.mariotaku.kpreferences.get
 import org.mariotaku.twidere.constant.IntentConstants
-import org.mariotaku.twidere.constant.newDocumentApiKey
 import org.mariotaku.twidere.fragment.ParcelableUsersFragment
 import org.mariotaku.twidere.loader.users.AbsRequestUsersLoader
 import org.mariotaku.twidere.loader.users.UserFriendsLoader
+import org.mariotaku.twidere.model.ParcelableUser
 import org.mariotaku.twidere.model.UserKey
-import org.mariotaku.twidere.util.IntentUtils
 import org.mariotaku.twidere.view.holder.UserViewHolder
 
 class UserListAddFollowerFragment : ParcelableUsersFragment() {
+
+    interface OnSelectUserHandler {
+        fun onUserSelected(users: ArrayList<ParcelableUser>)
+    }
+
+    var mSelectedListener: OnSelectUserHandler? = null
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        adapter.userListAddingMode = true
+    }
 
     override fun onCreateUsersLoader(context: Context, args: Bundle, fromUser: Boolean):
             AbsRequestUsersLoader {
@@ -24,15 +33,10 @@ class UserListAddFollowerFragment : ParcelableUsersFragment() {
                 fromUser)
     }
 
-    override fun onFollowClicked(holder: UserViewHolder, position: Int) {
-        val user = adapter.getUser(position) ?: return
-        val accountKey = user.account_key ?: return
-        Log.d("drz", "onFollowClicked: here")
-    }
-
     override fun onUserClick(holder: UserViewHolder, position: Int) {
         val user = adapter.getUser(position) ?: return
         adapter.setUserSelection(position, user)
+        mSelectedListener?.onUserSelected(ArrayList(adapter.selectedData))
     }
 
 }

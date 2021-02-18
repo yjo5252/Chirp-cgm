@@ -184,6 +184,12 @@ class UserViewHolder(
         itemView.setBackgroundColor(Color.TRANSPARENT)
     }
 
+    fun hideButtons() {
+        followButton.visibility = View.GONE
+        unblockButton.visibility = View.GONE
+        unmuteButton.visibility = View.GONE
+    }
+
     fun setSelected() {
         itemView.setBackgroundColor(Color.parseColor("#80d4ff"))
     }

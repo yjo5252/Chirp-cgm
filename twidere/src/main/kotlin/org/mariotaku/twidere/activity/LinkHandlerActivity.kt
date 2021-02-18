@@ -26,20 +26,17 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.BadParcelableException
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import android.text.TextUtils
+import android.view.*
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NavUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.appcompat.widget.Toolbar
-import android.text.TextUtils
-import android.view.KeyEvent
-import android.view.MenuItem
-import android.view.View
-import android.view.Window
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_link_handler.*
 import org.mariotaku.kpreferences.get
 import org.mariotaku.ktextension.set
@@ -73,6 +70,7 @@ import org.mariotaku.twidere.fragment.statuses.*
 import org.mariotaku.twidere.fragment.users.*
 import org.mariotaku.twidere.graphic.ActionBarColorDrawable
 import org.mariotaku.twidere.graphic.EmptyDrawable
+import org.mariotaku.twidere.model.ParcelableUser
 import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.analyzer.PurchaseFinished
 import org.mariotaku.twidere.util.*
@@ -80,8 +78,9 @@ import org.mariotaku.twidere.util.KeyboardShortcutsHandler.KeyboardShortcutCallb
 import org.mariotaku.twidere.util.linkhandler.TwidereLinkMatcher
 import org.mariotaku.twidere.util.theme.getCurrentThemeResource
 
+
 class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControlBarActivity,
-        SupportFragmentCallback {
+        SupportFragmentCallback, UserListAddFollowerFragment.OnSelectUserHandler {
 
     private lateinit var multiSelectHandler: MultiSelectEventHandler
     private lateinit var controlBarShowHideHelper: ControlBarShowHideHelper
@@ -89,6 +88,8 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
     private var actionBarHeight: Int = 0
     private var subtitle: CharSequence? = null
     private var hideOffsetNotSupported: Boolean = false
+
+    private lateinit var finishBtn: MenuItem
     private lateinit var fragmentLifecycleCallbacks: FragmentLifecycleCallbacks
 
     override val currentVisibleFragment: Fragment?
@@ -250,6 +251,14 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
                 }
                 return true
             }
+            R.id.selectConfirmBtn -> {
+                if (selectedData.size > 0) {
+                    val intent = Intent()
+                    intent.putParcelableArrayListExtra(EXTRA_USERS, selectedData)
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -292,7 +301,7 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
     }
 
     private fun isFragmentKeyboardShortcutHandled(handler: KeyboardShortcutsHandler,
-            keyCode: Int, event: KeyEvent, metaState: Int): Boolean {
+                                                  keyCode: Int, event: KeyEvent, metaState: Int): Boolean {
         val fragment = currentVisibleFragment
         if (fragment is KeyboardShortcutCallback) {
             return fragment.isKeyboardShortcutHandled(handler, keyCode, event, metaState)
@@ -514,7 +523,7 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
     }
 
     private fun handleFragmentKeyboardShortcutRepeat(handler: KeyboardShortcutsHandler, keyCode: Int,
-            repeatCount: Int, event: KeyEvent, metaState: Int): Boolean {
+                                                     repeatCount: Int, event: KeyEvent, metaState: Int): Boolean {
         val fragment = currentVisibleFragment
         if (fragment is KeyboardShortcutCallback) {
             return fragment.handleKeyboardShortcutRepeat(handler, keyCode,
@@ -524,11 +533,11 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
     }
 
     private fun handleFragmentKeyboardShortcutSingle(handler: KeyboardShortcutsHandler, keyCode: Int,
-            event: KeyEvent, metaState: Int): Boolean {
+                                                     event: KeyEvent, metaState: Int): Boolean {
         val fragment = currentVisibleFragment
         if (fragment is KeyboardShortcutCallback) {
             if (fragment.handleKeyboardShortcutSingle(handler, keyCode,
-                    event, metaState)) {
+                            event, metaState)) {
                 return true
             }
         }
@@ -706,6 +715,7 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
                 }
                 if (TextUtils.isEmpty(paramScreenName) && paramUserKey == null) return null
             }
+            //drustz: add following list activity
             LINK_ID_ADD_FOLLOWING_LIST -> {
                 fragment = UserListAddFollowerFragment()
                 val paramScreenName = uri.getQueryParameter(QUERY_PARAM_SCREEN_NAME)
@@ -716,6 +726,7 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
                 if (!args.containsKey(EXTRA_USER_KEY)) {
                     args.putParcelable(EXTRA_USER_KEY, paramUserKey)
                 }
+                (fragment as UserListAddFollowerFragment).mSelectedListener = this
             }
             LINK_ID_USER_BLOCKS -> {
                 fragment = UserBlocksListFragment()
@@ -731,7 +742,8 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
             LINK_ID_MESSAGES_CONVERSATION -> {
                 fragment = MessagesConversationFragment()
                 accountRequired = true
-                val conversationId = uri.getQueryParameter(QUERY_PARAM_CONVERSATION_ID) ?: return null
+                val conversationId = uri.getQueryParameter(QUERY_PARAM_CONVERSATION_ID)
+                        ?: return null
                 args.putString(EXTRA_CONVERSATION_ID, conversationId)
             }
             LINK_ID_MESSAGES_CONVERSATION_NEW -> {
@@ -740,7 +752,8 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
             }
             LINK_ID_MESSAGES_CONVERSATION_INFO -> {
                 fragment = MessageConversationInfoFragment()
-                val conversationId = uri.getQueryParameter(QUERY_PARAM_CONVERSATION_ID) ?: return null
+                val conversationId = uri.getQueryParameter(QUERY_PARAM_CONVERSATION_ID)
+                        ?: return null
                 args.putString(EXTRA_CONVERSATION_ID, conversationId)
                 accountRequired = true
             }
@@ -940,6 +953,26 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
         args.putParcelable(EXTRA_ACCOUNT_KEY, accountKey)
         fragment.arguments = args
         return fragment
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.multiselectmenu, menu)
+        if (menu != null) {
+            finishBtn = menu.findItem(R.id.selectConfirmBtn)
+            finishBtn.setVisible(false)
+        }
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    //drustz: add onselect handler
+    var selectedData: ArrayList<ParcelableUser> = ArrayList()
+    override fun onUserSelected(users: ArrayList<ParcelableUser>){
+        if (users.size > 0) {
+            selectedData = users
+            finishBtn.setVisible(true)
+        } else {
+            finishBtn.setVisible(false)
+        }
     }
 
     interface HideUiOnScroll

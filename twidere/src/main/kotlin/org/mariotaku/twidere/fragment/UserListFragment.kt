@@ -121,8 +121,16 @@ class UserListFragment : AbsToolbarTabPagesFragment(), OnClickListener,
                 twitter.addUserListMembersAsync(userList.account_key, userList.id, user)
                 return
             }
+            //drustz: add users from the following member list
             REQUEST_SELECT_USERS -> {
-
+                val userList = this.userList
+                if (resultCode != Activity.RESULT_OK || !data!!.hasExtra(EXTRA_USERS) || userList == null)
+                    return
+                val users = data.getParcelableArrayListExtra<ParcelableUser>(EXTRA_USERS)
+                for (user in users) {
+                    twitter.addUserListMembersAsync(userList.account_key, userList.id, user)
+                }
+                return
             }
             REQUEST_SELECT_ACCOUNT -> {
                 if (resultCode == Activity.RESULT_OK) {
