@@ -290,6 +290,10 @@ object UseStats {
             firebaseLoginstance.setUserId(uuid)
         }
 
+        val weekStats = getUseWeeklyTillNow(sharedPreferences)
+        val todayIdx = getTodayInWeekIdx()
+        val secs = (weekStats[todayIdx]/1000).toInt()
+
         Log.d("drz", "sendFirebaseEvents: send!")
         firebaseLoginstance.logEvent("UseStats") {
             param("OpenTimes", sharedPreferences[openTimesKey].toLong())
@@ -300,6 +304,7 @@ object UseStats {
             param("TweetCompose", sharedPreferences[composeTweetsStats].toLong())
             param("AccFollow", sharedPreferences[followAccountsStats].toLong())
             param("AccUnfollow", sharedPreferences[unfollowAccountsStats].toLong())
+            param("ConsumeTime", secs.toLong())
             param("StatPageView", sharedPreferences[timestatusPageVisitStats].toLong())
             param("StatsDialogueExit", sharedPreferences[shutDownDialogueStats].toLong())
             param("StatsDialogueIgnore", sharedPreferences[ignoreDialogueStats].toLong())
