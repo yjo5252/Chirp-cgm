@@ -22,6 +22,7 @@ package org.mariotaku.twidere.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.Loader
 import android.view.View
@@ -86,6 +87,12 @@ class UserListSelectorActivity : BaseActivity(),
 
         adapter = SimpleParcelableUserListsAdapter(this, requestManager)
         adapter.loadMoreSupportedPosition = ILoadMoreSupportAdapter.END
+
+        listView.addFooterView(layoutInflater.inflate(R.layout.simple_list_item_activated_1,
+                listView, false).apply {
+            findViewById<TextView>(android.R.id.text1).setText("Create a new list")
+        }, CreateListAction, true)
+
         listView.addFooterView(layoutInflater.inflate(R.layout.simple_list_item_activated_1,
                 listView, false).apply {
             findViewById<TextView>(android.R.id.text1).setText(R.string.action_select_user)
@@ -98,6 +105,7 @@ class UserListSelectorActivity : BaseActivity(),
             when (val item = view.getItemAtPosition(position)) {
                 is ParcelableUserList -> {
                     val data = Intent()
+                    data.putExtra("createNewList", false)
                     data.putExtra(EXTRA_USER_LIST, item)
                     data.putExtra(EXTRA_EXTRAS, intent.getBundleExtra(EXTRA_EXTRAS))
                     setResult(Activity.RESULT_OK, data)
@@ -105,6 +113,15 @@ class UserListSelectorActivity : BaseActivity(),
                 }
                 is SelectUserAction -> {
                     selectUser()
+                }
+
+                // drustz: add shortcut to add list button
+                is CreateListAction -> {
+                    val data = Intent()
+                    data.putExtra("createNewList", true)
+                    data.putExtra(EXTRA_EXTRAS, intent.getBundleExtra(EXTRA_EXTRAS))
+                    setResult(Activity.RESULT_OK, data)
+                    finish()
                 }
             }
         }
@@ -224,5 +241,6 @@ class UserListSelectorActivity : BaseActivity(),
     }
 
     object SelectUserAction
+    object CreateListAction
 
 }

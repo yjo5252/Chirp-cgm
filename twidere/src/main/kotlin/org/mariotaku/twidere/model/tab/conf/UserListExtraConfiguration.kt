@@ -65,13 +65,18 @@ class UserListExtraConfiguration(key: String) : TabConfiguration.ExtraConfigurat
         when (requestCode) {
             1 -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    val userList: ParcelableUserList = data!!.getParcelableExtra(EXTRA_USER_LIST)
-                    viewHolder.display(userList)
-                    viewHolder.itemView.visibility = View.VISIBLE
-                    hintView.visibility = View.GONE
+                    if (data!!.getBooleanExtra("createNewList", false)){
+                        // we go to create list interface
+                        listener?.onCreateListRequest()
+                    } else {
+                        val userList: ParcelableUserList = data!!.getParcelableExtra(EXTRA_USER_LIST)
+                        viewHolder.display(userList)
+                        viewHolder.itemView.visibility = View.VISIBLE
+                        hintView.visibility = View.GONE
 
-                    this.value = userList
-                    listener?.onUserListSelected(userList.name)
+                        this.value = userList
+                        listener?.onUserListSelected(userList.name)
+                    }
                 }
             }
         }
@@ -79,6 +84,7 @@ class UserListExtraConfiguration(key: String) : TabConfiguration.ExtraConfigurat
 
     interface listSelectListener {
         fun onUserListSelected(listname : String)
+        fun onCreateListRequest()
     }
 }
 

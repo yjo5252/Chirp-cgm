@@ -71,6 +71,7 @@ import org.mariotaku.twidere.model.tab.iface.AccountCallback
 import org.mariotaku.twidere.model.util.AccountUtils
 import org.mariotaku.twidere.provider.TwidereDataStore.Tabs
 import org.mariotaku.twidere.util.CustomTabUtils
+import org.mariotaku.twidere.util.IntentUtils
 import org.mariotaku.twidere.util.ThemeUtils
 import org.mariotaku.twidere.view.holder.TwoLineWithIconViewHolder
 import java.lang.ref.WeakReference
@@ -418,6 +419,14 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
         //drustz: sync the list name
         override fun onUserListSelected(listname: String) {
             mdialog?.tabName?.setText(listname)
+        }
+
+        override fun onCreateListRequest() {
+            mdialog?.dismiss()
+            if (context != null && account != null) {
+                IntentUtils.openUserLists(requireContext(), account!!.key,
+                        account!!.key, account!!.user.screen_name)
+            }
         }
 
         override fun getAccount(): AccountDetails? {
