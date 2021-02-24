@@ -1,4 +1,4 @@
-package org.mariotaku.twidere.util
+ package org.mariotaku.twidere.util
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -38,6 +38,8 @@ object UseStats {
 
     var neweststampdict = mutableMapOf<String, Long?>()
     var lastreaddict = mutableMapOf<String, Long?>()
+
+    var lastRequestTimeStamp: Long = 0.toLong()
 
     //drustz: those are for list reading hisotries.
     fun initTweetHistoryList(preference: SharedPreferences){
@@ -115,6 +117,7 @@ object UseStats {
     fun recordOpenTime(preference : SharedPreferences){
         var opentimes = preference[openTimesKey]
         val curtime = System.currentTimeMillis()
+        lastRequestTimeStamp = curtime
         val today = DateFormat.format("dd", Date(curtime) ) as String
         val lastOpenTime = Date(preference[openTimeStamp])
         val lastDay = DateFormat.format("dd", lastOpenTime) as String
@@ -149,9 +152,10 @@ object UseStats {
         val curtime = System.currentTimeMillis()
         val week_today = DateFormat.format("EEEE", Date(curtime)) as String
         val today = DateFormat.format("dd", Date(curtime)) as String
-        val lastOpenTime = Date(preference[openTimeStamp])
-        val week_lastday = DateFormat.format("EEEE", lastOpenTime) as String
-        val lastDay = DateFormat.format("dd", lastOpenTime) as String
+
+        val lastRequestTime = Date(lastRequestTimeStamp)
+        val week_lastday = DateFormat.format("EEEE", lastRequestTime) as String
+        val lastDay = DateFormat.format("dd", lastRequestTime) as String
         val c: Calendar = GregorianCalendar()
 
         if (today != lastDay) {
@@ -161,22 +165,28 @@ object UseStats {
         }
 
         val midnightmillis = c.timeInMillis
-        val curtimemillis = System.currentTimeMillis()
         var weeklyUsage = getUseTimeOfAWeek(preference)
+        Log.d("drz", "today usage before: " + weeklyUsage[weekdayToIdx[week_today]!!])
 
         if (today != lastDay){
-            weeklyUsage[weekdayToIdx[week_today]!!] = curtimemillis - midnightmillis
-            weeklyUsage[weekdayToIdx[week_lastday]!!] += midnightmillis - lastOpenTime.time
+            weeklyUsage[weekdayToIdx[week_today]!!] = curtime - midnightmillis
+            weeklyUsage[weekdayToIdx[week_lastday]!!] += midnightmillis - lastRequestTime.time
 
             preference.edit().apply {
-                this[openTimeStamp] = midnightmillis
+                this[openTimeStamp] = midnightmillis+1
                 this[openTimesKey] = 0
             }.apply()
         } else {
-            weeklyUsage[weekdayToIdx[week_today]!!] += curtimemillis - lastOpenTime.time
-            Log.d("drz", "same day, added " + (curtimemillis - lastOpenTime.time))
+            weeklyUsage[weekdayToIdx[week_today]!!] += curtime - lastRequestTimeStamp
+            Log.d("drz", "same day, added " + (curtime - lastRequestTimeStamp))
         }
 
+        preference.edit().apply {
+            this[weekUsage] = weeklyUsage.joinToString(",")
+        }.apply()
+
+        //we update the lastRequestTimeStamp everytime the request is called
+        lastRequestTimeStamp = curtime
         return weeklyUsage
     }
 

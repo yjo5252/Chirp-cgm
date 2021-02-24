@@ -26,6 +26,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff.Mode
 import android.os.Bundle
@@ -65,6 +66,7 @@ import org.mariotaku.twidere.model.AccountDetails
 import org.mariotaku.twidere.model.Tab
 import org.mariotaku.twidere.model.tab.DrawableHolder
 import org.mariotaku.twidere.model.tab.TabConfiguration
+import org.mariotaku.twidere.model.tab.conf.UserListExtraConfiguration
 import org.mariotaku.twidere.model.tab.iface.AccountCallback
 import org.mariotaku.twidere.model.util.AccountUtils
 import org.mariotaku.twidere.provider.TwidereDataStore.Tabs
@@ -239,7 +241,8 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
         mode.title = resources.getQuantityString(R.plurals.Nitems_selected, count, count)
     }
 
-    class TabEditorDialogFragment : BaseDialogFragment(), DialogInterface.OnShowListener, AccountCallback {
+    class TabEditorDialogFragment : BaseDialogFragment(), DialogInterface.OnShowListener,
+            AccountCallback, UserListExtraConfiguration.listSelectListener {
 
         private val activityResultMap: SparseArray<TabConfiguration.ExtraConfiguration> = SparseArray()
 
@@ -284,6 +287,10 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
 
             val iconsAdapter = TabIconsAdapter(currentContext)
             val accountsAdapter = AccountsSpinnerAdapter(currentContext, requestManager = requestManager)
+
+            //drustz : disallow to change the icon
+            iconSpinner.isEnabled = false
+            iconSpinner.isClickable = false
             iconSpinner.adapter = iconsAdapter
             accountSpinner.adapter = accountsAdapter
 
@@ -342,6 +349,11 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
                 extraConf.onViewCreated(currentContext, view, this)
                 conf.readExtraConfigurationFrom(tab, extraConf)
                 extraConfigContainer.addView(view)
+
+                //drustz: sync the list name
+                if (extraConf is UserListExtraConfiguration){
+                    extraConf.listener = this
+                }
             }
 
             accountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -403,9 +415,16 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
             }
         }
 
+        //drustz: sync the list name
+        override fun onUserListSelected(listname: String) {
+            mdialog?.tabName?.setText(listname)
+        }
+
         override fun getAccount(): AccountDetails? {
             return dialog?.findViewById<Spinner>(R.id.accountSpinner)?.selectedItem as? AccountDetails
         }
+
+        var mdialog: AlertDialog? = null
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val builder = AlertDialog.Builder(requireContext())
@@ -414,6 +433,7 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
             builder.setNegativeButton(android.R.string.cancel, null)
             val dialog = builder.create()
             dialog.setOnShowListener(this)
+            mdialog = dialog
             return dialog
         }
 

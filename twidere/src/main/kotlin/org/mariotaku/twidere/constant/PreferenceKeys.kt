@@ -103,7 +103,7 @@ val phishingLinksWaringKey = KBooleanKey(KEY_PHISHING_LINK_WARNING, true)
 val multiColumnWidthKey = KStringKey(KEY_MULTI_COLUMN_TAB_WIDTH, "normal")
 val quickSendKey = KBooleanKey(KEY_QUICK_SEND, false)
 val refreshAfterTweetKey = KBooleanKey(KEY_REFRESH_AFTER_TWEET, false)
-val refreshOnStartKey = KBooleanKey(KEY_REFRESH_ON_START, false)
+val refreshOnStartKey = KBooleanKey(KEY_REFRESH_ON_START, true)
 val homeRefreshMentionsKey = KBooleanKey(KEY_HOME_REFRESH_MENTIONS, true)
 val homeRefreshDirectMessagesKey = KBooleanKey(KEY_HOME_REFRESH_DIRECT_MESSAGES, true)
 val homeRefreshSavedSearchesKey = KBooleanKey(KEY_HOME_REFRESH_SAVED_SEARCHES, true)
@@ -208,10 +208,9 @@ object linkHighlightOptionKey : KSimpleKey<Int>(KEY_LINK_HIGHLIGHT_OPTION, VALUE
         })
         return true
     }
-
 }
 
-object refreshIntervalKey : KSimpleKey<Long>(KEY_REFRESH_INTERVAL, 15) {
+object refreshIntervalKey : KSimpleKey<Long>(KEY_REFRESH_INTERVAL, 1) {
     override fun read(preferences: SharedPreferences): Long {
         return preferences.getString(key, null).toLongOr(def)
     }

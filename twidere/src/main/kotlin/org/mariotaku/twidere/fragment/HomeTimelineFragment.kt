@@ -210,6 +210,15 @@ class HomeTimelineFragment : CursorStatusesFragment() {
             val firstitm = adapter.getStatus(adapter.statusStartIndex, false)
             val newestTs = preferences[newestTweetTimestampKey]
             var lastreadTs = preferences[lastReadTweetTimestampKey]
+            var newstatscnt = 0
+
+            val statscnt = adapter.getStatusCount() - adapter.statusStartIndex
+            for (i in adapter.statusStartIndex..statscnt){
+                if (adapter.getStatusTimestamp(i) <= newestTs)
+                    break
+                else newstatscnt += 1
+            }
+
             preferences.edit().apply {
                 //only reassign if they are not equal
                 if (firstLoad && lastreadTs != newestTs) {
@@ -218,6 +227,8 @@ class HomeTimelineFragment : CursorStatusesFragment() {
                 this[newestTweetTimestampKey] = firstitm.timestamp
             }.apply()
             adapter.lastReadTstamp = preferences[lastReadTweetTimestampKey]
+            //drustz: add to stats
+            UseStats.modifyStatsKeyCount(preferences, newTweetsStats, newstatscnt)
         } catch (e: IndexOutOfBoundsException) {
 
         }

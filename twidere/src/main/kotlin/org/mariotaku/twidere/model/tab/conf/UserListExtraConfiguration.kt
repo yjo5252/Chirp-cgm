@@ -28,6 +28,8 @@ class UserListExtraConfiguration(key: String) : TabConfiguration.ExtraConfigurat
     var value: ParcelableUserList? = null
         private set
 
+    var listener: listSelectListener? = null
+
     private lateinit var viewHolder: SimpleUserListViewHolder
     private lateinit var dependencyHolder: DependencyHolder
     private lateinit var hintView: View
@@ -69,9 +71,14 @@ class UserListExtraConfiguration(key: String) : TabConfiguration.ExtraConfigurat
                     hintView.visibility = View.GONE
 
                     this.value = userList
+                    listener?.onUserListSelected(userList.name)
                 }
             }
         }
+    }
+
+    interface listSelectListener {
+        fun onUserListSelected(listname : String)
     }
 }
 

@@ -299,7 +299,6 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
 
     override fun onStart() {
         super.onStart()
-        Log.d("drz", "onStart: here called")
         multiSelectHandler.dispatchOnStart()
         AccountManager.get(this).addOnAccountsUpdatedListenerSafe(accountUpdatedListener, updateImmediately = false)
         bus.register(this)
@@ -799,7 +798,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             IntentUtils.openSearch(this, accountKey, query)
             return -1
         }
-        val refreshOnStart = preferences.getBoolean(SharedPreferenceConstants.KEY_REFRESH_ON_START, false)
+        val refreshOnStart = preferences.getBoolean(SharedPreferenceConstants.KEY_REFRESH_ON_START, true)
         if (handleExtraIntent && refreshOnStart) {
             twitterWrapper.refreshAll()
         }
@@ -1087,8 +1086,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                                 true, accountKeys, FilterScope.HOME)
                         result.put(i, count)
                         publishProgress(TabBadge(i, count))
-                        //drustz: add to stats
-                        UseStats.modifyStatsKeyCount(preferences, newTweetsStats, count)
+
                     }
                     CustomTabType.NOTIFICATIONS_TIMELINE -> {
                         val accountKeys = Utils.getAccountKeys(context, spec.args) ?: activatedKeys
@@ -1169,7 +1167,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             builder.setTitle("Usage Status Today")
             builder.setMessage("You have used Twidere for " + UseStats.getTodayUsageStr(preferences) + " today. " +
                     "Do you want to continue?")
-            builder.setNegativeButton(android.R.string.ok) { _, _ ->
+            builder.setNegativeButton("Continue") { _, _ ->
                 UseStats.modifyStatsKeyCount(preferences, ignoreDialogueStats, 1)
             }
             builder.setPositiveButton("Exit") { dialog, _ ->
