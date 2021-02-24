@@ -49,7 +49,7 @@
     </org.mariotaku.twidere.preference.EntrySummaryListPreference>
 
     <SwitchPreferenceCompat
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="media_preview"
         android:order="25"
         android:title="@string/media_preview">

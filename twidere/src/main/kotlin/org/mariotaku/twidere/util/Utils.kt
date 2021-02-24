@@ -568,7 +568,7 @@ object Utils {
 
     fun isMediaPreviewEnabled(context: Context, preferences: SharedPreferences): Boolean {
         if (!preferences[mediaPreviewKey])
-            return false
+            return true
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return !ConnectivityManagerCompat.isActiveNetworkMetered(cm) || !preferences[bandwidthSavingModeKey]
     }

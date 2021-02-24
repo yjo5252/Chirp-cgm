@@ -799,6 +799,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             return -1
         }
         val refreshOnStart = preferences.getBoolean(SharedPreferenceConstants.KEY_REFRESH_ON_START, true)
+        Log.d("drz", "handleIntent: onstart????? "+refreshOnStart)
         if (handleExtraIntent && refreshOnStart) {
             twitterWrapper.refreshAll()
         }
@@ -887,6 +888,8 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
 
     private fun showAutoRefreshConfirm() {
         if (isFinishing) return
+        return
+        //drustz: skip autorefresh setting
         executeAfterFragmentResumed { activity ->
             val df = AutoRefreshConfirmDialogFragment()
             df.show(activity.supportFragmentManager, "auto_refresh_confirm")

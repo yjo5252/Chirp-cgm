@@ -35,6 +35,6 @@ class AutoRefreshAccountsListPreference(context: Context, attrs: AttributeSet? =
     }
 
     override fun getSwitchDefault(): Boolean {
-        return preferenceManager.sharedPreferences.getBoolean(KEY_DEFAULT_AUTO_REFRESH, false)
+        return preferenceManager.sharedPreferences.getBoolean(KEY_DEFAULT_AUTO_REFRESH, true)
     }
 }

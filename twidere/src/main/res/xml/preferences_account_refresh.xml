@@ -8,7 +8,7 @@
         android:key="cat_refresh_content"
         android:title="@string/content_to_refresh">
         <SwitchPreferenceCompat
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="auto_refresh_home_timeline"
             android:title="@string/refresh_type_home"/>
         <SwitchPreferenceCompat
