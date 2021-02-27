@@ -263,6 +263,9 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
 
         actionsButton.setOnClickListener(this)
         actionsButton.setOnLongClickListener(this)
+        //drustz: add usagestats button
+        usestatsButton.setOnClickListener(this)
+
         drawerToggleButton.setOnClickListener(this)
         emptyTabHint.setOnClickListener(this)
         settingToggleButton.setOnClickListener(this)
@@ -382,8 +385,14 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                     homeMenu.openDrawer(GravityCompat.START)
                 }
             }
+            //drustz: add usestatus button view toggle
+            usestatsButton -> {
+                val intent = IntentUtils.useStats()
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                startActivity(intent)
+            }
+            //drustz: toggle the list add button
             settingToggleButton -> {
-                Log.d("drz", "onClick: [here]")
                 val intent = IntentUtils.settings()
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                 val b = Bundle()
@@ -490,6 +499,12 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         (actionsButton.layoutParams as? MarginLayoutParams)?.bottomMargin =
                 actionsButtonBottomMargin + if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
                     insets.systemWindowInsetBottom
+                } else {
+                    0
+                }
+        (usestatsButton.layoutParams as? MarginLayoutParams)?.bottomMargin =
+                actionsButtonBottomMargin + if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
+                    insets.systemWindowInsetBottom  + 0
                 } else {
                     0
                 }
@@ -688,8 +703,10 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                 val lp = actionsButton.layoutParams
                 if (lp is MarginLayoutParams) {
                     actionsButton.translationY = (lp.bottomMargin + actionsButton.height) * (1 - offset)
+                    usestatsButton.translationY = (lp.bottomMargin + usestatsButton.height) * (1 - offset)
                 } else {
                     actionsButton.translationY = actionsButton.height * (1 - offset)
+                    usestatsButton.translationY = usestatsButton.height * (1 - offset)
                 }
                 notifyControlBarOffsetChanged()
             } else {
@@ -709,8 +726,10 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                 val lp = actionsButton.layoutParams
                 if (lp is MarginLayoutParams) {
                     actionsButton.translationY = (lp.bottomMargin + toolbar.height + actionsButton.height + toolbarMarginBottom) * (1 - offset)
+                    usestatsButton.translationY = (lp.bottomMargin + toolbar.height + actionsButton.height + toolbarMarginBottom) * (1 - offset)
                 } else {
                     actionsButton.translationY = actionsButton.height * (1 - offset)
+                    usestatsButton.translationY = actionsButton.height * (1 - offset)
                 }
                 notifyControlBarOffsetChanged()
             }
@@ -944,6 +963,9 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             actionsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
             }
+            usestatsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
+            }
         } else if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
             toolbar.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
@@ -951,12 +973,18 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             actionsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
             }
+            usestatsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.ABOVE, actionsButton.id)
+            }
         } else {
             toolbar.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
             }
             actionsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ABOVE, toolbar.id)
+            }
+            usestatsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.ABOVE, actionsButton.id)
             }
         }
     }

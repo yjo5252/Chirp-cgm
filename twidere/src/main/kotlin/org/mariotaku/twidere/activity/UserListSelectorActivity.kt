@@ -88,6 +88,7 @@ class UserListSelectorActivity : BaseActivity(),
         adapter = SimpleParcelableUserListsAdapter(this, requestManager)
         adapter.loadMoreSupportedPosition = ILoadMoreSupportAdapter.END
 
+        //drustz : add a create new list item
         listView.addFooterView(layoutInflater.inflate(R.layout.simple_list_item_activated_1,
                 listView, false).apply {
             findViewById<TextView>(android.R.id.text1).setText("Create a new list")

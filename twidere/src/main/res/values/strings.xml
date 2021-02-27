@@ -111,7 +111,7 @@
     <string name="action_search">Search</string>
     <string name="action_select_all">Select all</string>
     <string name="action_select_none">Select none</string>
-    <string name="action_select_user">Select user</string>
+    <string name="action_select_user">Select a list from other users</string>
     <!-- [verb] Send tweet/message -->
     <string name="action_send">Send</string>
     <string name="action_set_color">Set color</string>
