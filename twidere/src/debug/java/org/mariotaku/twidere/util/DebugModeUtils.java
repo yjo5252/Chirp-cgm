@@ -60,8 +60,8 @@ public class DebugModeUtils {
                         .runtimeRepl(new BshRuntimeReplFactoryBuilder(application).build())
                         .finish())
                 .build());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(true);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            WebView.setWebContentsDebuggingEnabled(true);
+//        }
     }
 }

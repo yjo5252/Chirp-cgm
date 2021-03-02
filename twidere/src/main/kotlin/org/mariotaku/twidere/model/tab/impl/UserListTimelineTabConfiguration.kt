@@ -57,9 +57,9 @@ class UserListTimelineTabConfiguration : TabConfiguration() {
     }
 
     override fun getExtraConfigurations(context: Context) = arrayOf(
-            UserListExtraConfiguration(EXTRA_USER_LIST).headerTitle(R.string.title_user_list),
-            BooleanExtraConfiguration(EXTRA_HIDE_RETWEETS, R.string.hide_retweets, false).mutable(true),
-            BooleanExtraConfiguration(EXTRA_HIDE_QUOTES, R.string.hide_quotes, false).mutable(true)
+            UserListExtraConfiguration(EXTRA_USER_LIST).headerTitle(R.string.title_user_list)
+//            BooleanExtraConfiguration(EXTRA_HIDE_RETWEETS, R.string.hide_retweets, false).mutable(true),
+//            BooleanExtraConfiguration(EXTRA_HIDE_QUOTES, R.string.hide_quotes, false).mutable(true)
 //            BooleanExtraConfiguration(EXTRA_HIDE_REPLIES, R.string.hide_replies, false).mutable(true)
     )
 

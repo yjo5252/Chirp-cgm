@@ -50,6 +50,7 @@ import org.mariotaku.ktextension.contains
 import org.mariotaku.ktextension.set
 import org.mariotaku.ktextension.spannable
 import org.mariotaku.library.objectcursor.ObjectCursor
+import org.mariotaku.microblog.library.twitter.model.ExtendedProfile
 import org.mariotaku.sqliteqb.library.Columns.Column
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.sqliteqb.library.RawItemArray
@@ -264,6 +265,11 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
                     tab.type = tabType
                     tab.icon = conf.icon.persistentKey
                     tab.position = currentArguments.getInt(EXTRA_TAB_POSITION)
+                    if (tabType == CustomTabType.LIST_TIMELINE){
+                        dialog.titleLabel.text = "Add a list tab to the home tab"
+                    } else {
+                        dialog.titleLabel.text = "Add a tab to the home tab"
+                    }
                 }
                 TAG_EDIT_TAB -> {
                     tab = currentArguments.getParcelable(EXTRA_OBJECT)!!
@@ -299,6 +305,7 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
 
             tabName.hint = conf.name.createString(currentContext)
             tabName.setText(tab.name)
+
             iconSpinner.setSelection(iconsAdapter.findPositionByKey(tab.icon))
 
             val editMode = tag == TAG_EDIT_TAB

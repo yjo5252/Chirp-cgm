@@ -15,7 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:padding="@dimen/element_spacing_normal"
+        android:padding="@dimen/element_spacing_large"
+        android:background="@drawable/bg_rounded_corner"
         android:text="@string/select_user_list"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorPrimary"/>

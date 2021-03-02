@@ -65,6 +65,7 @@ class UserListExtraConfiguration(key: String) : TabConfiguration.ExtraConfigurat
         when (requestCode) {
             1 -> {
                 if (resultCode == Activity.RESULT_OK) {
+                    //drustz: add create new list result handler
                     if (data!!.getBooleanExtra("createNewList", false)){
                         // we go to create list interface
                         listener?.onCreateListRequest()

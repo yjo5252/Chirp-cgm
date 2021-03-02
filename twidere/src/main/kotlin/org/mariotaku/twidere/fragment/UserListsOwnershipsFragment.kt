@@ -21,6 +21,7 @@ package org.mariotaku.twidere.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.loader.content.Loader
 import android.view.Menu
 import android.view.MenuInflater
@@ -65,6 +66,7 @@ class UserListsOwnershipsFragment : ParcelableUserListsFragment() {
         when (item.itemId) {
             R.id.new_user_list -> {
                 val f = CreateUserListDialogFragment()
+                f.setTargetFragment(this, 0)
                 val args = Bundle()
                 args.putParcelable(EXTRA_ACCOUNT_KEY, accountKey)
                 f.arguments = args
@@ -86,10 +88,13 @@ class UserListsOwnershipsFragment : ParcelableUserListsFragment() {
         }
     }
 
-
     override fun onStart() {
         super.onStart()
         bus.register(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onStop() {

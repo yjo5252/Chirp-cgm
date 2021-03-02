@@ -103,8 +103,9 @@ open class MainActivity : ChameleonActivity(), IBaseActivity<MainActivity> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.DEBUG) {
-            StrictModeUtils.detectAllVmPolicy()
-            StrictModeUtils.detectAllThreadPolicy()
+            //drustz: disable strict mode
+//            StrictModeUtils.detectAllVmPolicy()
+//            StrictModeUtils.detectAllThreadPolicy()
         }
         val themeColor = themePreferences[themeColorKey]
         val themeResource = getThemeResource(themePreferences, themePreferences[themeKey], themeColor)

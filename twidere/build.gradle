@@ -25,11 +25,11 @@ buildscript {
         classpath 'com.github.mariotaku:imgenie-plugin:0.2.6'
         classpath 'com.google.gms:google-services:4.3.5'
 
-        if (enableGoogleVariant) {
-            // START Non-FOSS component
-            classpath 'com.google.gms:google-services:4.3.3'
-            // END Non-FOSS component
-        }
+//        if (enableGoogleVariant) {
+//            // START Non-FOSS component
+//            classpath 'com.google.gms:google-services:4.3.3'
+//            // END Non-FOSS component
+//        }
     }
 }
 
@@ -216,7 +216,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
 
 /** Firebase & Google Services**/
-    implementation platform('com.google.firebase:firebase-bom:26.4.0')
+    implementation platform('com.google.firebase:firebase-bom:26.5.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
 /** Third-party dependencies **/
@@ -327,9 +327,11 @@ dependencies {
     // https://g.co/androidstudio/app-test-app-conflict
     androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.2'
 }
+//
+//if (enableGoogleVariant) {
+//// START Non-FOSS component
+//    apply plugin: 'com.google.gms.google-services'
+//// END Non-FOSS component
+//}
 
-if (enableGoogleVariant) {
-// START Non-FOSS component
-    apply plugin: 'com.google.gms.google-services'
-// END Non-FOSS component
-}
+apply plugin: 'com.google.gms.google-services'

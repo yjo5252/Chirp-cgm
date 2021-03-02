@@ -21,15 +21,18 @@ package org.mariotaku.twidere.activity
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.Log
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.Loader
 import android.view.View
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.TextView
+import androidx.loader.app.LoaderManager
 import androidx.loader.app.hasRunningLoadersSafe
+import androidx.loader.content.Loader
 import kotlinx.android.synthetic.main.layout_list_with_empty_view.*
+import kotlinx.android.synthetic.main.preference_widget_color_picker.view.*
 import org.mariotaku.ktextension.Bundle
 import org.mariotaku.ktextension.contains
 import org.mariotaku.ktextension.set
@@ -47,6 +50,7 @@ import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.pagination.Pagination
 import org.mariotaku.twidere.util.ContentScrollHandler
 import org.mariotaku.twidere.util.ListViewScrollHandler
+
 
 class UserListSelectorActivity : BaseActivity(),
         ContentScrollHandler.ContentListSupport<SimpleParcelableUserListsAdapter>,
@@ -89,14 +93,19 @@ class UserListSelectorActivity : BaseActivity(),
         adapter.loadMoreSupportedPosition = ILoadMoreSupportAdapter.END
 
         //drustz : add a create new list item
+        listView.divider = ColorDrawable(Color.LTGRAY)
+        listView.dividerHeight = 1
+
         listView.addFooterView(layoutInflater.inflate(R.layout.simple_list_item_activated_1,
                 listView, false).apply {
-            findViewById<TextView>(android.R.id.text1).setText("Create a new list")
+            findViewById<TextView>(android.R.id.text1).text = "Create a new list"
+            findViewById<TextView>(android.R.id.text1).setTextColor(Color.parseColor("#0000EE"))
         }, CreateListAction, true)
 
         listView.addFooterView(layoutInflater.inflate(R.layout.simple_list_item_activated_1,
                 listView, false).apply {
             findViewById<TextView>(android.R.id.text1).setText(R.string.action_select_user)
+            findViewById<TextView>(android.R.id.text1).setTextColor(Color.parseColor("#0000EE"))
         }, SelectUserAction, true)
         listView.adapter = adapter
         val handler = ListViewScrollHandler(this, listView)

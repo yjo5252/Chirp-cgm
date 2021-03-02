@@ -43,6 +43,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDex
 import com.bumptech.glide.Glide
+import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -134,7 +135,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
     internal lateinit var thumbor: ThumborWrapper
 
     val sqLiteDatabase: SQLiteDatabase by lazy {
-        StrictModeUtils.checkDiskIO()
+//        StrictModeUtils.checkDiskIO()
         sqLiteOpenHelper.writableDatabase
     }
 
@@ -162,7 +163,8 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
     override fun onCreate() {
         instance = this
         if (BuildConfig.DEBUG) {
-            StrictModeUtils.detectAllVmPolicy()
+//            StrictModeUtils.detectAllVmPolicy()
+            Log.d("drz", "this is a debug build")
         }
         super.onCreate()
         applyLanguageSettings()
@@ -198,6 +200,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         AccountManager.get(this).addOnAccountsUpdatedListenerSafe(OnAccountsUpdateListener {
             NotificationChannelsManager.updateAccountChannelsAndGroups(this)
         }, updateImmediately = true)
+        FirebaseApp.initializeApp(this)
         firebaseAnalytics = Firebase.analytics
         firebaseLoginstance = firebaseAnalytics
 

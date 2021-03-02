@@ -52,6 +52,9 @@ class CreateUserListDialogFragment : BaseDialogFragment() {
             val isPublic = editPublic.isChecked
             if (TextUtils.isEmpty(name)) return@positive
             twitterWrapper.createUserListAsync(accountKey, name, isPublic, description)
+            if (targetFragment is UserListsOwnershipsFragment){
+                (targetFragment as UserListsOwnershipsFragment).triggerRefresh()
+            }
         }
         val dialog = builder.create()
         dialog.applyOnShow {

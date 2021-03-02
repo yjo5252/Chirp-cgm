@@ -43,11 +43,11 @@
         android:layout_marginVertical="@dimen/element_spacing_large"
         android:ellipsize="end"
         android:gravity="center_vertical|center"
-        android:maxLines="1"
+        android:maxLines="2"
         android:minHeight="@dimen/icon_size_profile_image_dashboard_current"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:visibility="gone"
-        android:text="——  You're all caught up  ——"
+        android:text="——  You're all caught up  ——\n - Old tweets below -"
         android:textColor="@color/background_color_window_black"
         tools:textSize="@dimen/text_size_normal"
         tools:visibility="visible"/>

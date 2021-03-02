@@ -8,6 +8,20 @@
     android:orientation="vertical"
     android:padding="@dimen/element_spacing_large">
 
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/titleLabel"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical|center"
+        android:maxLines="1"
+        android:minHeight="@dimen/icon_size_profile_image_dashboard_current"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        tools:text="test"
+        android:textColor="@color/background_color_window_black"
+        tools:textSize="22dp"/>
+
     <LinearLayout
         android:id="@+id/nameIconContainer"
         android:layout_width="match_parent"
@@ -24,7 +38,7 @@
             tools:listitem="@layout/spinner_item_custom_tab_icon"/>
         <!-- setting to null hides the arrow -->
 
-        <com.rengwuxian.materialedittext.MaterialEditText
+        <org.mariotaku.twidere.view.FixedTextView
             android:id="@+id/tabName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
