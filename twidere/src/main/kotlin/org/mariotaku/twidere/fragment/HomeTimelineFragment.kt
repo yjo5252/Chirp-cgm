@@ -19,6 +19,7 @@
 
 package org.mariotaku.twidere.fragment
 
+import android.accounts.AccountManager
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
@@ -46,11 +47,13 @@ import org.mariotaku.twidere.model.RefreshTaskParam
 import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.tab.extra.HomeTabExtras
 import org.mariotaku.twidere.model.timeline.UserTimelineFilter
+import org.mariotaku.twidere.model.util.AccountUtils
 import org.mariotaku.twidere.provider.TwidereDataStore.Statuses
 import org.mariotaku.twidere.util.DataStoreUtils
 import org.mariotaku.twidere.util.ErrorInfoStore
 import org.mariotaku.twidere.util.UseStats
 import org.mariotaku.twidere.util.UseStats.firebaseLoginstance
+import org.mariotaku.twidere.util.popularTweets
 import org.mariotaku.twidere.view.FixedTextView
 import org.mariotaku.twidere.view.holder.TimelineFilterHeaderViewHolder
 import java.util.*
@@ -246,6 +249,13 @@ class HomeTimelineFragment : CursorStatusesFragment() {
             recordEnterTime()
         }
 
+        //drustz: get trends of the popular tweets
+        val details = AccountUtils.getAccountDetails(AccountManager.get(context), accountKeys[0],
+                true)?: return
+        context?.let {
+            popularTweets.getTrends(twitterWrapper, accountKeys[0], preferences[localTrendsWoeIdKey],
+                details, it)
+        }
     }
 
     override fun onPause() {

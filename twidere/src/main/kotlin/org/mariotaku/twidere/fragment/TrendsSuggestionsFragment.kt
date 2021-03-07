@@ -23,6 +23,7 @@ import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
+import android.util.Log
 import androidx.loader.app.LoaderManager.LoaderCallbacks
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
@@ -62,6 +63,7 @@ class TrendsSuggestionsFragment : AbsContentListViewFragment<TrendsAdapter>(), L
 
     private val woeId: Int get() {
         val id = tabExtras?.woeId ?: 0
+        //drustz: change the default local trends to us
         return if (id > 0) id else preferences[localTrendsWoeIdKey]
     }
 

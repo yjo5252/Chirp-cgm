@@ -24,6 +24,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.collection.ArraySet
 import org.mariotaku.library.objectcursor.ObjectCursor
 import org.mariotaku.microblog.library.MicroBlog
@@ -44,6 +45,7 @@ import org.mariotaku.twidere.task.BaseAbstractTask
 import org.mariotaku.twidere.util.DebugLog.w
 import org.mariotaku.twidere.util.content.ContentResolverUtils
 import org.mariotaku.twidere.util.content.ContentResolverUtils.bulkInsert
+import org.mariotaku.twidere.util.popularTweets
 import java.util.*
 
 /**
@@ -93,6 +95,9 @@ class GetTrendsTask(
                 this.trend_order = idx
             })
         }
+
+        popularTweets.setHashTags(allTrends)
+
         val creator = ObjectCursor.valuesCreatorFrom(ParcelableTrend::class.java)
         bulkInsert(cr, uri, allTrends.map(creator::create))
         ContentResolverUtils.bulkDelete(cr, CachedHashtags.CONTENT_URI, CachedHashtags.NAME, false,

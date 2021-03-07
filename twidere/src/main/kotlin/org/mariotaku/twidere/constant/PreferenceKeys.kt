@@ -99,7 +99,7 @@ val mediaPreloadOnWifiOnlyKey = KBooleanKey(KEY_PRELOAD_WIFI_ONLY, true)
 val autoRefreshCompatibilityModeKey = KBooleanKey(KEY_AUTO_REFRESH_COMPATIBILITY_MODE,
         true)
 val floatingDetailedContentsKey = KBooleanKey(KEY_FLOATING_DETAILED_CONTENTS, true)
-val localTrendsWoeIdKey = KIntKey(KEY_LOCAL_TRENDS_WOEID, 1)
+val localTrendsWoeIdKey = KIntKey(KEY_LOCAL_TRENDS_WOEID, 23424977)
 val phishingLinksWaringKey = KBooleanKey(KEY_PHISHING_LINK_WARNING, true)
 val multiColumnWidthKey = KStringKey(KEY_MULTI_COLUMN_TAB_WIDTH, "normal")
 val quickSendKey = KBooleanKey(KEY_QUICK_SEND, false)

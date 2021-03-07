@@ -20,6 +20,7 @@
 package org.mariotaku.twidere.loader.statuses
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.WorkerThread
 import org.mariotaku.microblog.library.MicroBlog
 import org.mariotaku.microblog.library.MicroBlogException
@@ -106,6 +107,7 @@ open class TweetSearchLoader(
         val microBlog = account.newMicroBlogInstance(context, MicroBlog::class.java)
         if (query == null) throw MicroBlogException("Empty query")
         val queryText = processQuery(account, query)
+        Log.d("drz", "getMicroBlogStatuses: query: $queryText")
         when (account.type) {
             AccountType.TWITTER -> {
                 if (account.extras?.official == true) {

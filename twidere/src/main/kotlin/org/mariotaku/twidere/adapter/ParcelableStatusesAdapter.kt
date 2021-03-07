@@ -53,6 +53,7 @@ import org.mariotaku.twidere.provider.TwidereDataStore.Statuses
 import org.mariotaku.twidere.util.StatusAdapterLinkClickHandler
 import org.mariotaku.twidere.util.TwidereLinkify
 import org.mariotaku.twidere.util.Utils
+import org.mariotaku.twidere.util.popularTweets
 import org.mariotaku.twidere.view.holder.EmptyViewHolder
 import org.mariotaku.twidere.view.holder.GapViewHolder
 import org.mariotaku.twidere.view.holder.LoadIndicatorViewHolder
@@ -189,8 +190,12 @@ abstract class ParcelableStatusesAdapter(
         return displayDataCount
     }
 
+    var promptTweets: MutableList<ParcelableStatus> = mutableListOf()
+    val promptinterval = 4
+
     override fun setData(data: List<ParcelableStatus>?): Boolean {
         var changed = true
+        promptTweets.clear()
         when (data) {
             null -> {
                 displayPositions = null
@@ -198,7 +203,16 @@ abstract class ParcelableStatusesAdapter(
             }
             is ObjectCursor -> {
                 displayPositions = null
-                displayDataCount = data.size
+
+                //drustz: test inject popular tweets
+                val popsize = popularTweets.mpopTweets.size
+                if (popsize > 0) {
+                    for (i in 0 until (data.size - 1) / promptinterval) {
+                        promptTweets.add(popularTweets.mpopTweets[i % popsize])
+                    }
+                }
+                Log.d("drz", "setData: here??? datasize: ${data.size}, prompt size: ${promptTweets.size}")
+                displayDataCount = data.size + promptTweets.size
             }
             else -> {
                 var filteredCount = 0
@@ -213,10 +227,12 @@ abstract class ParcelableStatusesAdapter(
                 }
                 displayDataCount = data.size - filteredCount
                 changed = this.data != data
+                Log.d("drz", "setData: here!!!")
+
             }
         }
         this.data = data
-        this.infoCache = if (data != null) arrayOfNulls(data.size) else null
+        this.infoCache = if (data != null) arrayOfNulls(data!!.size) else null
         gapLoadingIds.clear()
         updateItemCount()
         notifyDataSetChanged()
@@ -358,7 +374,8 @@ abstract class ParcelableStatusesAdapter(
                 val status = getStatusInternal(position, countIndex = countIndex, reuse = true)
                 (holder as IStatusViewHolder).display(status, displayInReplyTo = isShowInReplyTo,
                         displayPinned = countIndex == ITEM_INDEX_PINNED_STATUS)
-                if ( (status.timestamp <= lastReadTstamp && lastReadTID == "") ||
+                if ( !promptTweets.contains(status) &&
+                        (status.timestamp <= lastReadTstamp && lastReadTID == "") ||
                         (lastReadTID == status.id)){
                     lastReadTID = status.id
                     (holder as IStatusViewHolder).showLastReadLabel(preferences.getBoolean(
@@ -439,6 +456,7 @@ abstract class ParcelableStatusesAdapter(
         // lesser equals than read position
         if (positionKey <= 0) return RecyclerView.NO_POSITION
         val range = rangeOfSize(statusStartIndex, getStatusCount(raw))
+        Log.d("drz", "findPositionByPositionKey: range last: ${range.last}")
         if (range.isEmpty() || range.first < 0) return RecyclerView.NO_POSITION
         if (positionKey < getStatusPositionKey(range.last, raw)) {
             return range.last
@@ -479,7 +497,19 @@ abstract class ParcelableStatusesAdapter(
             defValue: T, raw: Boolean = false): T {
         val data = this.data
         if (data is ObjectCursor) {
-            val dataPosition = position - statusStartIndex
+            var dataPosition = position - statusStartIndex
+
+            //drustz: add offset by prompts
+            if (promptTweets.size > 0){
+                if (dataPosition % (promptinterval+1) == promptinterval &&
+                        (dataPosition/(promptinterval+1) < promptTweets.size)  ){
+                    //return the prompt tweets
+//                    Log.d("drz", "getFieldValue: get position $dataPosition interval $promptinterval, promptsize ${promptTweets.size}, idx ${dataPosition/promptinterval}")
+                    return readStatusValueAction(promptTweets[dataPosition/(promptinterval+1)])
+                }
+                dataPosition -= dataPosition / (promptinterval+1)
+            }
+
             if (dataPosition < 0 || dataPosition >= getStatusCount(true)) {
                 throw CursorIndexOutOfBoundsException("index: $position, valid range is $0..${getStatusCount(true)}")
             }
@@ -510,8 +540,19 @@ abstract class ParcelableStatusesAdapter(
                 return pinnedStatuses!![position - getItemStartPosition(ITEM_INDEX_PINNED_STATUS)]
             }
             ITEM_INDEX_STATUS -> {
+                var dataPosition = position - statusStartIndex
+
+                //drustz: add offset by prompts
+                if (promptTweets.size > 0){
+                    if (dataPosition % (promptinterval+1) == promptinterval &&
+                            (dataPosition/(promptinterval+1) < promptTweets.size)  ){
+                        //return the prompt tweets
+                        return promptTweets[dataPosition/(promptinterval+1)]
+                    }
+                    dataPosition -= dataPosition / (promptinterval+1)
+                }
+
                 val data = this.data!!
-                val dataPosition = position - statusStartIndex
                 val positions = displayPositions
                 val listPosition = if (positions != null && !raw) {
                     positions[dataPosition]
