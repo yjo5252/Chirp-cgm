@@ -254,7 +254,7 @@ class HomeTimelineFragment : CursorStatusesFragment() {
                 true)?: return
         context?.let {
             popularTweets.getTrends(twitterWrapper, accountKeys[0], preferences[localTrendsWoeIdKey],
-                details, it)
+                details, it, preferences)
         }
     }
 

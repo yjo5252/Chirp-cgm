@@ -65,6 +65,7 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
     override val profileTypeView: ImageView by lazy { itemView.profileType }
 
     private val lastReadLabel by lazy { itemView.lastReadLabel }
+    private val promptLabel by lazy { itemView.promptLabel }
     private val itemContent by lazy { itemView.itemContent }
     private val mediaPreview by lazy { itemView.mediaPreview }
     private val linkPreview by lazy { itemView.linkPreview }
@@ -148,10 +149,15 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
         linkPreview.displayData(TWIDERE_PREVIEW_LINK_URI, LinkPreviewData(title = TWIDERE_PREVIEW_NAME, imgRes = R.drawable.featured_graphics), adapter.requestManager)
     }
 
+    //drustz: visibility handler for extra uis
     override fun showLastReadLabel(showinternal: Boolean) {
         if (showinternal)
             lastReadLabel.visibility = View.VISIBLE
         lastReadLabel.tag = "readhistoryshow"
+    }
+
+    override fun showPromptLabel() {
+        promptLabel.visibility = View.VISIBLE
     }
 
     override fun display(status: ParcelableStatus, displayInReplyTo: Boolean,
@@ -466,6 +472,7 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
         quotedNameView.updateText(formatter)
 
         //drustz:hide the lastread view
+        promptLabel.visibility = View.GONE
         lastReadLabel.visibility = View.GONE
         lastReadLabel.tag = ""
     }
@@ -549,6 +556,7 @@ class StatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: View)
         quotedNameView.setSecondaryTextSize(textSize * 0.85f)
         timeView.textSize = textSize * 0.85f
         statusInfoLabel.textSize = textSize * 0.75f
+        promptLabel.textSize =  textSize
 
         mediaLabel.textSize = textSize * 0.95f
         quotedMediaLabel.textSize = textSize * 0.95f

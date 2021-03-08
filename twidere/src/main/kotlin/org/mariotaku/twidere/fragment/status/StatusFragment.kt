@@ -33,6 +33,7 @@ import android.nfc.NdefRecord
 import android.nfc.NfcAdapter.CreateNdefMessageCallback
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog

@@ -1,8 +1,5 @@
  package org.mariotaku.twidere.util
 
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -10,20 +7,11 @@ import android.util.Log
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
-import kotlinx.android.synthetic.main.activity_usagestats.*
 import org.mariotaku.kpreferences.KIntKey
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
-import org.mariotaku.twidere.Constants
-import org.mariotaku.twidere.R
 import org.mariotaku.twidere.TwidereConstants
-import org.mariotaku.twidere.app.TwidereApplication
 import org.mariotaku.twidere.constant.*
-import org.mariotaku.twidere.extension.applyTheme
-import org.mariotaku.twidere.extension.onShow
-import org.mariotaku.twidere.fragment.BaseDialogFragment
-import org.mariotaku.twidere.fragment.statuses.UserListTimelineFragment
-import org.mariotaku.twidere.model.timeline.UserTimelineFilter
 import java.util.*
 
 object UseStats {
@@ -62,7 +50,6 @@ object UseStats {
                     .toMap()
                     .toMutableMap()
         }
-//        Log.d("drz", "initTweetHistoryList: " + lastreaddict.toString())
     }
 
     fun getNewestTweetTimeStampOfList(preference: SharedPreferences, listID: String):Long {

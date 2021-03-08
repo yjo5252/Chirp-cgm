@@ -176,6 +176,10 @@ public interface SharedPreferenceConstants {
     String KEY_NEWEST_STAMP_LIST = "newest_tweetstamp_list";
     @ExportablePreference(STRING)
     String KEY_LASTREAD_STAMP_LIST = "lastread_tweetstamp_list";
+    @ExportablePreference(STRING)
+    String KEY_POPULAR_TWEETS_CACHE = "popular_tweets_cache";
+    @ExportablePreference(LONG)
+    String KEY_POPULAR_TWEETS_TIMESTAMP = "popular_tweets_timestamp";
     @ExportablePreference(BOOLEAN)
     String KEY_REMEMBER_POSITION = "remember_position";
     @ExportablePreference(BOOLEAN)

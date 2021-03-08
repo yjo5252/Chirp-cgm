@@ -106,6 +106,8 @@ class MediaStatusViewHolder(private val adapter: IStatusesAdapter<*>, itemView: 
     override fun showLastReadLabel(showinternal: Boolean) {
     }
 
+    override fun showPromptLabel(){}
+
     override fun setTextSize(textSize: Float) {
 
     }

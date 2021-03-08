@@ -214,7 +214,8 @@ abstract class CursorStatusesFragment : AbsStatusesFragment() {
         val _id = adapter.getRowId(position)
         val where = Expression.equals(Statuses._ID, _id).sql
         return context?.contentResolver?.queryOne(contentUri, Statuses.COLUMNS, where, null, null,
-                ParcelableStatus::class.java)
+                ParcelableStatus::class.java) ?:
+                super.getFullStatus(position) //drustz: we add this for popular tweets that's not in db
     }
 
     protected fun getFiltersWhere(table: String): Expression? {

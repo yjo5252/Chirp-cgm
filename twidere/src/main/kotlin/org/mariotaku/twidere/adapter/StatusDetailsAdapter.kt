@@ -21,6 +21,7 @@ package org.mariotaku.twidere.adapter
 
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View

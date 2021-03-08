@@ -52,6 +52,22 @@
         tools:textSize="@dimen/text_size_normal"
         tools:visibility="visible"/>
 
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/promptLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lastReadLabel"
+        android:layout_alignParentRight="true"
+        android:ellipsize="end"
+        android:gravity="center_vertical|end"
+        android:maxLines="1"
+        android:minHeight="@dimen/element_size_small"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="gone"
+        android:text="Popular tweet from trend"
+        tools:textSize="@dimen/text_size_extra_small"
+        tools:visibility="visible"/>
+
     <org.mariotaku.twidere.view.IconActionView
         android:id="@+id/statusInfoIcon"
         style="?profileImageStyle"
@@ -73,7 +89,7 @@
         android:id="@+id/statusInfoLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/lastReadLabel"
+        android:layout_below="@id/promptLabel"
         android:layout_marginLeft="@dimen/element_spacing_normal"
         android:layout_marginStart="@dimen/element_spacing_normal"
         android:layout_toEndOf="@+id/statusInfoIcon"

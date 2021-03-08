@@ -41,6 +41,8 @@ interface IStatusViewHolder : CardMediaContainer.OnMediaClickListener {
     //drustz: add show last read label
     fun showLastReadLabel(showinternal: Boolean)
 
+    fun showPromptLabel()
+
     val profileImageView: ImageView?
 
     val profileTypeView: ImageView?
