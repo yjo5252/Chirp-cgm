@@ -52,7 +52,7 @@ class EditUserListDialogFragment : BaseDialogFragment() {
             if (savedInstanceState == null) {
                 dialog.editName.setText(arguments?.getString(EXTRA_LIST_NAME))
                 dialog.editDescription.setText(arguments?.getString(EXTRA_DESCRIPTION))
-                dialog.isPublic.isChecked = arguments?.getBoolean(EXTRA_IS_PUBLIC, true) ?: true
+                dialog.isPublic.isChecked = arguments?.getBoolean(EXTRA_IS_PUBLIC, false) ?: false
             }
         }
         return dialog

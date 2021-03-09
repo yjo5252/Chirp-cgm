@@ -61,7 +61,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/editName"
-        android:checked="true"
+        android:checked="false"
         android:maxLines="1"
         android:text="@string/user_list_details_is_public"/>
 

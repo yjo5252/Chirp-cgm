@@ -213,7 +213,7 @@ object linkHighlightOptionKey : KSimpleKey<Int>(KEY_LINK_HIGHLIGHT_OPTION, VALUE
     }
 }
 
-object refreshIntervalKey : KSimpleKey<Long>(KEY_REFRESH_INTERVAL, 1) {
+object refreshIntervalKey : KSimpleKey<Long>(KEY_REFRESH_INTERVAL, 5) {
     override fun read(preferences: SharedPreferences): Long {
         return preferences.getString(key, null).toLongOr(def)
     }

@@ -83,7 +83,7 @@ public interface SharedPreferenceConstants {
     String DEFAULT_QUOTE_FORMAT = "RT @" + FORMAT_PATTERN_NAME + ": " + FORMAT_PATTERN_TEXT;
     String DEFAULT_SHARE_FORMAT = FORMAT_PATTERN_TITLE + " - " + FORMAT_PATTERN_TEXT;
 
-    String DEFAULT_REFRESH_INTERVAL = "1";
+    String DEFAULT_REFRESH_INTERVAL = "5";
     boolean DEFAULT_AUTO_REFRESH = true;
     boolean DEFAULT_AUTO_REFRESH_HOME_TIMELINE = true;
     boolean DEFAULT_AUTO_REFRESH_MENTIONS = true;

@@ -1215,7 +1215,7 @@
     <string name="title_favorite_confirm">Favorite this tweet?</string>
     <!-- [noun] Twitter's favorite, in the plural -->
     <string name="title_favorites">Favorites</string>
-    <string name="title_filters">Mutes</string>
+    <string name="title_filters">Filters</string>
     <string name="title_filters_subscription_invalid">Invalid subscription</string>
     <string name="title_filters_subscription_url">URL</string>
     <string name="title_followers">Followers</string>

@@ -23,14 +23,6 @@
         android:paddingBottom="@dimen/element_spacing_normal"
         android:paddingTop="@dimen/element_spacing_normal">
 
-        <CheckBox
-            android:id="@+id/filterEverywhereToggle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/filter_everywhere"
-            android:textAppearance="?android:textAppearanceMedium"/>
-
         <org.mariotaku.twidere.view.IconActionButton
             android:id="@+id/filterEverywhereHelp"
             android:layout_width="@dimen/button_size_content_card_action"

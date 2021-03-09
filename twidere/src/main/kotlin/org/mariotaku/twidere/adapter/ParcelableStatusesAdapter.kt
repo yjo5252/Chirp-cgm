@@ -129,7 +129,9 @@ abstract class ParcelableStatusesAdapter(
             if (lastReadTstamp == 0.toLong()) return
             val statscnt = getStatusCount() - statusStartIndex
             for (i in statusStartIndex..statscnt){
-                if (getStatusTimestamp(i) <= lastReadTstamp) {
+                val status = getStatusInternal(i, reuse=false)
+                if (!promptTweets.contains(status)
+                        && status.timestamp <= lastReadTstamp) {
                     lastReadTID = getStatusId(i)
                     break
                 }
@@ -210,11 +212,8 @@ abstract class ParcelableStatusesAdapter(
                     val popsize = popularTweets.mpopTweets.size
 
                     if (popsize > 0) {
-                        //we randomize the pop order
-                        var randmapping = (0 until popsize).toList()
-                        randmapping = randmapping.shuffled()
                         for (i in 0 until (data.size - 1) / promptinterval) {
-                            promptTweets.add(popularTweets.mpopTweets[randmapping[i%popsize]])
+                            promptTweets.add(popularTweets.mpopTweets[i%popsize])
                         }
                     }
                     displayDataCount = data.size + promptTweets.size
@@ -379,14 +378,14 @@ abstract class ParcelableStatusesAdapter(
                 val status = getStatusInternal(position, countIndex = countIndex, reuse = true)
                 (holder as IStatusViewHolder).display(status, displayInReplyTo = isShowInReplyTo,
                         displayPinned = countIndex == ITEM_INDEX_PINNED_STATUS)
-                if ( (!promptTweets.contains(status)) &&
-                        (status.timestamp <= lastReadTstamp && lastReadTID == "") ||
-                        (lastReadTID == status.id)){
+
+                if (promptTweets.contains(status)) {
+                    (holder as IStatusViewHolder).showPromptLabel()
+                } else if (lastReadTID == status.id) {
+//                    Log.d("drz", "onBindViewHolder: ${promptTweets.contains(status)}, status text: ${status.text_unescaped}")
                     lastReadTID = status.id
                     (holder as IStatusViewHolder).showLastReadLabel(preferences.getBoolean(
                             TwidereConstants.KEY_INTERNAL_FEATURE, true))
-                } else if (promptTweets.contains(status)) {
-                    (holder as IStatusViewHolder).showPromptLabel()
                 }
             }
             VIEW_TYPE_FILTER_HEADER -> {
@@ -511,7 +510,6 @@ abstract class ParcelableStatusesAdapter(
                 if (dataPosition % (promptinterval+1) == promptinterval &&
                         (dataPosition/(promptinterval+1) < promptTweets.size)  ){
                     //return the prompt tweets
-//                    Log.d("drz", "getFieldValue: get position $dataPosition interval $promptinterval, promptsize ${promptTweets.size}, idx ${dataPosition/promptinterval}")
                     return readStatusValueAction(promptTweets[dataPosition/(promptinterval+1)])
                 }
                 dataPosition -= dataPosition / (promptinterval+1)
@@ -552,7 +550,6 @@ abstract class ParcelableStatusesAdapter(
                 if (promptTweets.size > 0) {
                     if (dataPosition % (promptinterval + 1) == promptinterval &&
                             (dataPosition / (promptinterval + 1) < promptTweets.size)) {
-//                        Log.d("drz", "getStatusInternal: return here: ${promptTweets[dataPosition / (promptinterval + 1)]}")
                         //return the prompt tweets
                         return promptTweets[dataPosition / (promptinterval + 1)]
                     }

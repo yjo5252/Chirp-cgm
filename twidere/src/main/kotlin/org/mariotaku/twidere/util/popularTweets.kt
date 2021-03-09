@@ -67,6 +67,7 @@ object popularTweets {
                 }
             }
         }
+        mpopTweets.shuffle()
         saveCacheToLocal()
     }
 

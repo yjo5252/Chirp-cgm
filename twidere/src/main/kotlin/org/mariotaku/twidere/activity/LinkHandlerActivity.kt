@@ -515,6 +515,10 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
             LINK_ID_FILTERS_SUBSCRIPTIONS -> {
                 title = getString(R.string.title_manage_filter_subscriptions)
             }
+            //drustz: add filter description
+            LINK_ID_FILTERS -> {
+                title = "Mute Contents In Twidere"
+            }
             else -> {
                 title = getString(R.string.app_name)
             }
