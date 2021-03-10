@@ -241,7 +241,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         }
 
         //show ESM prompts
-        if ( (secs > 3*60 && sharedPreferences[lastshowESMDialogTimeStamp].equals(0))
+        if ( (secs > 3*60 && sharedPreferences[lastshowESMDialogTimeStamp] == 0L)
                 || (secs -
                 sharedPreferences[lastshowESMDialogTimeStamp] > 10*60) /*10min*/)
         sharedPreferences.edit().apply{
