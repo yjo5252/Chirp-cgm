@@ -146,8 +146,12 @@ public interface SharedPreferenceConstants {
     String KEY_CONDITION_CHANGE_STAMP = "exp_condition_change_time_stamp";
     @ExportablePreference(LONG)
     String KEY_LAST_USAGE_DIALOG_STAMP = "last_show_time_usage_time_stamp";
+    @ExportablePreference(LONG)
+    String KEY_LAST_ESM_DIALOG_STAMP = "last_show_esm_time_stamp";
     @ExportablePreference(BOOLEAN)
     String KEY_SHOULD_SHOW_TIME_USAGE = "should_show_time_usage";
+    @ExportablePreference(BOOLEAN)
+    String KEY_SHOULD_SHOW_ESM = "should_show_esm";
     @ExportablePreference(INT)
     String KEY_OPEN_TIMES = "open_times";
     @ExportablePreference(STRING)

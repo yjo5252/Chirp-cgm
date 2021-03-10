@@ -20,6 +20,7 @@
 package org.mariotaku.twidere.activity
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.app.PendingIntent
 import android.content.*
 import android.content.res.Resources
@@ -28,11 +29,15 @@ import android.nfc.NfcAdapter
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.annotation.StyleRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.TwilightManagerAccessor
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.TwidereActionMenuView
@@ -45,30 +50,29 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.analytics.ktx.logEvent
 import com.squareup.otto.Bus
 import nl.komponents.kovenant.Promise
 import org.mariotaku.chameleon.Chameleon
 import org.mariotaku.chameleon.ChameleonActivity
 import org.mariotaku.kpreferences.KPreferences
 import org.mariotaku.kpreferences.get
+import org.mariotaku.kpreferences.set
 import org.mariotaku.ktextension.activityLabel
 import org.mariotaku.ktextension.getSystemWindowInsets
 import org.mariotaku.ktextension.unregisterReceiverSafe
 import org.mariotaku.restfu.http.RestHttpClient
 import org.mariotaku.twidere.BuildConfig
 import org.mariotaku.twidere.R
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.TwidereConstants.SHARED_PREFERENCES_NAME
 import org.mariotaku.twidere.activity.iface.IBaseActivity
 import org.mariotaku.twidere.activity.iface.IControlBarActivity
 import org.mariotaku.twidere.activity.iface.IThemedActivity
 import org.mariotaku.twidere.annotation.NavbarStyle
 import org.mariotaku.twidere.constant.*
-import org.mariotaku.twidere.extension.defaultSharedPreferences
-import org.mariotaku.twidere.extension.firstLanguage
-import org.mariotaku.twidere.extension.overriding
+import org.mariotaku.twidere.extension.*
+import org.mariotaku.twidere.fragment.BaseDialogFragment
 import org.mariotaku.twidere.fragment.iface.IBaseFragment.SystemWindowInsetsCallback
 import org.mariotaku.twidere.model.DefaultFeatures
 import org.mariotaku.twidere.preference.iface.IDialogPreference
@@ -88,6 +92,7 @@ import org.mariotaku.twidere.util.theme.getCurrentThemeResource
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 import javax.inject.Inject
+
 
 @SuppressLint("Registered")
 open class BaseActivity : ChameleonActivity(), IBaseActivity<BaseActivity>, IThemedActivity,
@@ -321,6 +326,15 @@ open class BaseActivity : ChameleonActivity(), IBaseActivity<BaseActivity>, IThe
         registerReceiver(nightTimeChangedReceiver, filter)
 
         updateNightMode()
+
+        //drustz: add time diff for show dialogue on use status
+        if (preferences[shouldShowESMDialog]){
+            showESMStatsDialog()
+            preferences.edit().apply {
+                this[shouldShowESMDialog] = false
+                this[lastshowESMDialogTimeStamp] = System.currentTimeMillis()
+            }.apply()
+        }
     }
 
     override fun onPause() {
@@ -338,6 +352,11 @@ open class BaseActivity : ChameleonActivity(), IBaseActivity<BaseActivity>, IThe
         }
         actionHelper.dispatchOnPause()
         super.onPause()
+    }
+
+    private fun showESMStatsDialog() {
+        val df = ESMDialog()
+        df.show(supportFragmentManager, "ESM_dialog")
     }
 
     override fun notifyControlBarOffsetChanged() {
@@ -498,6 +517,35 @@ open class BaseActivity : ChameleonActivity(), IBaseActivity<BaseActivity>, IThe
             return
         }
         isNightBackup = nightState
+    }
+
+    //drustz: add ESM prompt for the study
+    class ESMDialog : BaseDialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val inflater = layoutInflater
+            val dialoglayout: View = inflater.inflate(R.layout.dialog_esm, null)
+            val builder = AlertDialog.Builder(requireContext())
+            val radiogroup = dialoglayout.findViewById<RadioGroup>(R.id.radio_group)
+            builder.setView(dialoglayout)
+            builder.setTitle("Study Feedback")
+            builder.setPositiveButton("Submit") { _, _ ->
+                Log.d("drz", "onCreateDialog: ${radiogroup.checkedRadioButtonId}")
+                val selectedid = radiogroup.checkedRadioButtonId
+                if (selectedid >= 0){
+                    val score = dialoglayout.
+                    findViewById<RadioButton>(selectedid).text.toString().toLong()
+                    UseStats.firebaseLoginstance.logEvent("ESM") {
+                        param("Score", score)
+                        param("Condition", preferences[expcondition].toLong())
+                        preferences.getString(TwidereConstants.KEY_PID,
+                                "")?.let { param("userID", it) }
+                    }
+                }
+            }
+            val dialog = builder.create()
+            dialog.onShow { it.applyTheme() }
+            return dialog
+        }
     }
 
     companion object {

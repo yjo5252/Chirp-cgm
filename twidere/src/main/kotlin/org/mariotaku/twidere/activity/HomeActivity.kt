@@ -316,7 +316,6 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         updateActionsButton()
 
         //drustz: add time diff for show dialogue on use status
-//        Log.d("drz", "onResume: show activity?" + preferences[shouldShowUsageDialog] )
         if (preferences[shouldShowUsageDialog]){
             showUsageStatsDialog()
             preferences.edit().apply {

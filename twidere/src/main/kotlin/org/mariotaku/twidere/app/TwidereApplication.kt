@@ -217,17 +217,26 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         UseStats.recordOpenTime(sharedPreferences)
 //      drustz: add time diff for show dialogue on use status
         //also need to switch on the external preference
+        val weekStats = UseStats.getUseWeeklyTillNow(sharedPreferences)
+        val todayIdx = UseStats.getTodayInWeekIdx()
+        val secs = (weekStats[todayIdx]/1000).toInt()
+
         if (sharedPreferences.getBoolean(KEY_EXTERNAL_FEATURE, true)
                 && System.currentTimeMillis() -
                 sharedPreferences[lastshowUsageDialogTimeStamp] > 15*60*1000 /*15min*/){
-            val weekStats = UseStats.getUseWeeklyTillNow(sharedPreferences)
-            val todayIdx = UseStats.getTodayInWeekIdx()
-            val secs = (weekStats[todayIdx]/1000).toInt()
             if (secs < 5*60) return //not show if not over 5min
             sharedPreferences.edit().apply{
                 this[shouldShowUsageDialog] = true
             }.apply()
         }
+
+        //show ESM prompts
+        if (secs > 3*60 && System.currentTimeMillis() -
+                sharedPreferences[lastshowESMDialogTimeStamp] > 20*60*1000 /*20min*/)
+        sharedPreferences.edit().apply{
+            this[shouldShowESMDialog] = true
+        }.apply()
+
         UseStats.sendFirebaseEvents(sharedPreferences)
     }
 
