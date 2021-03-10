@@ -629,6 +629,17 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.TutorialClass"
+            android:label="TutorialActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="org.mariotaku.twidere.tutorial"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="twidere.tutorial"/>
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".service.LegacyTaskService"
             android:enabled="true"

@@ -329,10 +329,14 @@ open class BaseActivity : ChameleonActivity(), IBaseActivity<BaseActivity>, IThe
 
         //drustz: add time diff for show dialogue on use status
         if (preferences[shouldShowESMDialog]){
+            val weekStats = UseStats.getUseWeeklyTillNow(preferences)
+            val todayIdx = UseStats.getTodayInWeekIdx()
+            val secs = (weekStats[todayIdx]/1000)
+
             showESMStatsDialog()
             preferences.edit().apply {
                 this[shouldShowESMDialog] = false
-                this[lastshowESMDialogTimeStamp] = System.currentTimeMillis()
+                this[lastshowESMDialogTimeStamp] = secs
             }.apply()
         }
     }

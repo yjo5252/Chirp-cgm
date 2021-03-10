@@ -221,9 +221,19 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         val todayIdx = UseStats.getTodayInWeekIdx()
         val secs = (weekStats[todayIdx]/1000).toInt()
 
+        //update the last time in case it was yesterday's
+        if (sharedPreferences[lastshowESMDialogTimeStamp] > secs){
+            sharedPreferences.edit().apply{
+                this[lastshowESMDialogTimeStamp] = 0
+            }.apply()
+        }
+
+        Log.d("drz", "onMoveToForeground: interval:: ${secs -
+                sharedPreferences[lastshowUsageDialogTimeStamp]}")
+
         if (sharedPreferences.getBoolean(KEY_EXTERNAL_FEATURE, true)
-                && System.currentTimeMillis() -
-                sharedPreferences[lastshowUsageDialogTimeStamp] > 15*60*1000 /*15min*/){
+                && secs -
+                sharedPreferences[lastshowUsageDialogTimeStamp] > 15*60*1000 /*10min*/){
             if (secs < 5*60) return //not show if not over 5min
             sharedPreferences.edit().apply{
                 this[shouldShowUsageDialog] = true
@@ -231,8 +241,9 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         }
 
         //show ESM prompts
-        if (secs > 3*60 && System.currentTimeMillis() -
-                sharedPreferences[lastshowESMDialogTimeStamp] > 20*60*1000 /*20min*/)
+        if ( (secs > 3*60 && sharedPreferences[lastshowESMDialogTimeStamp].equals(0))
+                || (secs -
+                sharedPreferences[lastshowESMDialogTimeStamp] > 10*60) /*10min*/)
         sharedPreferences.edit().apply{
             this[shouldShowESMDialog] = true
         }.apply()

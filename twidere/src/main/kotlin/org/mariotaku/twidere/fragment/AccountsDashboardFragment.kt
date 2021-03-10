@@ -87,6 +87,7 @@ import org.mariotaku.twidere.model.UserKey
 import org.mariotaku.twidere.model.util.AccountUtils
 import org.mariotaku.twidere.provider.TwidereDataStore.Drafts
 import org.mariotaku.twidere.util.*
+import org.mariotaku.twidere.util.IntentUtils.tutorial
 import org.mariotaku.twidere.util.KeyboardShortcutsHandler.KeyboardShortcutCallback
 import org.mariotaku.twidere.view.holder.AccountProfileImageViewHolder
 import org.mariotaku.twidere.view.transformer.AccountsSelectorTransformer
@@ -650,6 +651,13 @@ class AccountsDashboardFragment : BaseFragment(), LoaderCallbacks<AccountsInfo>,
                 val intent = IntentUtils.settings()
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                 startActivityForResult(intent, REQUEST_SETTINGS)
+                closeAccountsDrawer()
+            }
+            //drustz: show tutorial
+            R.id.tutorial -> {
+                val intent = IntentUtils.tutorial()
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                startActivity(intent)
                 closeAccountsDrawer()
             }
         }

@@ -77,6 +77,7 @@ public interface TwidereConstants extends SharedPreferenceConstants, IntentConst
     String SCHEME_TWIDERE = "twidere";
     String SCHEME_TWIDERE_SETTINGS = "twidere.settings";
     String SCHEME_TWIDERE_USESTATS = "twidere.usestats";
+    String SCHEME_TWIDERE_TUTORIAL = "twidere.tutorial";
     String SCHEME_DATA = "data";
 
     String PROTOCOL_HTTP = SCHEME_HTTP + "://";

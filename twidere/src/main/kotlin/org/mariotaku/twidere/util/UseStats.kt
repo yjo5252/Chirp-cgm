@@ -153,7 +153,7 @@ object UseStats {
 
         val midnightmillis = c.timeInMillis
         var weeklyUsage = getUseTimeOfAWeek(preference)
-        Log.d("drz", "today usage before: " + weeklyUsage[weekdayToIdx[week_today]!!])
+//        Log.d("drz", "today usage before: " + weeklyUsage[weekdayToIdx[week_today]!!])
 
         if (today != lastDay){
             weeklyUsage[weekdayToIdx[week_today]!!] = curtime - midnightmillis
@@ -165,7 +165,7 @@ object UseStats {
             }.apply()
         } else {
             weeklyUsage[weekdayToIdx[week_today]!!] += curtime - lastRequestTimeStamp
-            Log.d("drz", "same day, added " + (curtime - lastRequestTimeStamp))
+//            Log.d("drz", "same day, added " + (curtime - lastRequestTimeStamp))
         }
 
         preference.edit().apply {
@@ -245,6 +245,8 @@ object UseStats {
                 this[timestatusPageVisitStats] = 0
                 this[shutDownDialogueStats] = 0
                 this[ignoreDialogueStats] = 0
+//                this[lastshowUsageDialogTimeStamp] = 0
+                this[lastshowESMDialogTimeStamp] = 0
 
                 this[prefKey] = numdiff.coerceAtLeast(0)
                 this[lastModificationTimeStamp] = System.currentTimeMillis()

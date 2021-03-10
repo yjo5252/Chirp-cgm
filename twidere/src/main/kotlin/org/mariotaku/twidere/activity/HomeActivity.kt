@@ -318,11 +318,11 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         //drustz: add time diff for show dialogue on use status
         if (preferences[shouldShowUsageDialog]){
             showUsageStatsDialog()
+
             preferences.edit().apply {
                 this[shouldShowUsageDialog] = false
                 this[lastshowUsageDialogTimeStamp] = System.currentTimeMillis()
             }.apply()
-
         }
     }
 
@@ -354,7 +354,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         drawerToggle.onConfigurationChanged(newConfig)
     }
 
-    override fun onAttachFragment(fragment: Fragment) {
+    override fun onAttachFragment(fragment: Fragment) {2000
         super.onAttachFragment(fragment)
         updateActionsButton()
     }

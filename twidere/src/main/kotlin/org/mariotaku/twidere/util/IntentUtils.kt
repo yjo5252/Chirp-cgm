@@ -552,6 +552,13 @@ object IntentUtils {
         return builder.intent(Intent.ACTION_MAIN)
     }
 
+    fun tutorial(initialTag: String? = null): Intent {
+        val builder = Uri.Builder()
+        builder.scheme(SCHEME_TWIDERE_TUTORIAL)
+        builder.authority(initialTag.orEmpty())
+        return builder.intent(Intent.ACTION_MAIN)
+    }
+
     fun settings(initialTag: String? = null): Intent {
         val builder = Uri.Builder()
         builder.scheme(SCHEME_TWIDERE_SETTINGS)

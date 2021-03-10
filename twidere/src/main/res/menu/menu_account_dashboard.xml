@@ -70,5 +70,9 @@
             android:id="@id/settings"
             android:icon="@drawable/ic_action_settings"
             android:title="@string/action_settings"/>
+        <item
+            android:id="@id/tutorial"
+            android:icon="@drawable/ic_action_content_warning"
+            android:title="Tutorial"/>
     </group>
 </menu>

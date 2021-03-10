@@ -462,7 +462,7 @@ abstract class ParcelableStatusesAdapter(
         // lesser equals than read position
         if (positionKey <= 0) return RecyclerView.NO_POSITION
         val range = rangeOfSize(statusStartIndex, getStatusCount(raw))
-        Log.d("drz", "findPositionByPositionKey: range last: ${range.last}")
+//        Log.d("drz", "findPositionByPositionKey: range last: ${range.last}")
         if (range.isEmpty() || range.first < 0) return RecyclerView.NO_POSITION
         if (positionKey < getStatusPositionKey(range.last, raw)) {
             return range.last
