@@ -198,7 +198,7 @@
 
     <string name="app_description">Your own Twitter app</string>
     <!-- App name, normally you don't need to translate this. -->
-    <string name="app_name">Twidere</string>
+    <string name="app_name">Chirp</string>
     <string name="app_restart_confirm">Twidere will restart to apply settings.</string>
     <string name="app_terminate_confirm">Twidere will quit to apply settings.</string>
 

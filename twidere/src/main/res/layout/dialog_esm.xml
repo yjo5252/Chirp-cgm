@@ -10,10 +10,10 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:gravity="center_vertical|left"
-        android:maxLines="2"
+        android:maxLines="3"
         android:layout_margin="@dimen/element_spacing_large"
         android:minHeight="25dp"
-        android:text="How much sense of control do you feel using the current version of this app?"
+        android:text="How much do you feel in control of your use of Chirp right now? (1 - not at all, 5 - totally in control)"
         android:textColor="@color/background_color_window_black"/>
 
     <RadioGroup

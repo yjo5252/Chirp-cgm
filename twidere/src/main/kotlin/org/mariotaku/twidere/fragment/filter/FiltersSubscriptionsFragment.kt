@@ -79,22 +79,22 @@ class FiltersSubscriptionsFragment : BaseFragment(), LoaderManager.LoaderCallbac
             fragmentManager?.let { fragmentManager ->
                 when (arguments?.getString(EXTRA_ACTION)) {
                     ACTION_ADD_URL_SUBSCRIPTION -> {
-                        if (!extraFeaturesService.isAdvancedFiltersEnabled) {
-                            val df = ExtraFeaturesIntroductionDialogFragment.create(
-                                    ExtraFeaturesService.FEATURE_ADVANCED_FILTERS)
-                            df.setTargetFragment(this, REQUEST_ADD_URL_SUBSCRIPTION_PURCHASE)
-                            df.show(fragmentManager, ExtraFeaturesIntroductionDialogFragment.FRAGMENT_TAG)
-                        } else {
+//                        if (!extraFeaturesService.isAdvancedFiltersEnabled) {
+//                            val df = ExtraFeaturesIntroductionDialogFragment.create(
+//                                    ExtraFeaturesService.FEATURE_ADVANCED_FILTERS)
+//                            df.setTargetFragment(this, REQUEST_ADD_URL_SUBSCRIPTION_PURCHASE)
+//                            df.show(fragmentManager, ExtraFeaturesIntroductionDialogFragment.FRAGMENT_TAG)
+//                        } else {
                             showAddUrlSubscription()
-                        }
+//                        }
                     }
                     else -> {
-                        if (!extraFeaturesService.isAdvancedFiltersEnabled) {
-                            val df = ExtraFeaturesIntroductionDialogFragment.create(
-                                    ExtraFeaturesService.FEATURE_ADVANCED_FILTERS)
-                            df.setTargetFragment(this, REQUEST_PURCHASE_EXTRA_FEATURES)
-                            df.show(fragmentManager, ExtraFeaturesIntroductionDialogFragment.FRAGMENT_TAG)
-                        }
+//                        if (!extraFeaturesService.isAdvancedFiltersEnabled) {
+//                            val df = ExtraFeaturesIntroductionDialogFragment.create(
+//                                    ExtraFeaturesService.FEATURE_ADVANCED_FILTERS)
+//                            df.setTargetFragment(this, REQUEST_PURCHASE_EXTRA_FEATURES)
+//                            df.show(fragmentManager, ExtraFeaturesIntroductionDialogFragment.FRAGMENT_TAG)
+//                        }
                     }
                 }
             }

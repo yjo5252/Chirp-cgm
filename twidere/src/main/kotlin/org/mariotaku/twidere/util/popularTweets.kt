@@ -77,8 +77,10 @@ object popularTweets {
         val gson = Gson()
         val type = object : TypeToken<List<ParcelableStatus?>?>() {}.type
         val cachestring = preference?.get(popularTweetsCache)
-        if (cachestring != null) {
+        if (cachestring != null && cachestring.isNotEmpty()) {
             mpopTweets = gson.fromJson(cachestring, type)
+        } else {
+            return false
         }
         //drustz: cache valid for 12hrs
         if (timediff > 60*60*1000*12) {

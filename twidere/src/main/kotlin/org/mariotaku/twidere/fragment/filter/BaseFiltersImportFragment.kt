@@ -106,14 +106,14 @@ abstract class BaseFiltersImportFragment : AbsContentListRecyclerViewFragment<Se
                     Toast.makeText(context, R.string.message_toast_no_user_selected, Toast.LENGTH_SHORT).show()
                     return true
                 }
-                if (!extraFeaturesService.isAdvancedFiltersEnabled) {
-                    fragmentManager?.let {
-                        ExtraFeaturesIntroductionDialogFragment.show(it,
-                                feature = ExtraFeaturesService.FEATURE_ADVANCED_FILTERS,
-                                requestCode = REQUEST_PURCHASE_EXTRA_FEATURES)
-                    }
-                    return true
-                }
+//                if (!extraFeaturesService.isAdvancedFiltersEnabled) {
+//                    fragmentManager?.let {
+//                        ExtraFeaturesIntroductionDialogFragment.show(it,
+//                                feature = ExtraFeaturesService.FEATURE_ADVANCED_FILTERS,
+//                                requestCode = REQUEST_PURCHASE_EXTRA_FEATURES)
+//                    }
+//                    return true
+//                }
                 val df = ImportConfirmDialogFragment()
                 df.arguments = Bundle {
                     this[EXTRA_COUNT] = adapter.checkedCount
@@ -188,12 +188,12 @@ abstract class BaseFiltersImportFragment : AbsContentListRecyclerViewFragment<Se
     override fun onCreateAdapter(context: Context, requestManager: RequestManager): SelectableUsersAdapter {
         val adapter = SelectableUsersAdapter(context, this.requestManager)
         adapter.itemCheckedListener = listener@ { _, _ ->
-            if (!extraFeaturesService.isAdvancedFiltersEnabled) {
-                ExtraFeaturesIntroductionDialogFragment.show(requireFragmentManager(),
-                        feature = ExtraFeaturesService.FEATURE_ADVANCED_FILTERS,
-                        requestCode = REQUEST_PURCHASE_EXTRA_FEATURES)
-                return@listener false
-            }
+//            if (!extraFeaturesService.isAdvancedFiltersEnabled) {
+//                ExtraFeaturesIntroductionDialogFragment.show(requireFragmentManager(),
+//                        feature = ExtraFeaturesService.FEATURE_ADVANCED_FILTERS,
+//                        requestCode = REQUEST_PURCHASE_EXTRA_FEATURES)
+//                return@listener false
+//            }
             val count = adapter.checkedCount
             val actionBar = (activity as BaseActivity).supportActionBar
             actionBar?.subtitle = if (count > 0) {

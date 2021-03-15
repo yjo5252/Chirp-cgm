@@ -145,13 +145,15 @@ class AddEditItemFragment : BaseDialogFragment() {
             advancedContainer.children.filterIsInstance<CheckBox>().forEach {
                 val checkBox = it as CheckBox
                 checkBox.setOnClickListener onClick@ {
-                    if (extraFeaturesService.isAdvancedFiltersEnabled) return@onClick
+                    //drutsz: we disable purchase dialogue
+//                    if (extraFeaturesService.isAdvancedFiltersEnabled)
+                        return@onClick
                     // Revert check state
-                    checkBox.isChecked = !checkBox.isChecked
-                    val df = ExtraFeaturesIntroductionDialogFragment.create(
-                            ExtraFeaturesService.FEATURE_ADVANCED_FILTERS)
-                    df.setTargetFragment(this@AddEditItemFragment, REQUEST_CHANGE_SCOPE_PURCHASE)
-                    df.show(requireFragmentManager(), ExtraFeaturesIntroductionDialogFragment.FRAGMENT_TAG)
+//                    checkBox.isChecked = !checkBox.isChecked
+//                    val df = ExtraFeaturesIntroductionDialogFragment.create(
+//                            ExtraFeaturesService.FEATURE_ADVANCED_FILTERS)
+//                    df.setTargetFragment(this@AddEditItemFragment, REQUEST_CHANGE_SCOPE_PURCHASE)
+//                    df.show(requireFragmentManager(), ExtraFeaturesIntroductionDialogFragment.FRAGMENT_TAG)
                 }
             }
 

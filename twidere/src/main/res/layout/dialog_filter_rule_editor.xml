@@ -45,6 +45,7 @@
             android:background="?selectableItemBackground"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:padding="@dimen/element_spacing_normal">
 
             <TextView

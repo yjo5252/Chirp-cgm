@@ -1489,10 +1489,10 @@ class ComposeActivity : BaseActivity(), OnMenuItemClickListener, OnClickListener
             val df = RetweetProtectedStatusWarnFragment()
             df.show(supportFragmentManager,
                     "retweet_protected_status_warning_message")
-        } else if (scheduleInfo != null && !extraFeaturesService.isEnabled(ExtraFeaturesService.FEATURE_SCHEDULE_STATUS)) {
-            ExtraFeaturesIntroductionDialogFragment.show(supportFragmentManager,
-                    feature = ExtraFeaturesService.FEATURE_SCHEDULE_STATUS,
-                    requestCode = REQUEST_PURCHASE_EXTRA_FEATURES)
+//        } else if (scheduleInfo != null && !extraFeaturesService.isEnabled(ExtraFeaturesService.FEATURE_SCHEDULE_STATUS)) {
+//            ExtraFeaturesIntroductionDialogFragment.show(supportFragmentManager,
+//                    feature = ExtraFeaturesService.FEATURE_SCHEDULE_STATUS,
+//                    requestCode = REQUEST_PURCHASE_EXTRA_FEATURES)
         } else {
             updateStatus()
         }
