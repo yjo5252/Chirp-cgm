@@ -30,6 +30,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff.Mode
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.loader.app.LoaderManager.LoaderCallbacks
 import androidx.loader.content.CursorLoader
@@ -266,9 +267,9 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
                     tab.icon = conf.icon.persistentKey
                     tab.position = currentArguments.getInt(EXTRA_TAB_POSITION)
                     if (tabType == CustomTabType.LIST_TIMELINE){
-                        dialog.titleLabel.text = "Add a list tab to the home tab"
+                        dialog.titleLabel.text = "Add a list tab to the bottom bar"
                     } else {
-                        dialog.titleLabel.text = "Add a tab to the home tab"
+                        dialog.titleLabel.text = "Add a tab to the bottom bar"
                     }
                 }
                 TAG_EDIT_TAB -> {
@@ -327,9 +328,12 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
                     return@filter conf.checkAccountAvailability(it)
                 })
                 accountsAdapter.setDummyItemText(R.string.activated_accounts)
-
                 tab.arguments?.accountKeys?.firstOrNull()?.let { key ->
                     accountSpinner.setSelection(accountsAdapter.findPositionByKey(key))
+                }
+                //drustz: we hide the account selector when there's only one account
+                if (accountsAdapter.getItemCount() <= 1){
+                    accountContainer.visibility = View.GONE
                 }
             } else {
                 accountContainer.visibility = View.GONE

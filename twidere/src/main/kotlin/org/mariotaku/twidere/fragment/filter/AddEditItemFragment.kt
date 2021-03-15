@@ -121,6 +121,7 @@ class AddEditItemFragment : BaseDialogFragment() {
             builder.setTitle(R.string.action_edit_filter_rule)
         } else {
             builder.setTitle(R.string.action_add_filter_rule)
+            builder.setMessage("Enter the keyword that you do not want to see in Chirp")
         }
         builder.setPositiveButton(android.R.string.ok, null)
         builder.setNegativeButton(android.R.string.cancel, null)
