@@ -26,21 +26,19 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff.Mode
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.loader.app.LoaderManager.LoaderCallbacks
-import androidx.loader.content.CursorLoader
-import androidx.loader.content.Loader
-import androidx.appcompat.app.AlertDialog
 import android.util.SparseArray
 import android.view.*
 import android.widget.*
 import android.widget.AbsListView.MultiChoiceModeListener
 import android.widget.AdapterView.OnItemClickListener
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.loader.app.LoaderManager.LoaderCallbacks
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
 import com.mobeta.android.dslv.SimpleDragSortCursorAdapter
 import kotlinx.android.synthetic.main.dialog_custom_tab_editor.*
 import kotlinx.android.synthetic.main.layout_draggable_list_with_empty_view.*
@@ -51,7 +49,6 @@ import org.mariotaku.ktextension.contains
 import org.mariotaku.ktextension.set
 import org.mariotaku.ktextension.spannable
 import org.mariotaku.library.objectcursor.ObjectCursor
-import org.mariotaku.microblog.library.twitter.model.ExtendedProfile
 import org.mariotaku.sqliteqb.library.Columns.Column
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.sqliteqb.library.RawItemArray
@@ -202,7 +199,7 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
     }
 
     override fun onItemCheckedStateChanged(mode: ActionMode, position: Int, id: Long,
-            checked: Boolean) {
+                                           checked: Boolean) {
         updateTitle(mode)
     }
 
@@ -266,7 +263,7 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
                     tab.type = tabType
                     tab.icon = conf.icon.persistentKey
                     tab.position = currentArguments.getInt(EXTRA_TAB_POSITION)
-                    if (tabType == CustomTabType.LIST_TIMELINE){
+                    if (tabType == CustomTabType.LIST_TIMELINE) {
                         dialog.titleLabel.text = "Add a list tab to the bottom bar"
                     } else {
                         dialog.titleLabel.text = "Add a tab to the bottom bar"
@@ -333,7 +330,11 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
                 }
                 //drustz: we hide the account selector when there's only one account
                 if (accountsAdapter.getItemCount() <= 1){
-                    accountContainer.visibility = View.GONE
+                    accountContainer.visibility = View.INVISIBLE
+                    val params = accountContainer.layoutParams
+                    params.height = 1
+                    params.width = 1
+                    accountContainer.layoutParams = params
                 }
             } else {
                 accountContainer.visibility = View.GONE
