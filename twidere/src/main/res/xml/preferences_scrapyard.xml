@@ -39,11 +39,5 @@
             android:value="true"/>
     </SwitchPreferenceCompat>
 
-    <org.mariotaku.twidere.preference.EntrySummaryListPreference
-        android:defaultValue="@string/default_tab_display_option"
-        android:entries="@array/entries_tab_display_option"
-        android:entryValues="@array/values_tab_display_option"
-        android:key="tab_display_option"
-        android:title="@string/tab_display_option"/>
 
 </PreferenceScreen>

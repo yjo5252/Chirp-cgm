@@ -265,6 +265,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         actionsButton.setOnLongClickListener(this)
         //drustz: add usagestats button
         usestatsButton.setOnClickListener(this)
+        searchButton.setOnClickListener(this)
 
         drawerToggleButton.setOnClickListener(this)
         emptyTabHint.setOnClickListener(this)
@@ -292,6 +293,15 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         if (!showDrawerTutorial() && !kPreferences[defaultAutoRefreshAskedKey]) {
             showAutoRefreshConfirm()
         }
+
+        if (preferences[firstLaunch]) {
+            val intent = IntentUtils.tutorial()
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+            preferences.edit().apply {
+                this[firstLaunch] = false
+            }.apply()
+        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -314,6 +324,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         super.onResume()
         invalidateOptionsMenu()
         updateActionsButton()
+
 
         //drustz: add time diff for show dialogue on use status
         if (preferences[shouldShowUsageDialog]){
@@ -365,7 +376,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         if (mainPager.currentItem == 0){
             super.onBackPressed()
         } else {
-            mainPager.currentItem = 0;
+            mainPager.currentItem = 0
         }
     }
 
@@ -390,6 +401,11 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                 startActivity(intent)
             }
+            //drustz: search button
+            searchButton -> {
+                openSearchView(selectedAccountToSearch)
+            }
+
             //drustz: toggle the list add button
             settingToggleButton -> {
                 val intent = IntentUtils.settings()
@@ -495,18 +511,23 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             homeContent.setPadding(0, insets.systemWindowInsetTop, 0, 0)
         }
         (toolbar.layoutParams as? MarginLayoutParams)?.bottomMargin = insets.systemWindowInsetBottom
-        (actionsButton.layoutParams as? MarginLayoutParams)?.bottomMargin =
-                actionsButtonBottomMargin + if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
-                    insets.systemWindowInsetBottom
-                } else {
-                    0
-                }
-        (usestatsButton.layoutParams as? MarginLayoutParams)?.bottomMargin =
+        val buttons = listOf(usestatsButton, searchButton, actionsButton)
+        for (btn in buttons){
+            (btn.layoutParams as? MarginLayoutParams)?.bottomMargin =
                 actionsButtonBottomMargin + if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
                     insets.systemWindowInsetBottom  + 0
                 } else {
                     0
                 }
+        }
+
+//        (actionsButton.layoutParams as? MarginLayoutParams)?.bottomMargin =
+//                actionsButtonBottomMargin + if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
+//                    insets.systemWindowInsetBottom
+//                } else {
+//                    0
+//                }
+
         return insets
     }
 
@@ -691,6 +712,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             } / totalHeight
         }
         set(offset) {
+            var buttons = listOf(actionsButton, usestatsButton, searchButton)
             if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
                 val translationY = if (mainTabs.columns > 1 || !toolbar.isVisible) {
                     0
@@ -701,11 +723,15 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                 windowOverlay.translationY = translationY.toFloat()
                 val lp = actionsButton.layoutParams
                 if (lp is MarginLayoutParams) {
-                    actionsButton.translationY = (lp.bottomMargin + actionsButton.height) * (1 - offset)
-                    usestatsButton.translationY = (lp.bottomMargin + usestatsButton.height) * (1 - offset)
+                    for (btn in buttons){
+                        btn.translationY = (lp.bottomMargin + btn.height) * (1 - offset)
+                    }
+//                    actionsButton.translationY = (lp.bottomMargin + actionsButton.height) * (1 - offset)
                 } else {
-                    actionsButton.translationY = actionsButton.height * (1 - offset)
-                    usestatsButton.translationY = usestatsButton.height * (1 - offset)
+                    for (btn in buttons){
+                        btn.translationY = btn.height * (1 - offset)
+                    }
+//                    actionsButton.translationY = actionsButton.height * (1 - offset)
                 }
                 notifyControlBarOffsetChanged()
             } else {
@@ -724,11 +750,15 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                 windowOverlay.translationY = -translationY.toFloat()
                 val lp = actionsButton.layoutParams
                 if (lp is MarginLayoutParams) {
-                    actionsButton.translationY = (lp.bottomMargin + toolbar.height + actionsButton.height + toolbarMarginBottom) * (1 - offset)
-                    usestatsButton.translationY = (lp.bottomMargin + toolbar.height + actionsButton.height + toolbarMarginBottom) * (1 - offset)
+                    for (btn in buttons){
+                        btn.translationY = (lp.bottomMargin + toolbar.height + btn.height + toolbarMarginBottom) * (1 - offset)
+                    }
+//                    actionsButton.translationY = (lp.bottomMargin + toolbar.height + actionsButton.height + toolbarMarginBottom) * (1 - offset)
                 } else {
-                    actionsButton.translationY = actionsButton.height * (1 - offset)
-                    usestatsButton.translationY = actionsButton.height * (1 - offset)
+                    for (btn in buttons){
+                        btn.translationY = btn.height * (1 - offset)
+                    }
+//                    actionsButton.translationY = actionsButton.height * (1 - offset)
                 }
                 notifyControlBarOffsetChanged()
             }
@@ -957,33 +987,39 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             pagerAdapter.hasMultipleColumns = false
             mainTabs.columns = 1
         }
+        var buttons = listOf(actionsButton, usestatsButton, searchButton)
         if (pagerAdapter.count == 1 && preferences[autoHideTabs]) {
             toolbar.isVisible = false
-            actionsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
-                addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-            }
-            usestatsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
-                addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
+            for (btn in buttons) {
+                btn.updateLayoutParams<RelativeLayout.LayoutParams> {
+                    addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
+                }
             }
         } else if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
             toolbar.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
             }
-            actionsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+            usestatsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
             }
-            usestatsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
-                addRule(RelativeLayout.ABOVE, actionsButton.id)
+            searchButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.ABOVE, usestatsButton.id)
+            }
+            actionsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.ABOVE, searchButton.id)
             }
         } else {
             toolbar.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
             }
-            actionsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+            usestatsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
                 addRule(RelativeLayout.ABOVE, toolbar.id)
             }
-            usestatsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
-                addRule(RelativeLayout.ABOVE, actionsButton.id)
+            searchButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.ABOVE, usestatsButton.id)
+            }
+            actionsButton.updateLayoutParams<RelativeLayout.LayoutParams> {
+                addRule(RelativeLayout.ABOVE, searchButton.id)
             }
         }
     }

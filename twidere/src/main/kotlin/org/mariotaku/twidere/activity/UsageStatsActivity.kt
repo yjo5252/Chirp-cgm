@@ -21,10 +21,15 @@ package org.mariotaku.twidere.activity
 
 import android.content.res.TypedArray
 import android.graphics.Color
+import android.graphics.Typeface
+import android.icu.lang.UProperty.INT_START
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.TypedValue
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.components.XAxis
@@ -79,19 +84,26 @@ class UsageStatsActivity : BaseActivity() {
 
         var sec = seconds.coerceAtLeast(1)
         usageStr += if (sec == 1) "1 sec" else "$sec secs"
-        usingTimeStatsView.text = "⌛ Using Time: " + usageStr
+        usingTimeStatsView.text =  boldPartText(
+                "⌛ Using Time: ", usageStr)
 
         //today's other stats
-        openTimeStatsView.text = "\uD83D\uDEAA App Open Times: ${preferences[openTimesKey]}"
-        newTweetsStatsView.text = "\uD83D\uDC24 New Tweets Consumed: ${preferences[newTweetsStats]}"
-        likeStatsView.text = "♥ Tweets Liked: ${preferences[likedTweetsStats]}"
-        replyStatsView.text = "\uD83D\uDDE8 Tweet Replied: ${preferences[replyTweetsStats]}"
-        retweetStatsView.text = "\uD83D\uDD01 Retweeted/Quoted: ${preferences[retweetTweetsStats]}"
-        composeStatsView.text = "\uD83D\uDCDD Tweet Composed: ${preferences[composeTweetsStats]}"
-        userfollowStatsView.text =
-                "\uD83D\uDC40 Accounts Followed: ${preferences[followAccountsStats]}"
-        userunfollowStatsView.text =
-                "\uD83D\uDD15 Accounts Unfollowed: ${preferences[unfollowAccountsStats]}"
+        openTimeStatsView.text = boldPartText(
+                "\uD83D\uDEAA App Open Times: ", "${preferences[openTimesKey]}")
+        newTweetsStatsView.text =  boldPartText(
+                "\uD83D\uDC24 New Tweets Consumed: ","${preferences[newTweetsStats]}")
+        likeStatsView.text =  boldPartText(
+                "♥ Tweets Liked: ","${preferences[likedTweetsStats]}")
+        replyStatsView.text =  boldPartText(
+                "\uD83D\uDDE8 Tweet Replied: ", "${preferences[replyTweetsStats]}")
+        retweetStatsView.text =  boldPartText(
+                "\uD83D\uDD01 Retweeted/Quoted: ", "${preferences[retweetTweetsStats]}")
+        composeStatsView.text =  boldPartText(
+                "\uD83D\uDCDD Tweet Composed: ", "${preferences[composeTweetsStats]}")
+        userfollowStatsView.text = boldPartText(
+                "\uD83D\uDC40 Accounts Followed: ", "${preferences[followAccountsStats]}")
+        userunfollowStatsView.text = boldPartText(
+                "\uD83D\uDD15 Accounts Unfollowed: ","${preferences[unfollowAccountsStats]}")
 
         drawBarChart(weekStats)
     }
@@ -138,7 +150,7 @@ class UsageStatsActivity : BaseActivity() {
         for (i in weekStats.indices) {
             // turn your data into Entry objects
             entries.add(BarEntry(i.toFloat(),
-                    (weekStats[i] / (1000*60) ).toFloat()))
+                    (weekStats[i] / (1000 * 60)).toFloat()))
 
             if (i <= todayIdx)
                 colors.add(Color.parseColor("#16D9DF"))
@@ -174,6 +186,13 @@ class UsageStatsActivity : BaseActivity() {
         val color = a.getColor(0, 0)
         a.recycle()
         return color
+    }
+
+    private fun boldPartText(pretext: String, boldtext: String) : SpannableStringBuilder {
+        val str = SpannableStringBuilder(pretext + boldtext)
+        str.setSpan(StyleSpan(Typeface.BOLD),
+                pretext.length, (pretext + boldtext).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return str
     }
 
 }

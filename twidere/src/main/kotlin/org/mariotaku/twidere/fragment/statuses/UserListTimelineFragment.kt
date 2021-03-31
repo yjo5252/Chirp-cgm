@@ -244,6 +244,7 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
             isHideQuotes = false
             isHideReplies = false
             isHideRetweets = false
+            isHideTweets = false
         }
         //drustz: use filter only when the internal preference set
         if (preferences.getBoolean(TwidereConstants.KEY_INTERNAL_FEATURE, true)) {
@@ -253,6 +254,9 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
                 }
                 if (!it.isIncludeRetweets) {
                     extras.isHideRetweets = true
+                }
+                if (!it.isIncludeTweets) {
+                    extras.isHideTweets = true
                 }
             }
         }
@@ -316,11 +320,12 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
                 when (values[it]) {
                     "replies" -> filter.isIncludeReplies
                     "retweets" -> filter.isIncludeRetweets
+                    "tweets" -> filter.isIncludeTweets
                     else -> false
                 }
             }
             builder.setTitle(R.string.title_user_timeline_filter)
-            builder.setMultiChoiceItems(R.array.entries_user_timeline_filter, checkedItems, null)
+            builder.setMultiChoiceItems(R.array.entries_home_timeline_filter, checkedItems, null)
             builder.setNegativeButton(android.R.string.cancel, null)
             builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
                 dialog as AlertDialog
@@ -328,6 +333,7 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
                 val filter = UserTimelineFilter().apply {
                     isIncludeRetweets = listView.isItemChecked(values.indexOf("retweets"))
                     isIncludeReplies = listView.isItemChecked(values.indexOf("replies"))
+                    isIncludeTweets = listView.isItemChecked(values.indexOf("tweets"))
                 }
                 preferences.edit().apply {
                     this[homeTimelineFilterKey] = filter

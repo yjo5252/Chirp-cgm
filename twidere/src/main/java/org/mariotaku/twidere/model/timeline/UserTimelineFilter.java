@@ -37,6 +37,8 @@ public class UserTimelineFilter implements TimelineFilter, Parcelable {
     boolean includeRetweets = true;
     @ParcelableThisPlease
     boolean includeReplies = true;
+    @ParcelableThisPlease
+    boolean includeTweets = true;
 
     public boolean isIncludeRetweets() {
         return includeRetweets;
@@ -54,16 +56,32 @@ public class UserTimelineFilter implements TimelineFilter, Parcelable {
         this.includeReplies = includeReplies;
     }
 
+    public boolean isIncludeTweets() {
+        return includeTweets;
+    }
+
+    public void setIncludeTweets(final boolean includeTweets) {
+        this.includeTweets = includeTweets;
+    }
+
     @Override
     public CharSequence getSummary(final Context context) {
-        if (includeRetweets && includeReplies) {
+        if (includeRetweets && includeReplies && includeTweets) {
             return context.getString(R.string.label_statuses_retweets_replies);
-        } else if (includeReplies) {
+        } else if (includeReplies && includeTweets ) {
             return context.getString(R.string.label_statuses_replies);
-        } else if (includeRetweets) {
+        } else if (includeRetweets && includeTweets) {
             return context.getString(R.string.label_statuses_retweets);
+        } else if (includeRetweets && includeReplies) {
+            return "Retweets and Replies";
+        } else if (includeRetweets) {
+            return "Retweets";
+        } else if (includeReplies){
+            return "Replies";
+        } else if (includeTweets) {
+            return context.getString(R.string.label_statuses);
         }
-        return context.getString(R.string.label_statuses);
+        return "Quotes";
     }
 
     @Override

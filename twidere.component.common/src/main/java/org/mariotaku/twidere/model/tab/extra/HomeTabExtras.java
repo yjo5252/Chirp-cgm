@@ -40,6 +40,8 @@ public class HomeTabExtras extends TabExtras implements Parcelable {
     boolean hideQuotes;
     @JsonField(name = "hide_replies")
     boolean hideReplies;
+    @JsonField(name = "hide_tweets")
+    boolean hideTweets;
 
     public boolean isHideRetweets() {
         return hideRetweets;
@@ -65,12 +67,19 @@ public class HomeTabExtras extends TabExtras implements Parcelable {
         this.hideReplies = hideReplies;
     }
 
+    public boolean isHideTweets() { return hideTweets; }
+
+    public void setHideTweets(boolean hideTweets) {
+        this.hideTweets = hideTweets;
+    }
+
     @Override
     public void copyToBundle(Bundle bundle) {
         super.copyToBundle(bundle);
         bundle.putBoolean(IntentConstants.EXTRA_HIDE_RETWEETS, hideRetweets);
         bundle.putBoolean(IntentConstants.EXTRA_HIDE_QUOTES, hideQuotes);
         bundle.putBoolean(IntentConstants.EXTRA_HIDE_REPLIES, hideReplies);
+        bundle.putBoolean(IntentConstants.EXTRA_HIDE_TWEETS, hideTweets);
     }
 
     @Override
@@ -89,6 +98,7 @@ public class HomeTabExtras extends TabExtras implements Parcelable {
                 "hideRetweets=" + hideRetweets +
                 ", hideQuotes=" + hideQuotes +
                 ", hideReplies=" + hideReplies +
+                ", hideTweets=" + hideTweets +
                 "} " + super.toString();
     }
 

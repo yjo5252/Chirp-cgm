@@ -151,6 +151,8 @@ public interface SharedPreferenceConstants {
     @ExportablePreference(BOOLEAN)
     String KEY_SHOULD_SHOW_TIME_USAGE = "should_show_time_usage";
     @ExportablePreference(BOOLEAN)
+    String KEY_FIRST_LAUNCH = "app_first_launch";
+    @ExportablePreference(BOOLEAN)
     String KEY_SHOULD_SHOW_ESM = "should_show_esm";
     @ExportablePreference(INT)
     String KEY_OPEN_TIMES = "open_times";

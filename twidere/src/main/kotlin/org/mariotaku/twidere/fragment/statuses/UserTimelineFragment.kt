@@ -180,6 +180,7 @@ class UserTimelineFragment : ParcelableStatusesFragment() {
                 val filter = UserTimelineFilter().apply {
                     isIncludeRetweets = listView.isItemChecked(values.indexOf("retweets"))
                     isIncludeReplies = listView.isItemChecked(values.indexOf("replies"))
+                    isIncludeTweets = true
                 }
                 preferences.edit().apply {
                     this[userTimelineFilterKey] = filter

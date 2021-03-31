@@ -87,15 +87,16 @@
         android:background="?android:windowContentOverlay"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/actionsButton"
+        android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="@dimen/element_spacing_large"
+        android:layout_marginHorizontal="@dimen/element_spacing_large"
+        android:layout_marginVertical="@dimen/element_spacing_normal"
         android:clickable="true"
         android:focusable="true"
-        android:src="@drawable/ic_action_status_compose"
+        android:src="@drawable/ic_action_search"
         app:backgroundTint="?colorToolbar"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"/>
@@ -106,12 +107,29 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="@dimen/element_spacing_large"
+        android:layout_marginHorizontal="@dimen/element_spacing_large"
+        android:layout_marginVertical="@dimen/element_spacing_normal"
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/hourglass"
         app:backgroundTint="?colorToolbar"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/actionsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginHorizontal="@dimen/element_spacing_large"
+        android:layout_marginVertical="@dimen/element_spacing_normal"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_action_status_compose"
+        app:backgroundTint="?colorToolbar"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"/>
+
 
 </org.mariotaku.twidere.view.ExtendedRelativeLayout>

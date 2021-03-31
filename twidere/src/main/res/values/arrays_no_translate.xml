@@ -168,5 +168,6 @@
     <string-array name="values_user_timeline_filter">
         <item>replies</item>
         <item>retweets</item>
+        <item>tweets</item>
     </string-array>
 </resources>

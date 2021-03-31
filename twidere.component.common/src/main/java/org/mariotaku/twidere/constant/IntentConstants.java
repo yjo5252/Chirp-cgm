@@ -197,6 +197,7 @@ public interface IntentConstants {
     String EXTRA_HIDE_RETWEETS = "hide_retweets";
     String EXTRA_HIDE_QUOTES = "hide_quotes";
     String EXTRA_HIDE_REPLIES = "hide_replies";
+    String EXTRA_HIDE_TWEETS = "hide_tweets";
     String EXTRA_MENTIONS_ONLY = "mentions_only";
     String EXTRA_RESTART_ACTIVITY = "restart_activity";
     String EXTRA_RECREATE_ACTIVITY = "recreate_activity";

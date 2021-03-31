@@ -402,7 +402,7 @@
     <string name="fast_image_loading_summary">Enable to make images load faster, disable this if some image can\'t be displayed.</string>
 
     <string name="filter_everywhere">Filter everywhere</string>
-    <string name="filter_everywhere_description">These will be filtered in Twidere:\n  ·User\'s tweets\n  ·Tweets mentioning this user\n  ·Retweets/Quotes of this user</string>
+    <string name="filter_everywhere_description">These will be filtered in Chirp:\n  ·User\'s tweets\n  ·Tweets mentioning this user\n  ·Retweets/Quotes of this user</string>
     <string name="filter_type_keywords">Keywords</string>
     <string name="filter_type_links">Links</string>
     <string name="filter_type_sources">Sources</string>

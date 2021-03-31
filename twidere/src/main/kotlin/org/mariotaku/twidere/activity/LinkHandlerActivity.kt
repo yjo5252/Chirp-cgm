@@ -517,7 +517,7 @@ class LinkHandlerActivity : BaseActivity(), SystemWindowInsetsCallback, IControl
             }
             //drustz: add filter description
             LINK_ID_FILTERS -> {
-                title = "Mute Contents In Twidere"
+                title = "Mute Contents In Chirp"
             }
             else -> {
                 title = getString(R.string.app_name)

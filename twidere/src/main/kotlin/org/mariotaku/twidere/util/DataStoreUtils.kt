@@ -370,6 +370,7 @@ object DataStoreUtils {
             isHideQuotes = false
             isHideReplies = false
             isHideRetweets = false
+            isHideTweets = false
         }
         val timelineFilter = preferences[homeTimelineFilterKey]
         timelineFilter?.let {
@@ -378,6 +379,9 @@ object DataStoreUtils {
             }
             if (!it.isIncludeRetweets) {
                 extras.isHideRetweets = true
+            }
+            if (!it.isIncludeTweets) {
+                extras.isHideTweets = true
             }
         }
 
@@ -851,6 +855,21 @@ object DataStoreUtils {
         }
         if (extras.isHideReplies) {
             expressions.add(Expression.isNull(Column(Statuses.IN_REPLY_TO_STATUS_ID)))
+        }
+        //drustz: we add an option for hiding tweets
+        if (extras.isHideTweets) {
+            var exps = arrayListOf<Expression>()
+            if (!extras.isHideQuotes) {
+                exps.add(Expression.equals(Column(Statuses.IS_QUOTE), "1"))
+            }
+            if (!extras.isHideReplies) {
+                exps.add(Expression(Column(Statuses.IN_REPLY_TO_STATUS_ID).sql + " IS NOT NULL"));
+            }
+            if (!extras.isHideRetweets) {
+                exps.add(Expression.equals(Column(Statuses.IS_RETWEET), "1"))
+            }
+            val finalexp = exps.reduce { fir, sec -> Expression.or(fir, sec) }
+            expressions.add(finalexp)
         }
     }
 

@@ -89,6 +89,11 @@
         <item>Pure white/black</item>
         <item>Transparent</item>
     </string-array>
+    <string-array name="entries_home_timeline_filter">
+        <item>Replies</item>
+        <item>Retweets</item>
+        <item>Tweets</item>
+    </string-array>
     <string-array name="entries_user_timeline_filter">
         <item>Replies</item>
         <item>Retweets</item>

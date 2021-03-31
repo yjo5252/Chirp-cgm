@@ -46,6 +46,7 @@ val rememberPositionKey = KBooleanKey(KEY_REMEMBER_POSITION, true)
 val openTimeStamp = KLongKey(KEY_OPEN_TSTAMP, 0)
 val closeTimeStamp = KLongKey(KEY_CLOSE_TSTAMP, 0)
 val shouldShowUsageDialog = KBooleanKey(KEY_SHOULD_SHOW_TIME_USAGE, false)
+val firstLaunch = KBooleanKey(KEY_FIRST_LAUNCH, true)
 val shouldShowESMDialog = KBooleanKey(KEY_SHOULD_SHOW_ESM, false)
 val expcondition = KIntKey(KEY_EXP_CONDITION, 0)
 val expconditionChangeTimeStamp = KLongKey(KEY_CONDITION_CHANGE_STAMP, 0)
@@ -321,6 +322,7 @@ object userTimelineFilterKey : KSimpleKey<UserTimelineFilter>("user_timeline_fil
         return UserTimelineFilter().apply {
             isIncludeReplies = "replies" in options
             isIncludeRetweets = "retweets" in options
+            isIncludeTweets = "tweets" in options
         }
     }
 
@@ -331,6 +333,9 @@ object userTimelineFilterKey : KSimpleKey<UserTimelineFilter>("user_timeline_fil
             }
             if (value.isIncludeRetweets) {
                 add("retweets")
+            }
+            if (value.isIncludeTweets) {
+                add("tweets")
             }
         }.joinToString(",")
         editor.putString(key, options)
@@ -347,6 +352,7 @@ object homeTimelineFilterKey : KSimpleKey<UserTimelineFilter>("home_timeline_fil
         return UserTimelineFilter().apply {
             isIncludeReplies = "replies" in options
             isIncludeRetweets = "retweets" in options
+            isIncludeTweets = "tweets" in options
         }
     }
 
@@ -357,6 +363,9 @@ object homeTimelineFilterKey : KSimpleKey<UserTimelineFilter>("home_timeline_fil
             }
             if (value.isIncludeRetweets) {
                 add("retweets")
+            }
+            if (value.isIncludeTweets) {
+                add("tweets")
             }
         }.joinToString(",")
         editor.putString(key, options)

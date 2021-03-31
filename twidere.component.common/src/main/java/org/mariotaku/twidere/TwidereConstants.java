@@ -31,7 +31,7 @@ import org.mariotaku.twidere.constant.SharedPreferenceConstants;
  */
 public interface TwidereConstants extends SharedPreferenceConstants, IntentConstants, CompatibilityConstants {
 
-    String TWIDERE_APP_NAME = "Twidere";
+    String TWIDERE_APP_NAME = "Chirp";//"Twidere";
     String TWIDERE_PROJECT_URL = "https://github.com/TwidereProject/";
     String TWIDERE_PROJECT_EMAIL = "twidere.project@gmail.com";
     String TWIDERE_PACKAGE_NAME = "org.mariotaku.twidere";
