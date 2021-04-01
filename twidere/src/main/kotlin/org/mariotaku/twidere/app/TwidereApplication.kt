@@ -293,9 +293,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             KEY_MEDIA_PRELOAD, KEY_PRELOAD_WIFI_ONLY -> {
                 mediaPreloader.reloadOptions(preferences)
             }
-            KEY_NAME_FIRST, KEY_I_WANT_MY_STARS_BACK,
-                //drustz: add pref notificaiton on param change
-            KEY_EXTERNAL_FEATURE, KEY_INTERNAL_FEATURE, KEY_PID -> {
+            KEY_NAME_FIRST, KEY_I_WANT_MY_STARS_BACK -> {
                 contentNotificationManager.updatePreferences()
             }
             KEY_OVERRIDE_LANGUAGE -> {

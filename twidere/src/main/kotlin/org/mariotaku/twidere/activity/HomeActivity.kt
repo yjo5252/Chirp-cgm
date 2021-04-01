@@ -104,6 +104,7 @@ import org.mariotaku.twidere.provider.TwidereDataStore.Statuses
 import org.mariotaku.twidere.receiver.NotificationReceiver
 import org.mariotaku.twidere.util.*
 import org.mariotaku.twidere.util.DrzUtils.addHomeFeedTab
+import org.mariotaku.twidere.util.DrzUtils.changeCondition
 import org.mariotaku.twidere.util.DrzUtils.removeAllListFeedTabs
 import org.mariotaku.twidere.util.DrzUtils.removeHomeFeedTab
 import org.mariotaku.twidere.util.KeyboardShortcutsHandler.KeyboardShortcutCallback
@@ -345,8 +346,13 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         //change condition every n days
         val condition_time =
                 (System.currentTimeMillis() - preferences[expconditionChangeTimeStamp])/1000
-        if ( condition_time > 10){
+
+        if ( condition_time > 60 || preferences.getBoolean("needupdatePID", false)){
             Log.d("drz", "onCreate: changed! ${condition_time}")
+            with(preferences.edit()) {
+                putBoolean("needupdatePID", false)
+                commit()
+            }
             showPIDDialog()
         }
 
@@ -1286,7 +1292,10 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                     "Participant ID here to start the new week. " +
                     "The Assigned ID should have been provided to you via email.")
 
+            Log.e("drz", "onCreateDialog: pid: ${preferences.getString(TwidereConstants.KEY_PID, "")}")
             val input = EditText(this.activity)
+            input.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            input.maxLines = 1
             builder.setView(input)
 
             builder.setNegativeButton("Cancel") { _, _ ->
@@ -1298,49 +1307,18 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                         pid != preferences.getString(TwidereConstants.KEY_PID, "")) {
                     with(preferences.edit()) {
                         putString(TwidereConstants.KEY_PID, pid)
-                        putBoolean(TwidereConstants.CHANGE_PID, true)
                         commit()
                     }
-                    changeCondition(pid)
+                    changeCondition(pid, preferences, this.activity as HomeActivity)
+                    Utils.restartActivity(this.activity)
                 }
-                Utils.restartActivity(this.activity)
             }
             val dialog = builder.create()
             dialog.onShow { it.applyTheme() }
             return dialog
         }
 
-        fun changeCondition(pid : String){
-            var incond = 0
-            var outcond = 0
-            if (pid.contains("in1") == true){
-                incond = 1
-            }
-            if (pid.contains("ou1") == true){
-                outcond = 1
-            }
 
-            val prev_cond = preferences[expcondition]
-            val condition = incond * 2 + outcond //0, 1, || 2, 3
-            Log.d("drz", "onResume: changed from cond $prev_cond to $condition")
-
-            preferences.edit().apply{
-                this[expcondition] = condition
-                this[expconditionChangeTimeStamp] = System.currentTimeMillis()
-                putBoolean(KEY_INTERNAL_FEATURE, incond==1)
-                putBoolean(KEY_EXTERNAL_FEATURE, outcond==1)
-            }.apply()
-
-            //drustz: configure tabs
-            if (condition < 2){
-                removeAllListFeedTabs(this.activity as HomeActivity)
-                if (prev_cond >= 2){
-                    addHomeFeedTab(this.activity as HomeActivity)
-                }
-            } else if (condition >= 2){
-                removeHomeFeedTab(this.activity as HomeActivity)
-            }
-        }
     }
 
     companion object {

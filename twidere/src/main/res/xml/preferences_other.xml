@@ -38,17 +38,11 @@
         android:fragment="org.mariotaku.twidere.fragment.NetworkDiagnosticsFragment"
         android:title="@string/network_diagnostics"/>
 
-    <org.mariotaku.twidere.preference.ThemedEditTextPreference
-        android:key="participantid"
-        android:singleLine="true"
-        android:title="participant ID">
-        <extra
-            android:name="should_recreate"
-            android:value="true"/>
-        <extra
-            android:name="condition_changed"
-            android:value="true"/>
-    </org.mariotaku.twidere.preference.ThemedEditTextPreference>>
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="needupdatePID"
+        android:summary="Please do not change this on your own"
+        android:title="Update PID"/>
 
     <SwitchPreferenceCompat
         android:defaultValue="true"
