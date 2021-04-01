@@ -203,13 +203,6 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
         FirebaseApp.initializeApp(this)
         firebaseAnalytics = Firebase.analytics
         firebaseLoginstance = firebaseAnalytics
-
-        //drustz: exp condition check
-        //change condition every n days
-        if (System.currentTimeMillis() - sharedPreferences[expconditionChangeTimeStamp] >
-                60*1000){
-            Log.d("drz", "onCreate: changed!")
-        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -303,10 +296,6 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             KEY_NAME_FIRST, KEY_I_WANT_MY_STARS_BACK,
                 //drustz: add pref notificaiton on param change
             KEY_EXTERNAL_FEATURE, KEY_INTERNAL_FEATURE, KEY_PID -> {
-                sharedPreferences.edit().apply{
-                    this[expcondition] = 0
-                    this[expconditionChangeTimeStamp] = System.currentTimeMillis()
-                }.apply()
                 contentNotificationManager.updatePreferences()
             }
             KEY_OVERRIDE_LANGUAGE -> {

@@ -155,10 +155,19 @@ class CustomTabsFragment : BaseFragment(), LoaderCallbacks<Cursor?>, MultiChoice
         val accounts = AccountUtils.getAllAccountDetails(AccountManager.get(context), false)
         val itemAdd = menu.findItem(R.id.add_submenu)
         val theme = Chameleon.getOverrideTheme(requireContext(), context)
+
+        val internalFeature = preferences.getBoolean("internalfeature", false)
+
         if (itemAdd != null && itemAdd.hasSubMenu()) {
             val subMenu = itemAdd.subMenu
             subMenu.clear()
             for ((type, conf) in TabConfiguration.all()) {
+                //drustz: hide list when internal is off and hide home when its on
+                if (!internalFeature && type == CustomTabType.LIST_TIMELINE)
+                    continue
+                if (internalFeature && type == CustomTabType.HOME_TIMELINE)
+                    continue
+
                 val accountRequired = TabAccountFlags.FLAG_ACCOUNT_REQUIRED in conf.accountFlags
                 val subItem = subMenu.add(0, 0, conf.sortPosition, conf.name.createString(context))
                 val disabledByNoAccount = accountRequired && accounts.none(conf::checkAccountAvailability)

@@ -359,6 +359,8 @@ public interface SharedPreferenceConstants {
     @ExportablePreference(STRING)
     String KEY_PID = "participantID";
     @ExportablePreference(BOOLEAN)
+    String CHANGE_PID = "pidChanged";
+    @ExportablePreference(BOOLEAN)
     String KEY_INTERNAL_FEATURE = "internalfeature";
     @ExportablePreference(BOOLEAN)
     String KEY_EXTERNAL_FEATURE = "externalfeature";

@@ -41,7 +41,14 @@
     <org.mariotaku.twidere.preference.ThemedEditTextPreference
         android:key="participantid"
         android:singleLine="true"
-        android:title="participant ID"/>
+        android:title="participant ID">
+        <extra
+            android:name="should_recreate"
+            android:value="true"/>
+        <extra
+            android:name="condition_changed"
+            android:value="true"/>
+    </org.mariotaku.twidere.preference.ThemedEditTextPreference>>
 
     <SwitchPreferenceCompat
         android:defaultValue="true"

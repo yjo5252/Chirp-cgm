@@ -206,8 +206,9 @@ abstract class ParcelableStatusesAdapter(
             is ObjectCursor -> {
                 displayPositions = null
 
-                if (preferences.getBoolean(
-                                TwidereConstants.KEY_INTERNAL_FEATURE, true)) {
+                //drustz: do not show popular tweets with internal features
+                if (! preferences.getBoolean(
+                                TwidereConstants.KEY_INTERNAL_FEATURE, false)) {
                     //drustz: test inject popular tweets
                     val popsize = popularTweets.mpopTweets.size
 

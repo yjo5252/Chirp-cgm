@@ -37,12 +37,14 @@ import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.util.SparseIntArray
 import android.view.*
 import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.EditText
 import android.widget.RelativeLayout
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -73,6 +75,7 @@ import org.mariotaku.ktextension.removeOnAccountsUpdatedListenerSafe
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.twidere.Constants.*
 import org.mariotaku.twidere.R
+import org.mariotaku.twidere.TwidereConstants
 import org.mariotaku.twidere.activity.iface.IControlBarActivity.ControlBarShowHideHelper
 import org.mariotaku.twidere.adapter.SupportTabsAdapter
 import org.mariotaku.twidere.annotation.CustomTabType
@@ -100,13 +103,16 @@ import org.mariotaku.twidere.provider.TwidereDataStore.Messages.Conversations
 import org.mariotaku.twidere.provider.TwidereDataStore.Statuses
 import org.mariotaku.twidere.receiver.NotificationReceiver
 import org.mariotaku.twidere.util.*
+import org.mariotaku.twidere.util.DrzUtils.addHomeFeedTab
+import org.mariotaku.twidere.util.DrzUtils.removeAllListFeedTabs
+import org.mariotaku.twidere.util.DrzUtils.removeHomeFeedTab
 import org.mariotaku.twidere.util.KeyboardShortcutsHandler.KeyboardShortcutCallback
 import org.mariotaku.twidere.util.premium.ExtraFeaturesService
-import org.mariotaku.twidere.util.sync.LOGTAG_SYNC
 import org.mariotaku.twidere.view.HomeDrawerLayout
 import org.mariotaku.twidere.view.TabPagerIndicator
 import java.lang.ref.WeakReference
 import kotlin.math.floor
+
 
 class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, SupportFragmentCallback,
         OnLongClickListener, DrawerLayout.DrawerListener {
@@ -325,16 +331,34 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         invalidateOptionsMenu()
         updateActionsButton()
 
-
         //drustz: add time diff for show dialogue on use status
         if (preferences[shouldShowUsageDialog]){
             showUsageStatsDialog()
-
             preferences.edit().apply {
                 this[shouldShowUsageDialog] = false
                 this[lastshowUsageDialogTimeStamp] = System.currentTimeMillis()
             }.apply()
         }
+
+
+        //drustz: exp condition check
+        //change condition every n days
+        val condition_time =
+                (System.currentTimeMillis() - preferences[expconditionChangeTimeStamp])/1000
+        if ( condition_time > 10){
+            Log.d("drz", "onCreate: changed! ${condition_time}")
+            showPIDDialog()
+        }
+
+        //drustz: show floating buttons only in internal feature condition
+        val externalFeature = preferences.getBoolean(
+                TwidereConstants.KEY_EXTERNAL_FEATURE, true)
+        val internalFeature = preferences.getBoolean(
+                TwidereConstants.KEY_INTERNAL_FEATURE, true)
+
+        usestatsButton.visibility = if (externalFeature) View.VISIBLE else View.GONE
+        settingToggleButton.visibility = if (internalFeature) View.VISIBLE else View.GONE
+
     }
 
     override fun onStop() {
@@ -540,7 +564,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
     override fun setControlBarVisibleAnimate(visible: Boolean,
-            listener: ControlBarShowHideHelper.ControlBarAnimationListener?) {
+                                             listener: ControlBarShowHideHelper.ControlBarAnimationListener?) {
         controlBarShowHideHelper.setControlBarVisibleAnimate(visible, listener)
     }
 
@@ -574,7 +598,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
     override fun handleKeyboardShortcutSingle(handler: KeyboardShortcutsHandler, keyCode: Int,
-            event: KeyEvent, metaState: Int): Boolean {
+                                              event: KeyEvent, metaState: Int): Boolean {
         if (handleFragmentKeyboardShortcutSingle(handler, keyCode, event, metaState)) return true
         var action = handler.getKeyAction(KeyboardShortcutConstants.CONTEXT_TAG_HOME, keyCode, event, metaState)
         if (action != null) {
@@ -627,13 +651,13 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
     override fun isKeyboardShortcutHandled(handler: KeyboardShortcutsHandler, keyCode: Int,
-            event: KeyEvent, metaState: Int): Boolean {
+                                           event: KeyEvent, metaState: Int): Boolean {
         if (isFragmentKeyboardShortcutHandled(handler, keyCode, event, metaState)) return true
         return super.isKeyboardShortcutHandled(handler, keyCode, event, metaState)
     }
 
     override fun handleKeyboardShortcutRepeat(handler: KeyboardShortcutsHandler, keyCode: Int,
-            repeatCount: Int, event: KeyEvent, metaState: Int): Boolean {
+                                              repeatCount: Int, event: KeyEvent, metaState: Int): Boolean {
         if (handleFragmentKeyboardShortcutRepeat(handler, keyCode, repeatCount, event, metaState))
             return true
         return super.handleKeyboardShortcutRepeat(handler, keyCode, repeatCount, event, metaState)
@@ -798,8 +822,8 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
     private fun handleFragmentKeyboardShortcutRepeat(handler: KeyboardShortcutsHandler,
-            keyCode: Int, repeatCount: Int,
-            event: KeyEvent, metaState: Int): Boolean {
+                                                     keyCode: Int, repeatCount: Int,
+                                                     event: KeyEvent, metaState: Int): Boolean {
         val fragment = keyboardShortcutRecipient
         if (fragment is KeyboardShortcutCallback) {
             return fragment.handleKeyboardShortcutRepeat(handler, keyCode,
@@ -809,8 +833,8 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
     private fun handleFragmentKeyboardShortcutSingle(handler: KeyboardShortcutsHandler,
-            keyCode: Int, event: KeyEvent,
-            metaState: Int): Boolean {
+                                                     keyCode: Int, event: KeyEvent,
+                                                     metaState: Int): Boolean {
         val fragment = keyboardShortcutRecipient
         if (fragment is KeyboardShortcutCallback) {
             return fragment.handleKeyboardShortcutSingle(handler, keyCode,
@@ -820,7 +844,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     }
 
     private fun isFragmentKeyboardShortcutHandled(handler: KeyboardShortcutsHandler,
-            keyCode: Int, event: KeyEvent, metaState: Int): Boolean {
+                                                  keyCode: Int, event: KeyEvent, metaState: Int): Boolean {
         val fragment = keyboardShortcutRecipient
         if (fragment is KeyboardShortcutCallback) {
             return fragment.isKeyboardShortcutHandled(handler, keyCode,
@@ -847,7 +871,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             return -1
         }
         val refreshOnStart = preferences.getBoolean(SharedPreferenceConstants.KEY_REFRESH_ON_START, true)
-        Log.d("drz", "handleIntent: onstart????? "+refreshOnStart)
+        Log.d("drz", "handleIntent: onstart????? " + refreshOnStart)
         if (handleExtraIntent && refreshOnStart) {
             twitterWrapper.refreshAll()
         }
@@ -864,7 +888,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                 if (tabType == Tab.getTypeAlias(tab.type)) {
                     val args = tab.args
                     if (args != null && CustomTabUtils.hasAccountKey(this, args,
-                            activatedAccountKeys, accountKey)) {
+                                    activatedAccountKeys, accountKey)) {
                         initialTab = i
                         break
                     }
@@ -934,6 +958,13 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         df.show(supportFragmentManager, "time_usage_dialog")
     }
 
+
+    private fun showPIDDialog() {
+        val df = ShowPIDInputDialog()
+        df.show(supportFragmentManager, "input_pid_dialog")
+    }
+
+
     private fun showAutoRefreshConfirm() {
         if (isFinishing) return
         return
@@ -967,6 +998,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
 
     private fun setupHomeTabs() {
         pagerAdapter.clear()
+
         pagerAdapter.addAll(CustomTabUtils.getHomeTabs(this))
         val hasNoTab = pagerAdapter.count == 0
         emptyTabHint.visibility = if (hasNoTab) View.VISIBLE else View.GONE
@@ -1243,6 +1275,71 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             val dialog = builder.create()
             dialog.onShow { it.applyTheme() }
             return dialog
+        }
+    }
+
+    class ShowPIDInputDialog : BaseDialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Enter Your Participate ID")
+            builder.setMessage("It's a new week for the study! Please enter the assigned " +
+                    "Participant ID here to start the new week. " +
+                    "The Assigned ID should have been provided to you via email.")
+
+            val input = EditText(this.activity)
+            builder.setView(input)
+
+            builder.setNegativeButton("Cancel") { _, _ ->
+            }
+            builder.setPositiveButton("Submit") { dialog, _ ->
+                val pid = input.text.toString()
+
+                if (pid.isNotEmpty() &&
+                        pid != preferences.getString(TwidereConstants.KEY_PID, "")) {
+                    with(preferences.edit()) {
+                        putString(TwidereConstants.KEY_PID, pid)
+                        putBoolean(TwidereConstants.CHANGE_PID, true)
+                        commit()
+                    }
+                    changeCondition(pid)
+                }
+                Utils.restartActivity(this.activity)
+            }
+            val dialog = builder.create()
+            dialog.onShow { it.applyTheme() }
+            return dialog
+        }
+
+        fun changeCondition(pid : String){
+            var incond = 0
+            var outcond = 0
+            if (pid.contains("in1") == true){
+                incond = 1
+            }
+            if (pid.contains("ou1") == true){
+                outcond = 1
+            }
+
+            val prev_cond = preferences[expcondition]
+            val condition = incond * 2 + outcond //0, 1, || 2, 3
+            Log.d("drz", "onResume: changed from cond $prev_cond to $condition")
+
+            preferences.edit().apply{
+                this[expcondition] = condition
+                this[expconditionChangeTimeStamp] = System.currentTimeMillis()
+                putBoolean(KEY_INTERNAL_FEATURE, incond==1)
+                putBoolean(KEY_EXTERNAL_FEATURE, outcond==1)
+            }.apply()
+
+            //drustz: configure tabs
+            if (condition < 2){
+                removeAllListFeedTabs(this.activity as HomeActivity)
+                if (prev_cond >= 2){
+                    addHomeFeedTab(this.activity as HomeActivity)
+                }
+            } else if (condition >= 2){
+                removeHomeFeedTab(this.activity as HomeActivity)
+            }
         }
     }
 
