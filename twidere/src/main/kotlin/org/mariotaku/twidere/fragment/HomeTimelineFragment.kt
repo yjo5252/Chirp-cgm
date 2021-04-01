@@ -150,16 +150,16 @@ class HomeTimelineFragment : CursorStatusesFragment() {
         if (readhistoryShownTimestamp > 0) {
 //            Log.d("drz", "[HOME] time after readhistory: " + timeafterhistory)
             firebaseLoginstance.logEvent("FeedViewTime") {
-                param("ViewTimeTotal", usetime)
-                param("AfterHistory", timeafterhistory)
-                param("feed", "home")
+                param("FeedViewTimeTotal", usetime)
+                param("FeedViewTimeAfterHistory", timeafterhistory)
+                param("FeedName", "home")
                 param("Condition", preferences[expcondition].toLong())
                 preferences.getString(TwidereConstants.KEY_PID, "")?.let { param("userID", it) }
             }
         } else {
             firebaseLoginstance.logEvent("FeedViewTime") {
-                param("ViewTimeTotal", usetime)
-                param("feed", "home")
+                param("FeedName", "home")
+                param("FeedViewTimeTotal", usetime)
                 param("Condition", preferences[expcondition].toLong())
                 preferences.getString(TwidereConstants.KEY_PID, "")?.let { param("userID", it) }
             }
