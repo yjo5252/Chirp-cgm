@@ -335,6 +335,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         //drustz: add time diff for show dialogue on use status
         if (preferences[shouldShowUsageDialog]){
             showUsageStatsDialog()
+            Log.e("drz", "show time consump !" )
             preferences.edit().apply {
                 this[shouldShowUsageDialog] = false
                 this[lastshowUsageDialogTimeStamp] = System.currentTimeMillis()

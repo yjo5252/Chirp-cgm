@@ -221,13 +221,15 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             }.apply()
         }
 
-        Log.d("drz", "onMoveToForeground: interval:: ${secs -
-                sharedPreferences[lastshowUsageDialogTimeStamp]}")
+        Log.d("drz", "onMoveToForeground: interval:: " +
+                "${(System.currentTimeMillis() -
+                sharedPreferences[lastshowUsageDialogTimeStamp])/1000}")
 
         if (sharedPreferences.getBoolean(KEY_EXTERNAL_FEATURE, true)
-                && secs -
-                sharedPreferences[lastshowUsageDialogTimeStamp] > 15*60*1000 /*10min*/){
-            if (secs < 5*60) return //not show if not over 5min
+                && (System.currentTimeMillis() -
+                sharedPreferences[lastshowUsageDialogTimeStamp])/1000 > 60*10 /*10min*/){
+            if (secs < 15*60) return //not show if not over 15 min
+
             sharedPreferences.edit().apply{
                 this[shouldShowUsageDialog] = true
             }.apply()

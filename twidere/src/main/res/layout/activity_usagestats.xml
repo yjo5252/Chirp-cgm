@@ -15,7 +15,7 @@
         android:textAllCaps="true"
         android:textSize="@dimen/text_size_normal"
         android:textColor="?android:textColorPrimary"
-        android:text="Twidere Usage Today" />
+        android:text="Chirp Usage Today" />
 
     <Button
         android:id="@+id/mOpenUsageSettingButton"
