@@ -3,20 +3,24 @@ package org.mariotaku.twidere.util
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import okhttp3.*
+import org.json.JSONObject
 import org.mariotaku.kpreferences.get
 import org.mariotaku.kpreferences.set
 import org.mariotaku.library.objectcursor.ObjectCursor
-import org.mariotaku.sqliteqb.library.Expression
+import org.mariotaku.restfu.http.HttpCallback
 import org.mariotaku.sqliteqb.library.Columns.Column
-import org.mariotaku.sqliteqb.library.RawItemArray
+import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.twidere.Constants
-import org.mariotaku.twidere.activity.HomeActivity
 import org.mariotaku.twidere.annotation.CustomTabType
 import org.mariotaku.twidere.constant.expcondition
 import org.mariotaku.twidere.constant.expconditionChangeTimeStamp
 import org.mariotaku.twidere.model.Tab
 import org.mariotaku.twidere.model.tab.impl.HomeTabConfiguration
 import org.mariotaku.twidere.provider.TwidereDataStore.Tabs
+import java.io.IOException
+import java.lang.Exception
+
 
 object DrzUtils {
 
@@ -45,27 +49,38 @@ object DrzUtils {
         resolver.delete(Tabs.CONTENT_URI, where.sql, arrayOf(CustomTabType.LIST_TIMELINE))
     }
 
-    fun changeCondition(pid : String, preferences: SharedPreferences, context: Context){
-        var incond = 0
-        var outcond = 0
-        if (pid.contains("in1")){
-            incond = 1
-        }
-        if (pid.contains("ou1")){
-            outcond = 1
-        }
+    //drustz: the condition transition map
+    val transitions = listOf(
+        mapOf(3 to 2, 2 to 1, 1 to 0, -1 to 3, 0 to 3),
+        mapOf(1 to 3, 3 to 0, 0 to 2, -1 to 1, 2 to 1),
+        mapOf(2 to 0, 0 to 3, 3 to 1, -1 to 2, 1 to 2),
+        mapOf(0 to 1, 1 to 2, 2 to 3, -1 to 0, 3 to 0))
 
-        val prev_cond = preferences[expcondition]
-        val condition = incond * 2 + outcond //0, 1, || 2, 3
-        Log.d("drz", "onResume: changed from cond $prev_cond to $condition")
+    fun getTransition(pid: String) : Int {
+        val intid = pid.filter { it.isDigit() }.toInt()
+        return when (intid){
+            in 0..20 -> 0
+            in 21..40 -> 1
+            in 41..60 -> 2
+            else -> 3
+        }
+    }
 
+    fun changeCondition(prev_cond: Int, pid: String, preferences: SharedPreferences, context: Context){
+
+        var group = getTransition(pid)
+        val condition = transitions[group][prev_cond]!!
+        var incond = condition.and(2)
+        var outcond = condition.and(1)
         preferences.edit().apply{
             this[expcondition] = condition
             this[expconditionChangeTimeStamp] = System.currentTimeMillis()
-            putBoolean(Constants.KEY_INTERNAL_FEATURE, incond==1)
-            putBoolean(Constants.KEY_EXTERNAL_FEATURE, outcond==1)
+            putBoolean("shouldShowScreenshotDialog", true)
+            putBoolean(Constants.KEY_INTERNAL_FEATURE, incond > 0)
+            putBoolean(Constants.KEY_EXTERNAL_FEATURE, outcond > 0)
         }.apply()
 
+        Log.d("drz", "pid: $pid, changeCondition from $prev_cond to $condition, in/out: $incond/$outcond")
         //drustz: configure tabs
         if (condition < 2){
             removeAllListFeedTabs(context)
@@ -75,5 +90,53 @@ object DrzUtils {
         } else if (condition >= 2){
             removeHomeFeedTab(context)
         }
+    }
+
+    fun changeToNextCondition(pid: String, preferences: SharedPreferences, context: Context){
+        changeCondition(preferences[expcondition], pid, preferences, context)
+    }
+
+    fun initConditionWithPID(pid: String, preferences: SharedPreferences, context: Context){
+        changeCondition(-1, pid, preferences, context)
+    }
+
+    fun checkPidCondExists(pid: String, condition: String, preferences: SharedPreferences) {
+        val client = OkHttpClient()
+        val jsonObject = JSONObject()
+        jsonObject.put("pid", pid)
+        jsonObject.put("condition", condition)
+        jsonObject.put("quest", "query")
+        val body = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"), jsonObject.toString())
+
+        val request = Request.Builder()
+                .method("POST", body)
+                .url("https://l84rt6fed7.execute-api.us-west-2.amazonaws.com/default/checkParticipantStatus")
+                .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // Handle this
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                try {
+                    val jsonData: String = response.body()?.string() ?: ""
+                    val Jobject = JSONObject(jsonData)
+                    val count = Jobject.get("Count").toString().toInt()
+                    Log.d("drz", "onResponse: count $count")
+                    if (count > 0){
+                        with(preferences.edit()) {
+                            putBoolean("shouldShowScreenshotDialog", false)
+                            commit()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.d("drz", "onResponse: $e")
+                }
+            }
+
+        }
+        )
     }
 }

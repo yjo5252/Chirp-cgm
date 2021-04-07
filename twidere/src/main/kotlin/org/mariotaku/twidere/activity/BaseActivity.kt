@@ -34,6 +34,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.annotation.StyleRes
@@ -52,6 +53,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.google.firebase.analytics.ktx.logEvent
 import com.squareup.otto.Bus
+import kotlinx.android.synthetic.main.dialog_esm.view.*
 import nl.komponents.kovenant.Promise
 import org.mariotaku.chameleon.Chameleon
 import org.mariotaku.chameleon.ChameleonActivity
@@ -92,6 +94,7 @@ import org.mariotaku.twidere.util.theme.getCurrentThemeResource
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @SuppressLint("Registered")
@@ -326,19 +329,6 @@ open class BaseActivity : ChameleonActivity(), IBaseActivity<BaseActivity>, IThe
         registerReceiver(nightTimeChangedReceiver, filter)
 
         updateNightMode()
-
-        //drustz: add time diff for show dialogue on use status
-        if (preferences[shouldShowESMDialog]){
-            val weekStats = UseStats.getUseWeeklyTillNow(preferences)
-            val todayIdx = UseStats.getTodayInWeekIdx()
-            val secs = (weekStats[todayIdx]/1000)
-
-            showESMStatsDialog()
-            preferences.edit().apply {
-                this[shouldShowESMDialog] = false
-                this[lastshowESMDialogTimeStamp] = secs
-            }.apply()
-        }
     }
 
     override fun onPause() {
@@ -356,11 +346,6 @@ open class BaseActivity : ChameleonActivity(), IBaseActivity<BaseActivity>, IThe
         }
         actionHelper.dispatchOnPause()
         super.onPause()
-    }
-
-    private fun showESMStatsDialog() {
-        val df = ESMDialog()
-        df.show(supportFragmentManager, "ESM_dialog")
     }
 
     override fun notifyControlBarOffsetChanged() {
@@ -521,35 +506,6 @@ open class BaseActivity : ChameleonActivity(), IBaseActivity<BaseActivity>, IThe
             return
         }
         isNightBackup = nightState
-    }
-
-    //drustz: add ESM prompt for the study
-    class ESMDialog : BaseDialogFragment() {
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val inflater = layoutInflater
-            val dialoglayout: View = inflater.inflate(R.layout.dialog_esm, null)
-            val builder = AlertDialog.Builder(requireContext())
-            val radiogroup = dialoglayout.findViewById<RadioGroup>(R.id.radio_group)
-            builder.setView(dialoglayout)
-            builder.setTitle("Study Feedback")
-            builder.setPositiveButton("Submit") { _, _ ->
-                Log.d("drz", "onCreateDialog: ${radiogroup.checkedRadioButtonId}")
-                val selectedid = radiogroup.checkedRadioButtonId
-                if (selectedid >= 0){
-                    val score = dialoglayout.
-                    findViewById<RadioButton>(selectedid).text.toString().toLong()
-                    UseStats.firebaseLoginstance.logEvent("ESM") {
-                        param("Score", score)
-                        param("Condition", preferences[expcondition].toLong())
-                        preferences.getString(TwidereConstants.KEY_PID,
-                                "")?.let { param("userID", it) }
-                    }
-                }
-            }
-            val dialog = builder.create()
-            dialog.onShow { it.applyTheme() }
-            return dialog
-        }
     }
 
     companion object {

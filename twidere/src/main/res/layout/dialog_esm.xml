@@ -5,16 +5,56 @@
     android:layout_height="match_parent">
 
     <org.mariotaku.twidere.view.FixedTextView
-        android:id="@+id/promptlabel"
+        android:id="@+id/promptlabel1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:gravity="center_vertical|left"
-        android:maxLines="3"
+        android:maxLines="5"
         android:layout_margin="@dimen/element_spacing_large"
         android:minHeight="25dp"
-        android:text="How much do you feel in control of your use of Chirp right now? (1 - not at all, 5 - totally in control)"
+        android:text="For this Chirp use, how much did you feel in or out of control? (1 - very out of control, 5 - very in control)"
         android:textColor="@color/background_color_window_black"/>
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/promptlabel2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_vertical|left"
+        android:maxLines="5"
+        android:layout_margin="@dimen/element_spacing_large"
+        android:minHeight="25dp"
+        android:visibility="gone"
+        android:text="For this Chirp use, how much did you feel satisfied or disatisfied with the way you spent the time? (1 - very dissatisfied, 5 - very satisfied)"
+        android:textColor="@color/background_color_window_black"/>
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/promptlabel3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_vertical|left"
+        android:maxLines="5"
+        android:layout_margin="@dimen/element_spacing_large"
+        android:minHeight="25dp"
+        android:visibility="gone"
+        android:text="For this Chirp use, how much did it support or conflict with your personal goals? (1 - strongly conflict, 5 - strongly support)"
+        android:textColor="@color/background_color_window_black"/>
+
+    <org.mariotaku.twidere.view.FixedTextView
+        android:id="@+id/promptlabel4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_vertical|left"
+        android:maxLines="5"
+        android:layout_margin="@dimen/element_spacing_large"
+        android:minHeight="25dp"
+        android:visibility="gone"
+        android:text="I am currently using Chirp without really paying attention to what I am doing. (1 - strongly disagree, 5 - strongly agree)"
+        android:textColor="@color/background_color_window_black"/>
+
 
     <RadioGroup
         android:id="@+id/radio_group"

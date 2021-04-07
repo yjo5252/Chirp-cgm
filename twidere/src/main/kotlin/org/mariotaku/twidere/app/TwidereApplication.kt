@@ -221,27 +221,15 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
             }.apply()
         }
 
-        Log.d("drz", "onMoveToForeground: interval:: " +
-                "${(System.currentTimeMillis() -
-                sharedPreferences[lastshowUsageDialogTimeStamp])/1000}")
-
         if (sharedPreferences.getBoolean(KEY_EXTERNAL_FEATURE, true)
                 && (System.currentTimeMillis() -
                 sharedPreferences[lastshowUsageDialogTimeStamp])/1000 > 60*10 /*10min*/){
-            if (secs < 15*60) return //not show if not over 15 min
-
-            sharedPreferences.edit().apply{
-                this[shouldShowUsageDialog] = true
-            }.apply()
+            if (secs >= 15*60) { //not show if not over 15 min
+                sharedPreferences.edit().apply {
+                    this[shouldShowUsageDialog] = true
+                }.apply()
+            }
         }
-
-        //show ESM prompts
-        if ( (secs > 3*60 && sharedPreferences[lastshowESMDialogTimeStamp] == 0L)
-                || (secs -
-                sharedPreferences[lastshowESMDialogTimeStamp] > 10*60) /*10min*/)
-        sharedPreferences.edit().apply{
-            this[shouldShowESMDialog] = true
-        }.apply()
 
         UseStats.sendFirebaseEvents(sharedPreferences)
     }
@@ -251,7 +239,7 @@ class TwidereApplication : Application(), OnSharedPreferenceChangeListener, Life
 //        Log.d("drz", "onMoveToBackground1")
         //update all list read histories
         UseStats.updateAllLastTweetHistories(sharedPreferences)
-//        UseStats.sendFirebaseEvents(sharedPreferences)
+        UseStats.sendFirebaseEvents(sharedPreferences)
     }
 
 

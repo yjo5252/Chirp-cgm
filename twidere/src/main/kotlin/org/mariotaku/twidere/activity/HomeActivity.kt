@@ -44,8 +44,7 @@ import android.view.*
 import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.EditText
-import android.widget.RelativeLayout
+import android.widget.*
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -59,9 +58,11 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetView
+import com.google.firebase.analytics.ktx.logEvent
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.activity_home_content.*
+import kotlinx.android.synthetic.main.dialog_esm.view.*
 import kotlinx.android.synthetic.main.layout_empty_tab_hint.*
 import nl.komponents.kovenant.task
 import org.mariotaku.chameleon.ChameleonUtils
@@ -105,6 +106,9 @@ import org.mariotaku.twidere.receiver.NotificationReceiver
 import org.mariotaku.twidere.util.*
 import org.mariotaku.twidere.util.DrzUtils.addHomeFeedTab
 import org.mariotaku.twidere.util.DrzUtils.changeCondition
+import org.mariotaku.twidere.util.DrzUtils.changeToNextCondition
+import org.mariotaku.twidere.util.DrzUtils.checkPidCondExists
+import org.mariotaku.twidere.util.DrzUtils.initConditionWithPID
 import org.mariotaku.twidere.util.DrzUtils.removeAllListFeedTabs
 import org.mariotaku.twidere.util.DrzUtils.removeHomeFeedTab
 import org.mariotaku.twidere.util.KeyboardShortcutsHandler.KeyboardShortcutCallback
@@ -301,14 +305,14 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             showAutoRefreshConfirm()
         }
 
-        if (preferences[firstLaunch]) {
-            val intent = IntentUtils.tutorial()
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(intent)
-            preferences.edit().apply {
-                this[firstLaunch] = false
-            }.apply()
-        }
+//        if (preferences[firstLaunch]) {
+//            val intent = IntentUtils.tutorial()
+//            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+//            startActivity(intent)
+//            preferences.edit().apply {
+//                this[firstLaunch] = false
+//            }.apply()
+//        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -342,19 +346,37 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             }.apply()
         }
 
+        var canshowESM = true
 
         //drustz: exp condition check
         //change condition every n days
         val condition_time =
                 (System.currentTimeMillis() - preferences[expconditionChangeTimeStamp])/1000
 
-        if ( condition_time > 60 || preferences.getBoolean("needupdatePID", false)){
-            Log.d("drz", "onCreate: changed! ${condition_time}")
+        val pid = preferences.getString(TwidereConstants.KEY_PID, "")!!
+
+        if (condition_time > 20 && pid.isNotEmpty()){
+            //here we change the condtiion automatically
+            canshowESM = false
+            changeToNextCondition(pid, preferences, this)
+            Utils.restartActivity(this)
+        }
+
+        //if pid not entered
+        if (preferences.getBoolean("needupdatePID", false) ||
+                pid.isEmpty()){
             with(preferences.edit()) {
                 putBoolean("needupdatePID", false)
                 commit()
             }
+            canshowESM = false
             showPIDDialog()
+        }
+
+        if (preferences.getBoolean("shouldShowScreenshotDialog", false)){
+            Log.e("drz", "checking screenshot: $pid cond: "+preferences[expcondition].toString())
+            checkPidCondExists(pid, preferences[expcondition].toString(), preferences)
+            showScreenshotDialog()
         }
 
         //drustz: show floating buttons only in internal feature condition
@@ -366,6 +388,29 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         usestatsButton.visibility = if (externalFeature) View.VISIBLE else View.GONE
         settingToggleButton.visibility = if (internalFeature) View.VISIBLE else View.GONE
 
+
+        //drustz: for ESM
+        val weekStats = UseStats.getUseWeeklyTillNow(preferences)
+        val todayIdx = UseStats.getTodayInWeekIdx()
+        val secs = (weekStats[todayIdx]/1000)
+
+        //show ESM prompts
+        //update the last time in case it was yesterday's
+        if (preferences[lastshowESMDialogTimeStamp] > secs){
+            preferences.edit().apply{
+                this[lastshowESMDialogTimeStamp] = 0
+            }.apply()
+        }
+
+        Log.d("drz", "lastESM: ${preferences[lastshowESMDialogTimeStamp]}, " +
+                "Current secs $secs")
+
+        if (canshowESM &&
+                ( (secs > 3*60 && preferences[lastshowESMDialogTimeStamp] == 0L)
+                || (secs -
+                        preferences[lastshowESMDialogTimeStamp] > 15*60) /*15min*/)){
+            showESMStatsDialog()
+        }
     }
 
     override fun onStop() {
@@ -878,7 +923,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
             return -1
         }
         val refreshOnStart = preferences.getBoolean(SharedPreferenceConstants.KEY_REFRESH_ON_START, true)
-        Log.d("drz", "handleIntent: onstart????? " + refreshOnStart)
+
         if (handleExtraIntent && refreshOnStart) {
             twitterWrapper.refreshAll()
         }
@@ -969,6 +1014,11 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
     private fun showPIDDialog() {
         val df = ShowPIDInputDialog()
         df.show(supportFragmentManager, "input_pid_dialog")
+    }
+
+    private fun showScreenshotDialog() {
+        val df = ShowScreenshotDialog()
+        df.show(supportFragmentManager, "screenshot_dialog")
     }
 
 
@@ -1110,6 +1160,80 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         notificationManager.notify(NOTIFICATION_ID_PROMOTIONS_OFFER, builder.build())
     }
 
+    private fun showESMStatsDialog() {
+        val inflater = layoutInflater
+        val dialoglayout: View = inflater.inflate(R.layout.dialog_esm, null)
+        val builder = AlertDialog.Builder(this)
+        val radiogroup = dialoglayout.findViewById<RadioGroup>(R.id.radio_group)
+        var currentPrompt = 0
+        var scores = mutableListOf<Long>()
+        var prompts = listOf(
+                dialoglayout.promptlabel1,
+                dialoglayout.promptlabel2,
+                dialoglayout.promptlabel3,
+                dialoglayout.promptlabel4)
+
+        val weekStats = UseStats.getUseWeeklyTillNow(preferences)
+        val todayIdx = UseStats.getTodayInWeekIdx()
+        val secs = (weekStats[todayIdx]/1000)
+
+        builder.setView(dialoglayout)
+        builder.setTitle("Study Feedback")
+        builder.setNegativeButton("Cancel") { _, _ ->
+            preferences.edit().apply {
+                this[lastshowESMDialogTimeStamp] = secs
+            }.apply()
+        }
+
+        builder.setPositiveButton("Next", null)
+
+        val dialog = builder.create()
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.setCancelable(false)
+
+        dialog.onShow {
+            it.applyTheme()
+            val button: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            button.setOnClickListener(View.OnClickListener { // TODO Do something
+                val selectedid = radiogroup.checkedRadioButtonId
+                if (selectedid < 0) return@OnClickListener
+                val score = dialoglayout.findViewById<RadioButton>(selectedid).text.toString().toLong()
+                scores.add(score)
+                radiogroup.clearCheck()
+                currentPrompt += 1
+                if (currentPrompt == prompts.size - 1) {
+                    button.text = "Submit"
+                } else if (currentPrompt == prompts.size) {
+                    //Dismiss once everything is OK.
+                    dialog.dismiss()
+                    preferences.edit().apply {
+                        this[lastshowESMDialogTimeStamp] = secs
+                    }.apply()
+
+                    UseStats.firebaseLoginstance.logEvent("ESM") {
+                        param("control_score", scores[0])
+                        param("satisfy_score", scores[1])
+                        param("goal_score", scores[2])
+                        param("attention_score", scores[3])
+                        param("Condition", preferences[expcondition].toLong())
+                        preferences.getString(TwidereConstants.KEY_PID,
+                                "")?.let { it -> param("userID", it) }
+                    }
+                }
+
+                if (currentPrompt < prompts.size) {
+                    prompts[currentPrompt].visibility = View.VISIBLE
+                    for (i in 0 until prompts.size) {
+                        if (currentPrompt != i) {
+                            prompts[i].visibility = View.GONE
+                        }
+                    }
+                }
+            })
+        }
+        dialog.show()
+    }
+
     private fun triggerActionsClick() {
         val position = mainPager.currentItem
         if (pagerAdapter.count == 0) return
@@ -1242,6 +1366,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         }
 
         internal class TabBadge(var index: Int, var count: Int)
+
     }
 
     class AutoRefreshConfirmDialogFragment : BaseDialogFragment() {
@@ -1289,37 +1414,60 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("Enter Your Participate ID")
-            builder.setMessage("It's a new week for the study! Please enter the assigned " +
-                    "Participant ID here to start the new week. " +
+            builder.setMessage("Welcome to the study! Please enter the assigned " +
+                    "Participant ID here to start!. " +
                     "The Assigned ID should have been provided to you via email.")
 
-            Log.e("drz", "onCreateDialog: pid: ${preferences.getString(TwidereConstants.KEY_PID, "")}")
             val input = EditText(this.activity)
             input.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             input.maxLines = 1
             builder.setView(input)
 
-            builder.setNegativeButton("Cancel") { _, _ ->
-            }
-            builder.setPositiveButton("Submit") { dialog, _ ->
-                val pid = input.text.toString()
+            builder.setPositiveButton("Submit", null)
+            val dialog = builder.create()
+            dialog.setCancelable(false)
+            dialog.setCanceledOnTouchOutside(false)
+            dialog.onShow {
+                it.applyTheme()
 
-                if (pid.isNotEmpty() &&
-                        pid != preferences.getString(TwidereConstants.KEY_PID, "")) {
-                    with(preferences.edit()) {
-                        putString(TwidereConstants.KEY_PID, pid)
-                        commit()
+                val button: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                button.setOnClickListener { // TODO Do something
+                    val pid = input.text.toString()
+                    if (pid.isNotEmpty() &&
+                            pid.startsWith("uwp") &&
+                            pid != preferences.getString(TwidereConstants.KEY_PID, "")) {
+                        with(preferences.edit()) {
+                            putString(TwidereConstants.KEY_PID, pid)
+                            commit()
+                        }
+                        initConditionWithPID(pid, preferences, this.activity as HomeActivity)
+                        dialog.dismiss()
+                        Utils.restartActivity(this.activity)
+                        Toast.makeText(this.activity, "You're good to go!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this.activity, "Please enter a valid pid", Toast.LENGTH_SHORT).show()
                     }
-                    changeCondition(pid, preferences, this.activity as HomeActivity)
-                    Utils.restartActivity(this.activity)
                 }
             }
+            return dialog
+        }
+    }
+
+    class ShowScreenshotDialog: BaseDialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Did you send the screenshot?")
+            builder.setMessage("It's a new week for the study! And it seems that " +
+                    "you haven't sent the screenshot required by the study team. " +
+                    "Please take the screenshot and send it according to the email instruction!")
+
+            builder.setNegativeButton("OK") { _, _ ->
+            }
             val dialog = builder.create()
+            dialog.setCanceledOnTouchOutside(false)
             dialog.onShow { it.applyTheme() }
             return dialog
         }
-
-
     }
 
     companion object {

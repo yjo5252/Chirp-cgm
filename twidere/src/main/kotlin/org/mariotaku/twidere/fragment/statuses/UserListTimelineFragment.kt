@@ -213,7 +213,6 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
     override fun onResume() {
         super.onResume()
         if (isVisible && userVisibleHint){
-            Log.d("drz", "onResume: [list] visible !!")
             recordEnterTime()
         }
     }
@@ -221,7 +220,6 @@ class UserListTimelineFragment : ParcelableStatusesFragment() {
     override fun onPause() {
         super.onPause()
         if (isVisible && userVisibleHint){
-            Log.d("drz", "onPause: [list] visible !!")
             recordLeaveTime()
         }
     }
