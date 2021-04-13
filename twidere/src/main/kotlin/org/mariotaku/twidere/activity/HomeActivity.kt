@@ -355,7 +355,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
 
         val pid = preferences.getString(TwidereConstants.KEY_PID, "")!!
 
-        if (condition_time > 20 && pid.isNotEmpty()){
+        if (condition_time > 60*60*24 && pid.isNotEmpty()){
             //here we change the condtiion automatically
             canshowESM = false
             changeToNextCondition(pid, preferences, this)
@@ -596,13 +596,6 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
                     0
                 }
         }
-
-//        (actionsButton.layoutParams as? MarginLayoutParams)?.bottomMargin =
-//                actionsButtonBottomMargin + if (preferences[tabPositionKey] == SharedPreferenceConstants.VALUE_TAB_POSITION_TOP) {
-//                    insets.systemWindowInsetBottom
-//                } else {
-//                    0
-//                }
 
         return insets
     }
@@ -1432,7 +1425,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
 
                 val button: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                 button.setOnClickListener { // TODO Do something
-                    val pid = input.text.toString()
+                    val pid = input.text.toString().trim()
                     if (pid.isNotEmpty() &&
                             pid.startsWith("uwp") &&
                             pid != preferences.getString(TwidereConstants.KEY_PID, "")) {
@@ -1457,9 +1450,9 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("Did you send the screenshot?")
-            builder.setMessage("It's a new week for the study! And it seems that " +
-                    "you haven't sent the screenshot required by the study team. " +
-                    "Please take the screenshot and send it according to the email instruction!")
+            builder.setMessage("It's a new day for the study! " +
+                    "Please take the required screenshot and upload it in the survey! " +
+                    "(If you haven't received the email, please discard this message, the email will be sent shortly)")
 
             builder.setNegativeButton("OK") { _, _ ->
             }

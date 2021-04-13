@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--suppress AndroidElementNotAllowed -->
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/other_settings">
 
     <org.mariotaku.twidere.preference.SettingsImportExportPreference
@@ -48,11 +48,13 @@
         android:defaultValue="true"
         android:key="internalfeature"
         android:summary="Please do not change this on your own"
+        app:isPreferenceVisible="false"
         android:title="Internal Features"/>
 
     <SwitchPreferenceCompat
         android:defaultValue="true"
         android:key="externalfeature"
         android:summary="Please do not change this on your own"
+        app:isPreferenceVisible="false"
         android:title="External Features"/>
 </PreferenceScreen>

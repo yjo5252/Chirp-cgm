@@ -456,7 +456,7 @@
     <string name="highlight">Highlight</string>
     <string name="highlight_and_underline">Highlight and underline</string>
 
-    <string name="hint_accounts_dashboard_message">Swipe from screen edge to open accounts dashboard.</string>
+    <string name="hint_accounts_dashboard_message">Swipe right from the home screen to open accounts dashboard.</string>
     <string name="hint_accounts_dashboard_title">Accounts dashboard</string>
     <string name="hint_conversation_name">Conversation name</string>
     <string name="hint_empty_filters_subscriptions">No subscriptions</string>
