@@ -339,7 +339,6 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         //drustz: add time diff for show dialogue on use status
         if (preferences[shouldShowUsageDialog]){
             showUsageStatsDialog()
-            Log.e("drz", "show time consump !" )
             preferences.edit().apply {
                 this[shouldShowUsageDialog] = false
                 this[lastshowUsageDialogTimeStamp] = System.currentTimeMillis()
@@ -355,8 +354,8 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
 
         val pid = preferences.getString(TwidereConstants.KEY_PID, "")!!
 
-        if (condition_time > 60*60*24 && pid.isNotEmpty()){
-            //here we change the condtiion automatically
+        if (condition_time > 60*60*24*7 && pid.isNotEmpty()){
+            //here we change the condition automatically
             canshowESM = false
             changeToNextCondition(pid, preferences, this)
             Utils.restartActivity(this)
@@ -1388,7 +1387,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("Usage Status Today")
-            builder.setMessage("You have used Twidere for " + UseStats.getTodayUsageStr(preferences) + " today. " +
+            builder.setMessage("You have used Chirp for " + UseStats.getTodayUsageStr(preferences) + " today. " +
                     "Do you want to continue?")
             builder.setNegativeButton("Continue") { _, _ ->
                 UseStats.modifyStatsKeyCount(preferences, ignoreDialogueStats, 1)
@@ -1450,7 +1449,7 @@ class HomeActivity : BaseActivity(), OnClickListener, OnPageChangeListener, Supp
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("Did you send the screenshot?")
-            builder.setMessage("It's a new day for the study! " +
+            builder.setMessage("It's a new week for the study! " +
                     "Please take the required screenshot and upload it in the survey! " +
                     "(If you haven't received the email, please discard this message, the email will be sent shortly)")
 
