@@ -1,6 +1,6 @@
 # Chirp - Alternative Twitter Client #
 
-Chirp project is based on the opensource implementation of [Twiidere](https://github.com/TwidereProject/Twidere-Android)
+Chirp project is based on the opensource implementation of [Twidere](https://github.com/TwidereProject/Twidere-Android)
 
 For more details, please refer to our paper:
 
