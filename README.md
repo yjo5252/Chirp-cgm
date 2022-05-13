@@ -10,7 +10,22 @@ For more details, please refer to our paper:
 ## Cite the paper
 
 ```
-Citation comes later
+@inproceedings{10.1145/3491102.3517722,
+author = {Zhang, Mingrui Ray and Lukoff, Kai and Rao, Raveena and Baughan, Amanda and Hiniker, Alexis},
+title = {Monitoring Screen Time or Redesigning It? Two Approaches to Supporting Intentional Social Media Use},
+year = {2022},
+isbn = {9781450391573},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3491102.3517722},
+doi = {10.1145/3491102.3517722},
+booktitle = {CHI Conference on Human Factors in Computing Systems},
+articleno = {60},
+numpages = {19},
+keywords = {sense of agency, social media, twitter, mobile phone, digital wellbeing},
+location = {New Orleans, LA, USA},
+series = {CHI '22}
+}
 ```
 
 ---
